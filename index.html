@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>5th Annual Super Ad Bowl LX</title>
 <meta name="description" content="Interactive bracket voting app for Super Bowl LX advertisers"/>
-<meta name="theme-color" content="#080b14"/>
+<meta name="theme-color" content="#0f1219"/>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:#080b14; overflow-x:hidden; color:#e2e8f0; font-family:sans-serif; }
+  body { background:#0f1219; overflow-x:hidden; color:#e2e8f0; font-family:sans-serif; }
   ::-webkit-scrollbar { width:6px; }
-  ::-webkit-scrollbar-track { background:#080b14; }
-  ::-webkit-scrollbar-thumb { background:#1a1f2e; border-radius:3px; }
-  input[type="range"] { -webkit-appearance:none; height:6px; border-radius:3px; background:#1a1f2e; outline:none; }
+  ::-webkit-scrollbar-track { background:#0f1219; }
+  ::-webkit-scrollbar-thumb { background:#252b3b; border-radius:3px; }
+  input[type="range"] { -webkit-appearance:none; height:6px; border-radius:3px; background:#252b3b; outline:none; }
   input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; border-radius:50%; cursor:pointer; }
   #loading { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; gap:16px; }
-  #loading .spinner { width:40px; height:40px; border:3px solid #1a1f2e; border-top-color:#D4A843; border-radius:50%; animation:spin 1s linear infinite; }
+  #loading .spinner { width:40px; height:40px; border:3px solid #252b3b; border-top-color:#D4A843; border-radius:50%; animation:spin 1s linear infinite; }
   @keyframes spin { to { transform:rotate(360deg); } }
 </style>
 </head>
@@ -160,7 +160,7 @@ function WatchBtn({href, color, small}) {
 }
 
 const S = {
-  cd:{ borderRadius:12, background:"#0f1420", border:"1px solid #1a1f2e", overflow:"hidden" },
+  cd:{ borderRadius:12, background:"#161b26", border:"1px solid #1a1f2e", overflow:"hidden" },
   lb:{ fontFamily:"Oswald", fontSize:10, letterSpacing:3, textTransform:"uppercase", color:"#64748b" },
   h2:{ fontFamily:"Oswald", fontSize:"clamp(22px,4vw,36px)", fontWeight:700, letterSpacing:2, textTransform:"uppercase", color:"#e2e8f0", marginBottom:8 },
   h3:{ fontFamily:"Oswald", fontSize:16, fontWeight:600, letterSpacing:2, textTransform:"uppercase", color:"#94a3b8", marginBottom:12 }
@@ -195,7 +195,14 @@ const ttData = [
 ];
 
 export default function App() {
-  const [tab, sTab] = useState("home");
+  const [tab, rawSetTab] = useState("home");
+  const sTab = (t) => { rawSetTab(t); window.history.pushState({tab:t}, "", ""); window.scrollTo(0,0); };
+  React.useEffect(() => {
+    const onPop = () => { const s = window.history.state; if (s && s.tab) rawSetTab(s.tab); else rawSetTab("home"); };
+    window.addEventListener("popstate", onPop);
+    window.history.replaceState({tab:"home"}, "", "");
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
   const [voter, sVoter] = useState(null);
   const [vName, sVName] = useState("");
   const [votes, sVotes] = useState({});
@@ -321,19 +328,19 @@ export default function App() {
   const regions = ["Food & Bev","Celebrity","Heart & Purpose","Tech & Innovation"];
 
   return (
-    <div style={{ minHeight:"100vh", background:"#080b14", color:"#e2e8f0", fontFamily:"'Source Sans 3',sans-serif" }}>
+    <div style={{ minHeight:"100vh", background:"#0f1219", color:"#e2e8f0", fontFamily:"'Source Sans 3',sans-serif" }}>
       <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet"/>
       <div style={{ position:"fixed",top:"-30%",left:"-15%",width:"50%",height:"70%",background:"radial-gradient(ellipse,rgba(105,190,40,0.02)0%,transparent 70%)",pointerEvents:"none" }}/>
       <div style={{ position:"fixed",bottom:"-30%",right:"-15%",width:"50%",height:"70%",background:"radial-gradient(ellipse,rgba(200,16,46,0.02)0%,transparent 70%)",pointerEvents:"none" }}/>
 
-      <header style={{ position:"sticky",top:0,zIndex:100,background:"rgba(8,11,20,0.92)",backdropFilter:"blur(20px)",borderBottom:"1px solid #1a1f2e" }}>
+      <header style={{ position:"sticky",top:0,zIndex:100,background:"rgba(15,18,25,0.95)",backdropFilter:"blur(20px)",borderBottom:"1px solid #1a1f2e" }}>
         <div style={{ maxWidth:1200,margin:"0 auto",padding:"0 16px",display:"flex",alignItems:"center",justifyContent:"space-between",height:56 }}>
           <div style={{ cursor:"pointer" }} onClick={()=>sTab("home")}>
             <div style={{ fontFamily:"Oswald",fontSize:9,color:"#94a3b8",letterSpacing:3,lineHeight:1 }}>5TH ANNUAL</div>
             <div style={{ fontFamily:"Oswald",fontSize:16,fontWeight:700,letterSpacing:2,lineHeight:1.1 }}><span style={{color:"#D4A843"}}>SUPER AD BOWL</span> <span style={{color:"#e2e8f0"}}>LX</span></div>
           </div>
           <nav style={{ display:"flex",gap:2,flexWrap:"wrap" }}>
-            {tabs.map(t=><button key={t.id} onClick={()=>sTab(t.id)} style={{ fontFamily:"Oswald",fontSize:11,fontWeight:tab===t.id?600:400,padding:"6px 10px",borderRadius:4,border:"none",cursor:"pointer",letterSpacing:1,textTransform:"uppercase",transition:"all .2s",background:tab===t.id?"#1a1f2e":"transparent",color:tab===t.id?"#e2e8f0":"#64748b" }}>{t.l}</button>)}
+            {tabs.map(t=><button key={t.id} onClick={()=>sTab(t.id)} style={{ fontFamily:"Oswald",fontSize:11,fontWeight:tab===t.id?600:400,padding:"6px 10px",borderRadius:4,border:"none",cursor:"pointer",letterSpacing:1,textTransform:"uppercase",transition:"all .2s",background:tab===t.id?"#252b3b":"transparent",color:tab===t.id?"#e2e8f0":"#64748b" }}>{t.l}</button>)}
           </nav>
         </div>
       </header>
@@ -352,14 +359,14 @@ export default function App() {
     <p style={{ fontFamily:"Oswald",fontSize:16,color:"#D4A843",letterSpacing:1,margin:"6px 0" }}>Tuesday, Feb 10 at 11:00 AM PST</p>
     <p style={{ maxWidth:620,margin:"16px auto 0",color:"#94a3b8",lineHeight:1.7,fontSize:15 }}>16 of the biggest Super Bowl LX ads go head-to-head in a marketing bracket tournament. Evaluate each ad on Viral Factor, Product Tie-In, Call to Action, and Creativity, then vote to crown our 5th Annual Super Ad Bowl Champion.</p>
     {!reg?<div style={{ marginTop:24,display:"flex",justifyContent:"center",gap:8,flexWrap:"wrap" }}>
-      <input value={vName} onChange={e=>sVName(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doReg()} placeholder="Enter your name to vote..." style={{ padding:"12px 20px",borderRadius:8,border:"1px solid #1a1f2e",background:"#0f1420",color:"#e2e8f0",fontSize:15,width:"clamp(200px,50vw,320px)",outline:"none" }}/>
+      <input value={vName} onChange={e=>sVName(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doReg()} placeholder="Enter your name to vote..." style={{ padding:"12px 20px",borderRadius:8,border:"1px solid #1a1f2e",background:"#161b26",color:"#e2e8f0",fontSize:15,width:"clamp(200px,50vw,320px)",outline:"none" }}/>
       <button onClick={doReg} style={bt("linear-gradient(135deg,#69BE28,#4a9e1c)","#fff")}>Register</button>
     </div>:<div style={{ marginTop:24,padding:"10px 20px",borderRadius:8,background:"rgba(105,190,40,0.07)",border:"1px solid rgba(105,190,40,0.15)",display:"inline-block" }}>
       <span style={{ fontFamily:"Oswald",fontSize:13,color:"#69BE28",letterSpacing:1 }}>REGISTERED: {vName.toUpperCase()}</span>
     </div>}
   </div>
   <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))",gap:8,marginBottom:24 }}>
-    {[{v:"$8-10M",l:"Per 30-Sec Spot"},{v:"16",l:"Ads in Bracket"},{v:"130M+",l:"Est. Viewers"},{v:"4",l:"Rounds"},{v:"$5.20",l:"ROI Per $1"},{v:"1",l:"Champion"}].map((n,i)=><div key={i} style={{ textAlign:"center",padding:"12px 8px",borderRadius:8,background:"#0f1420",border:"1px solid #1a1f2e" }}>
+    {[{v:"$8-10M",l:"Per 30-Sec Spot"},{v:"16",l:"Ads in Bracket"},{v:"130M+",l:"Est. Viewers"},{v:"4",l:"Rounds"},{v:"$5.20",l:"ROI Per $1"},{v:"1",l:"Champion"}].map((n,i)=><div key={i} style={{ textAlign:"center",padding:"12px 8px",borderRadius:8,background:"#161b26",border:"1px solid #1a1f2e" }}>
       <div style={{ fontFamily:"Oswald",fontSize:20,fontWeight:700,color:"#D4A843" }}>{n.v}</div>
       <div style={{ fontSize:10,color:"#64748b",letterSpacing:1,textTransform:"uppercase",marginTop:2 }}>{n.l}</div>
     </div>)}
@@ -375,8 +382,8 @@ export default function App() {
         <div style={{...S.lb,textAlign:"center",marginBottom:10,color:"#D4A843"}}>{rg}</div>
         {INIT.slice(ri*2,ri*2+2).map(([a,b],mi)=>{const a1=ADS.find(x=>x.id===a),a2=ADS.find(x=>x.id===b);return(
           <div key={mi} style={{ marginBottom:8,borderRadius:8,overflow:"hidden",border:"1px solid #1a1f2e" }}>
-            {[a1,a2].map((ad,i)=><div key={ad.id} onClick={()=>{sExpB(ad.id);sTab("brands")}} style={{ display:"flex",alignItems:"center",gap:8,padding:"7px 10px",background:i?"#0a0d15":"#0c0f18",borderBottom:i===0?"1px solid #1a1f2e":"none",cursor:"pointer",transition:"background .2s" }}
-              onMouseEnter={e=>{e.currentTarget.style.background="#151a28"}} onMouseLeave={e=>{e.currentTarget.style.background=i?"#0a0d15":"#0c0f18"}}>
+            {[a1,a2].map((ad,i)=><div key={ad.id} onClick={()=>{sExpB(ad.id);sTab("brands")}} style={{ display:"flex",alignItems:"center",gap:8,padding:"7px 10px",background:i?"#111620":"#141821",borderBottom:i===0?"1px solid #1a1f2e":"none",cursor:"pointer",transition:"background .2s" }}
+              onMouseEnter={e=>{e.currentTarget.style.background="#1e2435"}} onMouseLeave={e=>{e.currentTarget.style.background=i?"#111620":"#141821"}}>
               <div style={{ fontFamily:"Oswald",fontSize:10,color:"#475569",minWidth:16 }}>#{ad.seed}</div>
               <BI ad={ad} size={22}/>
               <div style={{ fontFamily:"Oswald",fontSize:12,fontWeight:500,color:"#e2e8f0",flex:1 }}>{ad.brand}</div>
@@ -400,41 +407,62 @@ export default function App() {
   <div style={{ textAlign:"center",marginBottom:24 }}>
     <h2 style={S.h2}>{RNAMES[round]||"CHAMPION CROWNED"}</h2>
     <p style={S.lb}>Round {round+1} of 4 | {bracket.length} matchup{bracket.length!==1?"s":""}</p>
-    {!reg&&<div style={{ marginTop:12,padding:"8px 16px",borderRadius:6,background:"rgba(200,16,46,0.07)",border:"1px solid rgba(200,16,46,0.15)",display:"inline-block",fontSize:13,color:"#C8102E" }}>Register on Home tab to vote</div>}
-    <div style={{ marginTop:16,padding:"12px 16px",borderRadius:8,background:"#0f1420",border:"1px solid #1a1f2e",maxWidth:500,margin:"16px auto 0" }}>
-      <div style={{ fontFamily:"Oswald",fontSize:12,color:"#D4A843",letterSpacing:1,marginBottom:6 }}>HOW TO PLAY</div>
-      <div style={{ fontSize:13,color:"#94a3b8",lineHeight:1.5 }}>Click the ad you think wins each matchup. Judge by Viral Factor, Product Tie-In, Call to Action, and Creativity. Host advances rounds live.</div>
+    {!reg&&<div style={{ marginTop:16,padding:"16px 20px",borderRadius:10,background:"rgba(212,168,67,0.06)",border:"1px solid rgba(212,168,67,0.2)",maxWidth:420,margin:"0 auto" }}>
+      <div style={{ fontFamily:"Oswald",fontSize:12,color:"#D4A843",letterSpacing:2,marginBottom:10 }}>REGISTER TO VOTE</div>
+      <div style={{ display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap" }}>
+        <input value={vName} onChange={e=>sVName(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doReg()} placeholder="Enter your name..." style={{ padding:"10px 16px",borderRadius:8,border:"1px solid #252b3b",background:"#161b26",color:"#e2e8f0",fontSize:14,width:"clamp(180px,40vw,260px)",outline:"none" }}/>
+        <button onClick={doReg} style={bt("linear-gradient(135deg,#69BE28,#4a9e1c)","#fff")}>Register</button>
+      </div>
+    </div>}
+    <div style={{ marginTop:16,padding:"14px 18px",borderRadius:10,background:"rgba(105,190,40,0.06)",border:"1px solid rgba(105,190,40,0.15)",maxWidth:500,margin:"16px auto 0" }}>
+      <div style={{ fontFamily:"Oswald",fontSize:12,color:"#69BE28",letterSpacing:2,marginBottom:6 }}>VOTING IS OPEN</div>
+      <div style={{ fontSize:13,color:"#94a3b8",lineHeight:1.6 }}>Pick your winner in each matchup below. You can vote now or change your picks during the live event. Tap the brand you think has the better ad.</div>
+    </div>
+    <div style={{ marginTop:10,padding:"12px 16px",borderRadius:8,background:"#161b26",border:"1px solid #252b3b",maxWidth:500,margin:"10px auto 0" }}>
+      <div style={{ fontFamily:"Oswald",fontSize:12,color:"#D4A843",letterSpacing:1,marginBottom:6 }}>JUDGING CRITERIA</div>
+      <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:6 }}>
+        {["Viral Factor","Product Tie-In","Call to Action","Creativity"].map((c,ci)=>(
+          <div key={ci} style={{ fontSize:12,color:"#94a3b8",display:"flex",alignItems:"center",gap:6 }}>
+            <span style={{ color:"#D4A843" }}>{ci+1}.</span> {c}
+          </div>
+        ))}
+      </div>
     </div>
   </div>
   <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(340px,1fr))",gap:16 }}>
     {bracket.map((mu,idx)=>{
       const res=live[round+"-"+idx], mv=votes[round+"-"+idx];
       const t1=(res&&res.tally&&mu.a1&&res.tally[mu.a1.id])||0, t2=(res&&res.tally&&mu.a2&&res.tally[mu.a2.id])||0, tot=t1+t2;
-      return(<div key={idx} style={S.cd}>
-        <div style={{ padding:"8px 14px",background:"#111827",display:"flex",justifyContent:"space-between",borderBottom:"1px solid #1a1f2e" }}>
+      return(<div key={idx} style={{...S.cd,overflow:"visible"}}>
+        <div style={{ padding:"10px 14px",background:"#1c2233",display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:"1px solid #252b3b" }}>
           <span style={S.lb}>Match {idx+1}</span>
-          <span style={{...S.lb,color:tot?"#69BE28":"#475569"}}>{tot} vote{tot!==1?"s":""}</span>
+          {mv?<span style={{ fontFamily:"Oswald",fontSize:10,color:"#69BE28",letterSpacing:1,padding:"3px 10px",borderRadius:4,background:"rgba(105,190,40,0.1)",border:"1px solid rgba(105,190,40,0.2)" }}>VOTE CAST</span>
+          :<span style={{ fontFamily:"Oswald",fontSize:10,color:"#D4A843",letterSpacing:1,padding:"3px 10px",borderRadius:4,background:"rgba(212,168,67,0.08)",border:"1px solid rgba(212,168,67,0.15)" }}>TAP A SIDE TO VOTE</span>}
         </div>
         {[mu.a1,mu.a2].map((ad,i)=>ad&&<div key={ad.id}>
-          {i===1&&<div style={{ textAlign:"center",padding:"4px 0",background:"#060810",fontFamily:"Oswald",fontSize:12,fontWeight:700,color:"#334155",letterSpacing:2 }}>VS</div>}
-          <div onClick={()=>reg&&doVote(idx,ad.id)} style={{ display:"flex",alignItems:"center",gap:12,padding:"14px 16px",cursor:reg?"pointer":"default",transition:"all .2s",background:mv===ad.id?(ad.color+"12"):"transparent" }}
-            onMouseEnter={e=>{if(reg)e.currentTarget.style.background=ad.color+"0a"}} onMouseLeave={e=>{if(mv!==ad.id)e.currentTarget.style.background="transparent"}}>
-            <BI ad={ad} size={40}/>
+          {i===1&&<div style={{ textAlign:"center",padding:"6px 0",background:"#0d1018",fontFamily:"Oswald",fontSize:13,fontWeight:700,color:"#475569",letterSpacing:3 }}>VS</div>}
+          <div onClick={()=>{if(!reg){if(!vName.trim()){const n=prompt("Enter your name to vote:");if(!n||!n.trim())return;sVName(n.trim());const id=n.trim().toLowerCase().replace(/\s+/g,"-");sVoter(id);sReg(true);try{const key2=sk("voters");window.storage.get(key2,true).catch(()=>null).then(ex=>{let v2=ex?JSON.parse(ex.value):{};v2[id]={n:n.trim(),t:new Date().toISOString()};window.storage.set(key2,JSON.stringify(v2),true)})}catch(e2){}}else{const id=vName.trim().toLowerCase().replace(/\s+/g,"-");sVoter(id);sReg(true)}}doVote(idx,ad.id)}} style={{ display:"flex",alignItems:"center",gap:12,padding:"16px 18px",cursor:"pointer",transition:"all .25s",background:mv===ad.id?(ad.color+"18"):"transparent",borderLeft:mv===ad.id?("4px solid "+ad.color):"4px solid transparent" }}
+            onMouseEnter={e=>{e.currentTarget.style.background=mv===ad.id?(ad.color+"18"):(ad.color+"08")}} onMouseLeave={e=>{e.currentTarget.style.background=mv===ad.id?(ad.color+"18"):"transparent"}}>
+            <BI ad={ad} size={44}/>
             <div style={{ flex:1 }}>
-              <div style={{ display:"flex",alignItems:"center",gap:6 }}>
-                <span style={{ fontFamily:"Oswald",fontSize:11,color:ad.color }}>#{ad.seed}</span>
-                <span style={{ fontFamily:"Oswald",fontSize:16,fontWeight:600,color:"#e2e8f0" }}>{ad.brand}</span>
-                {mv===ad.id&&<span style={{ fontFamily:"Oswald",fontSize:10,color:"#69BE28",letterSpacing:1 }}>VOTED</span>}
+              <div style={{ display:"flex",alignItems:"center",gap:6,flexWrap:"wrap" }}>
+                <span style={{ fontFamily:"Oswald",fontSize:11,color:ad.color,background:ad.color+"15",padding:"1px 6px",borderRadius:3 }}>#{ad.seed}</span>
+                <span style={{ fontFamily:"Oswald",fontSize:17,fontWeight:600,color:mv===ad.id?"#fff":"#e2e8f0" }}>{ad.brand}</span>
+                {mv===ad.id&&<span style={{ fontFamily:"Oswald",fontSize:10,color:"#69BE28",letterSpacing:1,background:"rgba(105,190,40,0.12)",padding:"2px 8px",borderRadius:3 }}>YOUR PICK</span>}
               </div>
-              <div style={{ fontSize:12,color:"#64748b" }}>{ad.title} | {ad.celeb}</div>
-                  {ad.video && <div style={{marginTop:4}}><WatchBtn href={ad.video} color={ad.color} small/></div>}
+              <div style={{ fontSize:12,color:"#94a3b8",marginTop:2 }}>{ad.title}</div>
+              <div style={{ fontSize:11,color:"#64748b",marginTop:1 }}>{ad.celeb}</div>
             </div>
-            {tot>0&&<div style={{ textAlign:"right",minWidth:60 }}>
-              <div style={{ fontFamily:"Oswald",fontSize:16,fontWeight:600,color:ad.color }}>{Math.round(((i===0?t1:t2)/tot)*100)}%</div>
-              <div style={{ width:60,height:4,borderRadius:2,background:"#1a1f2e",overflow:"hidden",marginTop:2 }}>
-                <div style={{ width:(((i===0?t1:t2)/tot)*100)+"%",height:"100%",borderRadius:2,background:ad.color,transition:"width .5s" }}/>
+            <div style={{ textAlign:"right",minWidth:60 }}>
+              {tot>0?<div>
+                <div style={{ fontFamily:"Oswald",fontSize:18,fontWeight:700,color:ad.color }}>{Math.round(((i===0?t1:t2)/tot)*100)}%</div>
+                <div style={{ width:60,height:5,borderRadius:3,background:"#252b3b",overflow:"hidden",marginTop:3 }}>
+                  <div style={{ width:(((i===0?t1:t2)/tot)*100)+"%",height:"100%",borderRadius:3,background:ad.color,transition:"width .5s" }}/>
+                </div>
+                <div style={{ fontSize:9,color:"#475569",marginTop:2 }}>{i===0?t1:t2} vote{(i===0?t1:t2)!==1?"s":""}</div>
               </div>
-            </div>}
+              :<div style={{ fontFamily:"Oswald",fontSize:11,color:mv?"#475569":ad.color,letterSpacing:1,padding:"6px 12px",borderRadius:6,border:"1px solid "+(mv?"#252b3b":(ad.color+"40")),background:mv?"transparent":(ad.color+"08"),transition:"all .2s" }}>{mv?"":"VOTE"}</div>}
+            </div>
           </div>
         </div>)}
       </div>);
@@ -447,13 +475,13 @@ export default function App() {
   <h2 style={S.h2}>Brand Intelligence Dossiers</h2>
   <p style={{ color:"#94a3b8",marginBottom:20,maxWidth:600,lineHeight:1.6 }}>Marketing deep-dive into each Super Bowl LX advertiser.</p>
   <div style={{ display:"flex",gap:8,marginBottom:16,flexWrap:"wrap",alignItems:"center" }}>
-    {[{k:"all",l:"All"},{k:"food",l:"Food"},{k:"celeb",l:"Celebrity"},{k:"purpose",l:"Purpose"},{k:"tech",l:"Tech"}].map(f=><button key={f.k} onClick={()=>sBFilt(f.k)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(bFilt===f.k?"#D4A843":"#1a1f2e"),background:bFilt===f.k?"rgba(212,168,67,0.08)":"transparent",color:bFilt===f.k?"#D4A843":"#64748b",cursor:"pointer" }}>{f.l}</button>)}
-    <input placeholder="Search..." value={bSrch} onChange={e=>sBSrch(e.target.value)} style={{ marginLeft:"auto",padding:"6px 14px",borderRadius:20,border:"1px solid #1a1f2e",background:"#0f1420",color:"#e2e8f0",fontSize:13,outline:"none",width:180 }}/>
+    {[{k:"all",l:"All"},{k:"food",l:"Food"},{k:"celeb",l:"Celebrity"},{k:"purpose",l:"Purpose"},{k:"tech",l:"Tech"}].map(f=><button key={f.k} onClick={()=>sBFilt(f.k)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(bFilt===f.k?"#D4A843":"#252b3b"),background:bFilt===f.k?"rgba(212,168,67,0.08)":"transparent",color:bFilt===f.k?"#D4A843":"#64748b",cursor:"pointer" }}>{f.l}</button>)}
+    <input placeholder="Search..." value={bSrch} onChange={e=>sBSrch(e.target.value)} style={{ marginLeft:"auto",padding:"6px 14px",borderRadius:20,border:"1px solid #1a1f2e",background:"#161b26",color:"#e2e8f0",fontSize:13,outline:"none",width:180 }}/>
   </div>
   <div style={{ display:"grid",gap:12 }}>
-    {fBrands.map(ad=>{const isO=expB===ad.id;return(<div key={ad.id} style={{...S.cd,borderColor:isO?(ad.color+"30"):"#1a1f2e",transition:"all .3s"}}>
+    {fBrands.map(ad=>{const isO=expB===ad.id;return(<div key={ad.id} style={{...S.cd,borderColor:isO?(ad.color+"30"):"#252b3b",transition:"all .3s"}}>
       <div onClick={()=>sExpB(isO?null:ad.id)} style={{ display:"flex",alignItems:"center",gap:14,padding:"14px 18px",cursor:"pointer" }}
-        onMouseEnter={e=>{e.currentTarget.style.background="#111827"}} onMouseLeave={e=>{e.currentTarget.style.background="transparent"}}>
+        onMouseEnter={e=>{e.currentTarget.style.background="#1c2233"}} onMouseLeave={e=>{e.currentTarget.style.background="transparent"}}>
         <BI ad={ad} size={36}/>
         <div style={{ flex:1 }}><div style={{ fontFamily:"Oswald",fontSize:16,fontWeight:600,color:"#e2e8f0" }}>{ad.brand}</div><div style={{ fontSize:12,color:"#64748b" }}>{ad.title} | {ad.celeb}</div></div>
         <div style={{...S.lb,color:ad.color,padding:"4px 10px",borderRadius:4,border:"1px solid "+ad.color+"30"}}>{ad.cat}</div>
@@ -462,33 +490,33 @@ export default function App() {
         <p style={{ color:"#c8cdd5",lineHeight:1.7,fontSize:14,marginBottom:16 }}>{ad.bio}</p>
         {ad.video&&<div style={{ marginBottom:16 }}><WatchBtn href={ad.video} color={ad.color}/></div>}
         <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:10,marginBottom:16 }}>
-          {[{l:"Founded",v:ad.founded},{l:"Parent Co.",v:ad.parent},{l:"Headquarters",v:ad.hq},{l:"Parent Revenue",v:ad.revenue},{l:"Agency",v:ad.agency},{l:"Tagline",v:'"'+ad.tagline+'"'}].map(it=><div key={it.l} style={{ padding:"10px 12px",borderRadius:6,background:"#0a0d15",border:"1px solid #151a28" }}>
+          {[{l:"Founded",v:ad.founded},{l:"Parent Co.",v:ad.parent},{l:"Headquarters",v:ad.hq},{l:"Parent Revenue",v:ad.revenue},{l:"Agency",v:ad.agency},{l:"Tagline",v:'"'+ad.tagline+'"'}].map(it=><div key={it.l} style={{ padding:"10px 12px",borderRadius:6,background:"#111620",border:"1px solid #151a28" }}>
             <div style={S.lb}>{it.l}</div><div style={{ fontFamily:"Oswald",fontSize:13,color:"#e2e8f0",marginTop:3 }}>{it.v}</div>
           </div>)}
         </div>
         <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:12,marginBottom:16 }}>
-          <div style={{ padding:14,borderRadius:8,background:"#0a0d15",border:"1px solid #151a28" }}>
+          <div style={{ padding:14,borderRadius:8,background:"#111620",border:"1px solid #151a28" }}>
             <div style={{...S.lb,color:ad.color,marginBottom:8}}>Marketing Strategy</div>
             <div style={{ fontSize:13,color:"#94a3b8",lineHeight:1.7 }}>{ad.strategy}</div>
           </div>
-          <div style={{ padding:14,borderRadius:8,background:"#0a0d15",border:"1px solid #151a28" }}>
+          <div style={{ padding:14,borderRadius:8,background:"#111620",border:"1px solid #151a28" }}>
             <div style={{...S.lb,color:ad.color,marginBottom:8}}>Brand Voice</div>
             <div style={{ fontSize:13,color:"#94a3b8",lineHeight:1.7 }}>{ad.voice}</div>
           </div>
         </div>
         <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:12,marginBottom:16 }}>
-          <div style={{ padding:14,borderRadius:8,background:"#0a0d15",border:"1px solid "+ad.color+"20" }}>
+          <div style={{ padding:14,borderRadius:8,background:"#111620",border:"1px solid "+ad.color+"20" }}>
             <div style={{...S.lb,color:"#D4A843",marginBottom:10}}>Social Media Presence</div>
             <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8 }}>
               {[{p:"Instagram",v:ad.ig,cl:"#E4405F",url:"https://www.instagram.com/"+ad.brand.toLowerCase().replace(/[^a-z]/g,"")},{p:"X / Twitter",v:ad.tw,cl:"#e2e8f0",url:"https://x.com/"+ad.brand.toLowerCase().replace(/[^a-z]/g,"")},{p:"Facebook",v:ad.fb,cl:"#1877F2",url:"https://www.facebook.com/"+ad.brand.toLowerCase().replace(/[^a-z]/g,"")}].map((s,si)=>(
-                <a key={si} href={s.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration:"none",display:"block",textAlign:"center",padding:"10px 6px",borderRadius:6,background:"#111827",border:"1px solid #1a1f2e",cursor:"pointer",transition:"border-color 0.2s" }}>
+                <a key={si} href={s.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration:"none",display:"block",textAlign:"center",padding:"10px 6px",borderRadius:6,background:"#1c2233",border:"1px solid #1a1f2e",cursor:"pointer",transition:"border-color 0.2s" }}>
                   <div style={{ fontFamily:"Oswald",fontSize:16,fontWeight:700,color:s.cl }}>{s.v}</div>
                   <div style={{ fontSize:10,color:"#64748b",letterSpacing:1,marginTop:2 }}>{s.p}</div>
                 </a>
               ))}
             </div>
           </div>
-          <div style={{ padding:14,borderRadius:8,background:"#0a0d15",border:"1px solid "+ad.color+"20" }}>
+          <div style={{ padding:14,borderRadius:8,background:"#111620",border:"1px solid "+ad.color+"20" }}>
             <div style={{...S.lb,color:"#D4A843",marginBottom:10}}>Pre-Game Buzz Intel</div>
             <div style={{ display:"grid",gap:8 }}>
               {[{l:"Pre-Game Hype Rank",v:"#"+ad.buzz.preRank+" of 16",cl:ad.buzz.preRank<=3?"#69BE28":ad.buzz.preRank<=8?"#D4A843":"#64748b"},{l:"Sentiment",v:ad.buzz.sentiment,cl:ad.buzz.sentiment.indexOf("positive")>=0||ad.buzz.sentiment.indexOf("Positive")>=0?"#69BE28":"#D4A843"},{l:"Viral Prediction",v:ad.buzz.viral,cl:ad.buzz.viral==="Very High"?"#69BE28":ad.buzz.viral==="High"?"#D4A843":"#64748b"}].map((b,bi)=>(
@@ -517,7 +545,7 @@ export default function App() {
     <div style={{ fontSize:13,color:"#94a3b8",lineHeight:1.5 }}>This page will be populated with real viral stats, social engagement, YouTube views, sentiment analysis, and top social media reactions after the game airs. Check back Monday for the full breakdown.</div>
   </div>
   <div style={{ display:"flex",gap:8,marginBottom:16,flexWrap:"wrap" }}>
-    {[{k:"all",l:"All Ads"},{k:"food",l:"Food"},{k:"celeb",l:"Celebrity"},{k:"purpose",l:"Purpose"},{k:"tech",l:"Tech"}].map(f=><button key={f.k} onClick={()=>sRFilt(f.k)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(rFilt===f.k?"#FF3008":"#1a1f2e"),background:rFilt===f.k?"rgba(255,48,8,0.08)":"transparent",color:rFilt===f.k?"#FF3008":"#64748b",cursor:"pointer" }}>{f.l}</button>)}
+    {[{k:"all",l:"All Ads"},{k:"food",l:"Food"},{k:"celeb",l:"Celebrity"},{k:"purpose",l:"Purpose"},{k:"tech",l:"Tech"}].map(f=><button key={f.k} onClick={()=>sRFilt(f.k)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(rFilt===f.k?"#FF3008":"#252b3b"),background:rFilt===f.k?"rgba(255,48,8,0.08)":"transparent",color:rFilt===f.k?"#FF3008":"#64748b",cursor:"pointer" }}>{f.l}</button>)}
   </div>
   <div style={{ display:"grid",gap:12 }}>
     {fResults.sort((a,b)=>a.buzz.preRank-b.buzz.preRank).map((ad,i)=><div key={ad.id} style={S.cd}>
@@ -528,7 +556,7 @@ export default function App() {
         <div style={{ textAlign:"right" }}>{ad.video && <WatchBtn href={ad.video} color={ad.color} small/>}<div style={{...S.lb,color:ad.buzz.viral==="Very High"?"#69BE28":ad.buzz.viral==="High"?"#D4A843":"#64748b"}}>{ad.buzz.viral} VIRAL</div></div>
       </div>
       <div style={{ padding:"0 18px 14px",display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:8 }}>
-        {[{l:"Pre-Game Sentiment",v:ad.buzz.sentiment},{l:"YouTube Views",v:ad.buzz.yt},{l:"Social Mentions",v:ad.buzz.social},{l:"Top Take",v:ad.buzz.take}].map(item=><div key={item.l} style={{ padding:"8px 10px",borderRadius:6,background:"#0a0d15",border:"1px solid #151a28" }}>
+        {[{l:"Pre-Game Sentiment",v:ad.buzz.sentiment},{l:"YouTube Views",v:ad.buzz.yt},{l:"Social Mentions",v:ad.buzz.social},{l:"Top Take",v:ad.buzz.take}].map(item=><div key={item.l} style={{ padding:"8px 10px",borderRadius:6,background:"#111620",border:"1px solid #151a28" }}>
           <div style={{ fontSize:9,color:"#475569",letterSpacing:1,textTransform:"uppercase" }}>{item.l}</div>
           <div style={{ fontFamily:"Oswald",fontSize:12,color:item.v==="TBD"||item.v==="TBD after game"?"#334155":"#e2e8f0",marginTop:2 }}>{item.v}</div>
         </div>)}
@@ -542,13 +570,13 @@ export default function App() {
   <h2 style={S.h2}>60 Years of Super Bowl Advertising</h2>
   <p style={{ color:"#94a3b8",marginBottom:16,maxWidth:700,lineHeight:1.7 }}>From $37,500 in 1967 to $10M in 2026. $5.20 ROI per $1. 20-30% of viewers tune in primarily for the commercials.</p>
   <div style={{ display:"flex",gap:8,marginBottom:20,flexWrap:"wrap" }}>
-    {[{k:"timeline",l:"Timeline"},{k:"chart",l:"Cost Chart"},{k:"famous",l:"Most Famous Ads"},{k:"themes",l:"Era Themes"}].map(v=><button key={v.k} onClick={()=>sHView(v.k)} style={{...bt(hView===v.k?"rgba(212,168,67,0.12)":"#0f1420",hView===v.k?"#D4A843":"#64748b"),border:"1px solid "+(hView===v.k?"rgba(212,168,67,0.25)":"#1a1f2e"),fontSize:11,padding:"6px 16px"}}>{v.l}</button>)}
+    {[{k:"timeline",l:"Timeline"},{k:"chart",l:"Cost Chart"},{k:"famous",l:"Most Famous Ads"},{k:"themes",l:"Era Themes"}].map(v=><button key={v.k} onClick={()=>sHView(v.k)} style={{...bt(hView===v.k?"rgba(212,168,67,0.12)":"#161b26",hView===v.k?"#D4A843":"#64748b"),border:"1px solid "+(hView===v.k?"rgba(212,168,67,0.25)":"#252b3b"),fontSize:11,padding:"6px 16px"}}>{v.l}</button>)}
   </div>
 
   {hView==="timeline"&&<div style={{ position:"relative",paddingLeft:32 }}>
     <div style={{ position:"absolute",left:12,top:0,bottom:0,width:2,background:"linear-gradient(180deg,#69BE28,#D4A843,#C8102E)" }}/>
     {HIST.map((h,i)=><div key={i} style={{ marginBottom:14,position:"relative" }}>
-      <div style={{ position:"absolute",left:-26,top:4,width:10,height:10,borderRadius:"50%",background:h.lm?"#D4A843":"#1a1f2e",border:"2px solid "+(h.lm?"#D4A843":"#334155") }}/>
+      <div style={{ position:"absolute",left:-26,top:4,width:10,height:10,borderRadius:"50%",background:h.lm?"#D4A843":"#252b3b",border:"2px solid "+(h.lm?"#D4A843":"#334155") }}/>
       <div style={S.cd}><div style={{ padding:"12px 16px" }}>
         <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4 }}>
           <div style={{ fontFamily:"Oswald",fontSize:18,fontWeight:700,color:h.lm?"#D4A843":"#e2e8f0" }}>{h.y}</div>
@@ -602,7 +630,7 @@ export default function App() {
         <div style={{ fontFamily:"Oswald",fontSize:13,color:"#D4A843" }}>{er.e}</div>
       </div>
       <p style={{ fontSize:14,color:"#c8cdd5",lineHeight:1.6,marginBottom:8 }}>{er.d}</p>
-      <p style={{ fontSize:13,color:"#64748b",lineHeight:1.5,fontStyle:"italic",padding:"10px 12px",background:"#0a0d15",borderRadius:6,borderLeft:"3px solid rgba(212,168,67,0.25)" }}>Marketing takeaway: {er.k}</p>
+      <p style={{ fontSize:13,color:"#64748b",lineHeight:1.5,fontStyle:"italic",padding:"10px 12px",background:"#111620",borderRadius:6,borderLeft:"3px solid rgba(212,168,67,0.25)" }}>Marketing takeaway: {er.k}</p>
     </div></div>)}
   </div>}
 </div>}
@@ -694,8 +722,8 @@ export default function App() {
           style={{ aspectRatio:"1", display:"flex", alignItems:"center", justifyContent:"center",
             textAlign:"center", padding:8, borderRadius:10, fontSize:11, lineHeight:1.3,
             cursor:"pointer", fontFamily:"Oswald", letterSpacing:0.5, transition:"all .2s",
-            background:ck?"rgba(105,190,40,0.15)":"#0f1420",
-            border:"2px solid "+(ck?"rgba(105,190,40,0.4)":"#1a1f2e"),
+            background:ck?"rgba(105,190,40,0.15)":"#161b26",
+            border:"2px solid "+(ck?"rgba(105,190,40,0.4)":"#252b3b"),
             color:ck?"#69BE28":"#94a3b8", fontWeight:ck?600:400,
             boxShadow:ck?"0 0 12px rgba(105,190,40,0.1)":"none" }}>
           {i===12 ? <span style={{fontSize:16,fontWeight:700,color:"#D4A843"}}>{"\u2B50"} FREE</span> : item}
@@ -706,7 +734,7 @@ export default function App() {
   <div style={{ textAlign:"center", marginTop:20 }}>
     <div style={{ fontFamily:"Oswald", fontSize:18, fontWeight:700, color:"#D4A843", marginBottom:4 }}>{Object.values(bingo).filter(Boolean).length} / 25</div>
     <div style={{ fontSize:12, color:"#64748b", marginBottom:12 }}>squares checked</div>
-    <button onClick={function(){ sBingo({}); }} style={bt("#1a1f2e","#64748b")}>Reset Board</button>
+    <button onClick={function(){ sBingo({}); }} style={bt("#252b3b","#64748b")}>Reset Board</button>
   </div>
 </div>}
 
@@ -715,9 +743,9 @@ export default function App() {
   <h2 style={S.h2}>Seattle vs Boston</h2>
   <p style={{ color:"#94a3b8", marginBottom:16, lineHeight:1.6 }}>Two iconic American cities go head-to-head. The Emerald City vs Beantown.</p>
   <div style={{ display:"flex", gap:8, marginBottom:24 }}>
-    <button onClick={function(){ sCityV("vs"); }} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(cityV==="vs"?"#D4A843":"#1a1f2e"),background:cityV==="vs"?"rgba(212,168,67,0.08)":"transparent",color:cityV==="vs"?"#D4A843":"#64748b",cursor:"pointer" }}>Compare</button>
-    <button onClick={function(){ sCityV("sea"); }} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(cityV==="sea"?"#69BE28":"#1a1f2e"),background:cityV==="sea"?"rgba(105,190,40,0.08)":"transparent",color:cityV==="sea"?"#69BE28":"#64748b",cursor:"pointer" }}>Seattle</button>
-    <button onClick={function(){ sCityV("bos"); }} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(cityV==="bos"?"#C8102E":"#1a1f2e"),background:cityV==="bos"?"rgba(200,16,46,0.08)":"transparent",color:cityV==="bos"?"#C8102E":"#64748b",cursor:"pointer" }}>Boston</button>
+    <button onClick={function(){ sCityV("vs"); }} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(cityV==="vs"?"#D4A843":"#252b3b"),background:cityV==="vs"?"rgba(212,168,67,0.08)":"transparent",color:cityV==="vs"?"#D4A843":"#64748b",cursor:"pointer" }}>Compare</button>
+    <button onClick={function(){ sCityV("sea"); }} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(cityV==="sea"?"#69BE28":"#252b3b"),background:cityV==="sea"?"rgba(105,190,40,0.08)":"transparent",color:cityV==="sea"?"#69BE28":"#64748b",cursor:"pointer" }}>Seattle</button>
+    <button onClick={function(){ sCityV("bos"); }} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(cityV==="bos"?"#C8102E":"#252b3b"),background:cityV==="bos"?"rgba(200,16,46,0.08)":"transparent",color:cityV==="bos"?"#C8102E":"#64748b",cursor:"pointer" }}>Boston</button>
   </div>
 
   {cityV==="vs"&&<div>
@@ -729,7 +757,7 @@ export default function App() {
       </div>
       {[{c:"Population",s:"749K (4M metro)",b:"675K (4.9M metro)"},{c:"Founded",s:"1851",b:"1630"},{c:"Nickname",s:"Emerald City",b:"Beantown"},{c:"Annual Rainfall",s:"37 inches",b:"44 in + 48 in snow"},{c:"Pro Sports Titles",s:"5",b:"40+"},{c:"Top Landmark",s:"Space Needle",b:"Fenway Park"},{c:"Known For",s:"Coffee, tech, rain",b:"History, sports, accents"},{c:"Oldest Company",s:"Starbucks (1971)",b:"State Street (1792)"},{c:"Top University",s:"UW (1861)",b:"Harvard (1636)"},{c:"Vibe",s:"Chill + innovative",b:"Gritty + proud"}].map(function(r, i) {
         return (
-          <div key={i} style={{ display:"grid", gridTemplateColumns:"1fr auto 1fr", padding:"10px 18px", borderBottom:"1px solid #111827", background:i%2===0?"#0a0d15":"transparent" }}>
+          <div key={i} style={{ display:"grid", gridTemplateColumns:"1fr auto 1fr", padding:"10px 18px", borderBottom:"1px solid #111827", background:i%2===0?"#111620":"transparent" }}>
             <div style={{ textAlign:"right", fontFamily:"Oswald", fontSize:13, color:"#69BE28", paddingRight:16 }}>{r.s}</div>
             <div style={{ fontFamily:"Oswald", fontSize:10, color:"#64748b", letterSpacing:2, minWidth:120, textAlign:"center", paddingTop:2 }}>{r.c.toUpperCase()}</div>
             <div style={{ fontFamily:"Oswald", fontSize:13, color:"#C8102E", paddingLeft:16 }}>{r.b}</div>
@@ -807,7 +835,7 @@ export default function App() {
   <h2 style={{...S.h2,textAlign:"center"}}>Super Bowl Trivia</h2>
   <div style={{ textAlign:"center",marginBottom:20 }}>
     <span style={{ fontFamily:"Oswald",fontSize:14,color:"#69BE28" }}>{tScore}/{TRIVIA.length}</span>
-    <span style={{ margin:"0 10px",color:"#1a1f2e" }}>|</span>
+    <span style={{ margin:"0 10px",color:"#252b3b" }}>|</span>
     <span style={{ fontFamily:"Oswald",fontSize:14,color:"#64748b" }}>Q{Math.min(tIdx+1,TRIVIA.length)}/{TRIVIA.length}</span>
   </div>
   {tIdx<TRIVIA.length?<div style={S.cd}><div style={{ padding:"22px 20px" }}>
@@ -816,7 +844,7 @@ export default function App() {
     <div style={{ display:"grid",gap:8 }}>
       {TRIVIA[tIdx].o.map((opt,i)=>{
         const ans=tAns!==null,isC=i===TRIVIA[tIdx].a,isSel=tAns===i;
-        let bg="#0a0d15",bd="#1a1f2e",cl="#e2e8f0";
+        let bg="#111620",bd="#252b3b",cl="#e2e8f0";
         if(ans){if(isC){bg="rgba(105,190,40,0.07)";bd="rgba(105,190,40,0.25)";cl="#69BE28";}else if(isSel){bg="rgba(200,16,46,0.07)";bd="rgba(200,16,46,0.25)";cl="#C8102E";}else cl="#475569";}
         return <button key={i} disabled={ans} onClick={()=>{sTAns(i);if(isC)sTScore(s=>s+1)}} style={{ padding:"12px 14px",borderRadius:6,border:"1px solid "+bd,background:bg,color:cl,fontSize:14,cursor:ans?"default":"pointer",textAlign:"left",transition:"all .2s" }}>
           <span style={{ fontFamily:"Oswald",marginRight:8,opacity:0.4 }}>{String.fromCharCode(65+i)}.</span>{opt}
@@ -827,7 +855,7 @@ export default function App() {
   </div></div>:<div style={{...S.cd,textAlign:"center",padding:"40px 20px"}}>
     <div style={{ fontFamily:"Oswald",fontSize:36,fontWeight:700,color:"#e2e8f0",marginBottom:8 }}>{tScore}/{TRIVIA.length}</div>
     <p style={{ color:"#94a3b8",marginBottom:20 }}>{tScore>=10?"Super Bowl scholar!":tScore>=7?"Impressive!":tScore>=4?"Solid effort!":"Study up before game day!"}</p>
-    <button onClick={()=>{sTIdx(0);sTScore(0);sTAns(null)}} style={bt("#1a1f2e","#94a3b8")}>Try Again</button>
+    <button onClick={()=>{sTIdx(0);sTScore(0);sTAns(null)}} style={bt("#252b3b","#94a3b8")}>Try Again</button>
   </div>}
 </div>}
 
@@ -844,8 +872,8 @@ export default function App() {
       {key:"labs",label:"Labs & Experiments",ic:"\uD83D\uDD2C",cl:"#C8102E",desc:"Forensic analysis, brand comparisons, and awards",pages:[{id:"autopsy",n:"Ad Autopsy",d:"Famous SB ad disasters dissected with interactive fixes."},{id:"voicelab",n:"Brand Voice Lab",d:"Pick 2 brands. Compare voice, tone, strategy head-to-head."},{id:"awards",n:"SB Ad Awards",d:"Cast your vote across 6 award categories."}]},
       {key:"ref",label:"Reference",ic:"\uD83D\uDCD6",cl:"#9C27B0",desc:"Terminology and quick-reference guides",pages:[{id:"glossary",n:"Marketing Glossary",d:"Every marketing term in this app, explained."}]}
     ].map((section,si)=>(
-      <div key={si} style={{ borderRadius:10, border:"1px solid #1a1f2e", overflow:"hidden", background:"#0a0d15" }}>
-        <div onClick={()=>setHubOpen({...hubOpen,[section.key]:!hubOpen[section.key]})} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px 20px", cursor:"pointer", background:hubOpen[section.key]?"#0f1420":"#0a0d15", transition:"background 0.2s" }}>
+      <div key={si} style={{ borderRadius:10, border:"1px solid #1a1f2e", overflow:"hidden", background:"#111620" }}>
+        <div onClick={()=>setHubOpen({...hubOpen,[section.key]:!hubOpen[section.key]})} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px 20px", cursor:"pointer", background:hubOpen[section.key]?"#161b26":"#111620", transition:"background 0.2s" }}>
           <div style={{ display:"flex", alignItems:"center", gap:12 }}>
             <span style={{ fontSize:22 }}>{section.ic}</span>
             <div>
@@ -860,7 +888,7 @@ export default function App() {
         </div>
         {hubOpen[section.key]&&<div style={{ padding:"4px 12px 12px", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))", gap:10 }}>
           {section.pages.map((pg,pi)=>(
-            <div key={pg.id} onClick={()=>sTab(pg.id)} style={{ padding:"14px 16px", borderRadius:8, border:"1px solid #1a1f2e", cursor:"pointer", background:"#0f1420", transition:"border-color 0.2s" }}>
+            <div key={pg.id} onClick={()=>sTab(pg.id)} style={{ padding:"14px 16px", borderRadius:8, border:"1px solid #1a1f2e", cursor:"pointer", background:"#161b26", transition:"border-color 0.2s" }}>
               <div style={{ fontFamily:"Oswald", fontSize:14, fontWeight:600, color:section.cl, marginBottom:4 }}>{pg.n}</div>
               <div style={{ fontSize:12, color:"#94a3b8", lineHeight:1.5 }}>{pg.d}</div>
             </div>
@@ -877,7 +905,7 @@ export default function App() {
   <p style={{ color:"#94a3b8", marginBottom:20, lineHeight:1.7 }}>Full content strategy teardowns. How 4 iconic brands approached their Super Bowl campaigns from brief to measurement.</p>
   <div style={{ display:"flex", gap:8, marginBottom:24, flexWrap:"wrap" }}>
     {["Budweiser (Heritage)","Old Spice (Viral)","DoorDash (Challenger)","Dunkin (Comedy)"].map((b,i)=>(
-      <button key={i} onClick={()=>setPbBrand(i)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"8px 16px",borderRadius:20,border:"1px solid "+(pbBrand===i?"#D4A843":"#1a1f2e"),background:pbBrand===i?"rgba(212,168,67,0.08)":"transparent",color:pbBrand===i?"#D4A843":"#64748b",cursor:"pointer" }}>{b}</button>
+      <button key={i} onClick={()=>setPbBrand(i)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"8px 16px",borderRadius:20,border:"1px solid "+(pbBrand===i?"#D4A843":"#252b3b"),background:pbBrand===i?"rgba(212,168,67,0.08)":"transparent",color:pbBrand===i?"#D4A843":"#64748b",cursor:"pointer" }}>{b}</button>
     ))}
   </div>
   {pbBrand===0&&<div style={{ display:"grid", gap:14 }}>
@@ -983,7 +1011,7 @@ export default function App() {
   <h2 style={S.h2}>Audience Insights</h2>
   <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:10, marginBottom:24 }}>
     {[{v:"130M+",l:"Viewers 2026 est",cl:"#D4A843"},{v:"26%",l:"Watch for ads",cl:"#69BE28"},{v:"50%",l:"Use second screen",cl:"#4285F4"},{v:"72%",l:"Discuss on social",cl:"#FF69B4"}].map((s,i)=>(
-      <div key={i} style={{ textAlign:"center", padding:"16px 10px", borderRadius:10, background:"#0f1420", border:"1px solid #1a1f2e" }}>
+      <div key={i} style={{ textAlign:"center", padding:"16px 10px", borderRadius:10, background:"#161b26", border:"1px solid #1a1f2e" }}>
         <div style={{ fontFamily:"Oswald", fontSize:24, fontWeight:700, color:s.cl }}>{s.v}</div>
         <div style={{ fontSize:10, color:"#64748b", letterSpacing:1, textTransform:"uppercase", marginTop:4 }}>{s.l}</div>
       </div>
@@ -995,7 +1023,7 @@ export default function App() {
       {[{d:"Male 18-49",p:38},{d:"Female 18-49",p:34},{d:"Male 50+",p:15},{d:"Female 50+",p:13}].map((dm,i)=>(
         <div key={i} style={{ marginBottom:10 }}>
           <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}><span style={{ fontSize:13, color:"#e2e8f0" }}>{dm.d}</span><span style={{ fontFamily:"Oswald", fontSize:13, color:"#D4A843" }}>{dm.p+"%"}</span></div>
-          <div style={{ height:6, borderRadius:3, background:"#1a1f2e", overflow:"hidden" }}><div style={{ width:dm.p+"%", height:"100%", borderRadius:3, background:"linear-gradient(90deg,#D4A843,#8B6914)" }}/></div>
+          <div style={{ height:6, borderRadius:3, background:"#252b3b", overflow:"hidden" }}><div style={{ width:dm.p+"%", height:"100%", borderRadius:3, background:"linear-gradient(90deg,#D4A843,#8B6914)" }}/></div>
         </div>
       ))}
     </div></div>
@@ -1004,7 +1032,7 @@ export default function App() {
       {[{b:"Checking social during ads",p:72},{b:"Searching products from ads",p:45},{b:"Texting about ads",p:58},{b:"Visiting advertiser sites",p:31}].map((bh,i)=>(
         <div key={i} style={{ marginBottom:10 }}>
           <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}><span style={{ fontSize:12, color:"#94a3b8" }}>{bh.b}</span><span style={{ fontFamily:"Oswald", fontSize:13, color:"#4285F4" }}>{bh.p+"%"}</span></div>
-          <div style={{ height:6, borderRadius:3, background:"#1a1f2e", overflow:"hidden" }}><div style={{ width:bh.p+"%", height:"100%", borderRadius:3, background:"linear-gradient(90deg,#4285F4,#1a56c4)" }}/></div>
+          <div style={{ height:6, borderRadius:3, background:"#252b3b", overflow:"hidden" }}><div style={{ width:bh.p+"%", height:"100%", borderRadius:3, background:"linear-gradient(90deg,#4285F4,#1a56c4)" }}/></div>
         </div>
       ))}
     </div></div>
@@ -1013,7 +1041,7 @@ export default function App() {
       {[{t:"Pre-game",v:"12%",w:12},{t:"Q1-Q2 ad breaks",v:"22%",w:22},{t:"Halftime",v:"28%",w:28},{t:"Q3-Q4 ad breaks",v:"18%",w:18},{t:"Post-game",v:"12%",w:12}].map((sg,i)=>(
         <div key={i} style={{ marginBottom:8 }}>
           <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ fontSize:11, color:"#94a3b8" }}>{sg.t}</span><span style={{ fontFamily:"Oswald", fontSize:12, color:"#69BE28" }}>{sg.v}</span></div>
-          <div style={{ height:6, borderRadius:3, background:"#1a1f2e", overflow:"hidden" }}><div style={{ width:(sg.w/28*100)+"%", height:"100%", borderRadius:3, background:"linear-gradient(90deg,#69BE28,#2d5c10)" }}/></div>
+          <div style={{ height:6, borderRadius:3, background:"#252b3b", overflow:"hidden" }}><div style={{ width:(sg.w/28*100)+"%", height:"100%", borderRadius:3, background:"linear-gradient(90deg,#69BE28,#2d5c10)" }}/></div>
         </div>
       ))}
     </div></div>
@@ -1026,7 +1054,7 @@ export default function App() {
   <div style={{ display:"flex", gap:4, marginBottom:20 }}>
     {["Category","Celeb","Tone","Hook","Results"].map((s,i)=>(
       <div key={i} style={{ flex:1, textAlign:"center" }}>
-        <div style={{ height:4, borderRadius:2, background:briefStep>=i?"#D4A843":"#1a1f2e", marginBottom:6 }}/>
+        <div style={{ height:4, borderRadius:2, background:briefStep>=i?"#D4A843":"#252b3b", marginBottom:6 }}/>
         <div style={{ fontFamily:"Oswald", fontSize:10, color:briefStep>=i?"#D4A843":"#475569", letterSpacing:1 }}>{s}</div>
       </div>
     ))}
@@ -1035,7 +1063,7 @@ export default function App() {
     <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>What are you advertising?</div>
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:10 }}>
       {["Food and Bev","Tech / App","Auto","Financial","Entertainment","CPG / Retail"].map((cat,i)=>(
-        <div key={i} onClick={()=>{setBriefPicks({...briefPicks,cat:cat}); setBriefStep(1)}} style={{...S.cd, padding:"16px", cursor:"pointer", textAlign:"center", borderColor:briefPicks.cat===cat?"#D4A843":"#1a1f2e"}}>
+        <div key={i} onClick={()=>{setBriefPicks({...briefPicks,cat:cat}); setBriefStep(1)}} style={{...S.cd, padding:"16px", cursor:"pointer", textAlign:"center", borderColor:briefPicks.cat===cat?"#D4A843":"#252b3b"}}>
           <div style={{ fontFamily:"Oswald", fontSize:13, color:briefPicks.cat===cat?"#D4A843":"#e2e8f0" }}>{cat}</div>
         </div>
       ))}
@@ -1045,7 +1073,7 @@ export default function App() {
     <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>Pick your celebrity strategy</div>
     <div style={{ display:"grid", gap:10 }}>
       {[{n:"A-List Actor",d:"Broad appeal, safe",s:7},{n:"Musician / Pop Star",d:"Younger demo, social amp",s:8},{n:"Comedian",d:"Shareability, meme potential",s:9},{n:"Athlete",d:"Built-in SB audience",s:7},{n:"No Celebrity",d:"Bold. Forces creative to carry",s:6},{n:"Influencer / Creator",d:"Gen Z native. Emerging play",s:5}].map((c,i)=>(
-        <div key={i} onClick={()=>{setBriefPicks({...briefPicks,celeb:c.n,celebScore:c.s}); setBriefStep(2)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:briefPicks.celeb===c.n?"#D4A843":"#1a1f2e"}}>
+        <div key={i} onClick={()=>{setBriefPicks({...briefPicks,celeb:c.n,celebScore:c.s}); setBriefStep(2)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:briefPicks.celeb===c.n?"#D4A843":"#252b3b"}}>
           <div style={{ fontFamily:"Oswald", fontSize:14, color:briefPicks.celeb===c.n?"#D4A843":"#e2e8f0" }}>{c.n}</div>
           <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{c.d}</div>
         </div>
@@ -1056,7 +1084,7 @@ export default function App() {
     <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>Choose your tone</div>
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:10 }}>
       {[{n:"Humor / Comedy",s:9},{n:"Emotional",s:8},{n:"Epic / Cinematic",s:7},{n:"Nostalgic",s:8},{n:"Provocative",s:6},{n:"Wholesome",s:7}].map((t,i)=>(
-        <div key={i} onClick={()=>{setBriefPicks({...briefPicks,tone:t.n,toneScore:t.s}); setBriefStep(3)}} style={{...S.cd, padding:"16px", cursor:"pointer", textAlign:"center", borderColor:briefPicks.tone===t.n?"#D4A843":"#1a1f2e"}}>
+        <div key={i} onClick={()=>{setBriefPicks({...briefPicks,tone:t.n,toneScore:t.s}); setBriefStep(3)}} style={{...S.cd, padding:"16px", cursor:"pointer", textAlign:"center", borderColor:briefPicks.tone===t.n?"#D4A843":"#252b3b"}}>
           <div style={{ fontFamily:"Oswald", fontSize:13, color:briefPicks.tone===t.n?"#D4A843":"#e2e8f0" }}>{t.n}</div>
         </div>
       ))}
@@ -1066,7 +1094,7 @@ export default function App() {
     <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>Emotional hook?</div>
     <div style={{ display:"grid", gap:10 }}>
       {[{n:"Surprise Twist",d:"Unexpected ending",s:9},{n:"Nostalgia Trip",d:"Callback to beloved moment",s:8},{n:"Underdog Story",d:"Small beats big",s:7},{n:"Pure Spectacle",d:"Visual wow factor",s:6},{n:"Social Commentary",d:"Take a stance",s:7},{n:"Absurdist Humor",d:"So weird it works",s:8}].map((h,i)=>(
-        <div key={i} onClick={()=>{setBriefPicks({...briefPicks,hook:h.n,hookScore:h.s}); setBriefStep(4)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:briefPicks.hook===h.n?"#D4A843":"#1a1f2e"}}>
+        <div key={i} onClick={()=>{setBriefPicks({...briefPicks,hook:h.n,hookScore:h.s}); setBriefStep(4)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:briefPicks.hook===h.n?"#D4A843":"#252b3b"}}>
           <div style={{ fontFamily:"Oswald", fontSize:14, color:briefPicks.hook===h.n?"#D4A843":"#e2e8f0" }}>{h.n}</div>
           <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{h.d}</div>
         </div>
@@ -1092,13 +1120,13 @@ export default function App() {
   </div>}
 </div>}
 
-  {briefStep>0&&briefStep<4&&<div style={{ marginTop:16, textAlign:"center" }}><button onClick={()=>setBriefStep(briefStep-1)} style={bt("#1a1f2e","#64748b")}>Back</button></div>}
+  {briefStep>0&&briefStep<4&&<div style={{ marginTop:16, textAlign:"center" }}><button onClick={()=>setBriefStep(briefStep-1)} style={bt("#252b3b","#64748b")}>Back</button></div>}
 </div>}
 
 {tab==="glossary"&&<div>
   <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
   <h2 style={S.h2}>Marketing Glossary</h2>
-  <input placeholder="Search terms..." value={glossSrch} onChange={e=>setGlossSrch(e.target.value)} style={{ width:"100%", padding:"12px 18px", borderRadius:8, border:"1px solid #1a1f2e", background:"#0f1420", color:"#e2e8f0", fontSize:14, outline:"none", marginBottom:20, boxSizing:"border-box" }}/>
+  <input placeholder="Search terms..." value={glossSrch} onChange={e=>setGlossSrch(e.target.value)} style={{ width:"100%", padding:"12px 18px", borderRadius:8, border:"1px solid #1a1f2e", background:"#161b26", color:"#e2e8f0", fontSize:14, outline:"none", marginBottom:20, boxSizing:"border-box" }}/>
   <div style={{ display:"grid", gap:8 }}>
     {[{t:"SOV (Share of Voice)",d:"Percentage of total advertising in a category owned by one brand."},{t:"Earned Media",d:"Free publicity from PR, social shares, news coverage. Great SB ads generate 10-15x their cost."},{t:"CPM (Cost Per Mille)",d:"Cost per 1,000 impressions. SB LX CPM is roughly $62."},{t:"Ad Meter",d:"USA Today real-time viewer ranking. The industry most-cited SB ad ranking."},{t:"Hub and Spoke Model",d:"TV spot hub amplified by digital spokes: social, YouTube, PR, influencers."},{t:"Sentiment Analysis",d:"AI measurement of whether social mentions are positive, negative, or neutral."},{t:"Second Screen",d:"Viewers using phones while watching TV. 50%+ of SB viewers use a second screen."},{t:"Brand Lift",d:"Measurable increase in awareness, favorability, or purchase intent after a campaign."},{t:"War Room",d:"Real-time command center during the game. Social team monitoring and responding live."},{t:"Attribution",d:"Connecting ad exposure to business outcomes. The hardest part of SB measurement."},{t:"Challenger Brand",d:"Brand competing against leaders by being disruptive or unconventional."},{t:"DTC (Direct-to-Consumer)",d:"Brand selling directly without retail intermediaries."},{t:"ROI (Return on Investment)",d:"Revenue per dollar spent. Average SB ROI is $5.20 per $1."},{t:"Viral Coefficient",d:"How many new viewers each viewer generates through sharing."},{t:"UGC (User-Generated Content)",d:"Content created by fans rather than the brand."}].filter(g=>!glossSrch||g.t.toLowerCase().indexOf(glossSrch.toLowerCase())>=0||g.d.toLowerCase().indexOf(glossSrch.toLowerCase())>=0).map((g,i)=>(
       <div key={i} style={S.cd}><div style={{ padding:"14px 18px" }}>
@@ -1115,7 +1143,7 @@ export default function App() {
   <p style={{ color:"#94a3b8", marginBottom:20, lineHeight:1.7 }}>The greatest brand wars in marketing history. Strategy frameworks, competitive playbooks, and real lessons.</p>
   <div style={{ display:"flex", gap:8, marginBottom:24, flexWrap:"wrap" }}>
     {["Pepsi vs Coca-Cola","Nike vs Adidas","Burger King vs McDonalds","Mac vs PC","Uber vs Lyft"].map((b,i)=>(
-      <button key={i} onClick={()=>setRivalPair(i)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"8px 16px",borderRadius:20,border:"1px solid "+(rivalPair===i?"#FF3008":"#1a1f2e"),background:rivalPair===i?"rgba(255,48,8,0.08)":"transparent",color:rivalPair===i?"#FF3008":"#64748b",cursor:"pointer" }}>{b}</button>
+      <button key={i} onClick={()=>setRivalPair(i)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"8px 16px",borderRadius:20,border:"1px solid "+(rivalPair===i?"#FF3008":"#252b3b"),background:rivalPair===i?"rgba(255,48,8,0.08)":"transparent",color:rivalPair===i?"#FF3008":"#64748b",cursor:"pointer" }}>{b}</button>
     ))}
   </div>
   {[{idx:0,a:"Pepsi",ac:"#004B93",b2:"Coca-Cola",bc:"#C8102E",desc:"The 130-year war that invented competitive marketing.",secs:[{t:"Strategic Framework",cl:"#FF3008",items:[{h:"Positioning",v:"Coke owns HERITAGE. Pepsi owns YOUTH. Foundational challenger vs incumbent framework."},{h:"Pepsi Challenge",v:"Blind taste test. Pepsi won on taste. Forced Coke into the disastrous New Coke reformulation."},{h:"New Coke Lesson",v:"Brand equity is more powerful than product superiority. Customers buy identity, not ingredients."},{h:"The Real Lesson",v:"Pepsi never overtook Coke in share. The rivalry itself became the positioning."}]},{t:"SB Head-to-Head",cl:"#D4A843",items:[{h:"Coke Strategy",v:"Emotional, universal, unifying. Never mentions Pepsi. Incumbent playbook: do not engage."},{h:"Pepsi Strategy",v:"Celebrity-driven, provocative, comparative. Challenger playbook: force the comparison."},{h:"2026",v:"Pepsi back with The Choice callback. Coke absent this year."}]},{t:"Monday Morning Framework",cl:"#69BE28",items:[{h:"Know Your Role",v:"Are you Coke or Pepsi? Challenger and incumbent require different playbooks."},{h:"Rivalry Is Strategy",v:"Pepsi NEEDS Coke. Without rivalry, Pepsi is just another soda. Who is YOUR Coke?"},{h:"Never Change Formula",v:"New Coke is the ultimate cautionary tale. Brand equity beats product features."}]}]},{idx:1,a:"Nike",ac:"#FF6B00",b2:"Adidas",bc:"#e2e8f0",desc:"Performance vs lifestyle. Athlete-first vs culture-first.",secs:[{t:"Positioning",cl:"#FF6B00",items:[{h:"Nike",v:"Just Do It. Every campaign starts with athletic performance. Jordan, LeBron, Serena. The athlete IS the brand."},{h:"Adidas",v:"Culture and collaboration. Kanye, Pharrell, Bad Bunny. Three stripes on a runway, not just a track."},{h:"Market Share",v:"Nike: 27% global. Adidas: 15%. But Adidas leads in lifestyle segments."}]},{t:"Content Comparison",cl:"#D4A843",items:[{h:"Nike",v:"Hero brand films. 300M+ IG followers. Inspirational athlete content at massive scale."},{h:"Adidas",v:"Collabs as content events. Each drop IS the campaign. Less advertising, more culture."},{h:"Kaepernick Play",v:"Dream Crazy: stock dipped 3% day one, rose 5% within a month. $6B brand value added."}]},{t:"Framework",cl:"#69BE28",items:[{h:"Choose Your Lane",v:"Performance/aspiration or culture/identity? Both work. Straddling both fails."},{h:"Controversy as Strategy",v:"Brand stance drives loyalty IF your existing customers are aligned. Research first."}]}]},{idx:2,a:"Burger King",ac:"#FF8732",b2:"McDonalds",bc:"#FFC72C",desc:"The QSR war that invented troll marketing.",secs:[{t:"The Troll Playbook",cl:"#FF8732",items:[{h:"Whopper Detour",v:"1-cent Whoppers ONLY if ordered within 600 feet of a McDonalds. 1.5M app downloads. 33:1 ROI."},{h:"Moldy Whopper",v:"Showed Whopper decomposing to prove no preservatives. Won Grand Prix at Cannes. Sales rose 14%."},{h:"McDonalds Response",v:"Almost NEVER responds directly. Acknowledging BK would elevate BK."}]},{t:"When Trolling Works",cl:"#D4A843",items:[{h:"Do",v:"Be the underdog. Target someone too big to respond. Have a PRODUCT TRUTH underneath the troll."},{h:"Do Not",v:"Troll without substance. Generate controversy without conversion. Make it more than 15% of your content."}]}]},{idx:3,a:"Mac",ac:"#A3AAAE",b2:"PC",bc:"#00A4EF",desc:"66 ads that proved personality-based positioning moves market share.",secs:[{t:"Campaign",cl:"#A3AAAE",items:[{h:"Setup",v:"Justin Long vs John Hodgman. Each 30-sec sketch compared one feature. Simple, repeatable. 66 total ads."},{h:"Why It Worked",v:"Compared IDENTITIES not specs. Turned product choice into personality choice."},{h:"Results",v:"Mac share: 2.6% to 9.1%. Most-recalled ad campaign of the decade."}]},{t:"Identity Framework",cl:"#D4A843",items:[{h:"The Model",v:"Stop selling features. Start selling identity. Your customer buys who they want to be."},{h:"Modern Examples",v:"Tesla vs traditional auto. Slack vs email. Oatly vs dairy. Same framework, different categories."}]}]},{idx:4,a:"Uber",ac:"#e2e8f0",b2:"Lyft",bc:"#FF00BF",desc:"How Lyft turned scandals into values positioning, then watched Uber outspend its way back.",secs:[{t:"Values Play",cl:"#FF00BF",items:[{h:"Lyft 2017-2019",v:"Delete Uber movement. Lyft positioned as ethical alternative. Did not need to attack - Uber scandals did the work."},{h:"Uber Comeback",v:"New CEO. Brand refresh. Uber Eats expansion. Outspent Lyft 5:1. Scale plus cash overcame brand damage."},{h:"Current State",v:"Uber: 76% US rideshare. Values positioning was real but insufficient against unlimited capital."}]},{t:"Framework",cl:"#D4A843",items:[{h:"When Values Win",v:"When competitor has genuine ethical issues and your audience cares and you deliver on the promise."},{h:"When Values Lose",v:"When competitor fixes the problem and outspends you. Values are a temporary moat, not permanent."}]}]}].filter(r=>r.idx===rivalPair).map(r=>(
@@ -1150,7 +1178,7 @@ export default function App() {
   <h2 style={S.h2}>Sports Marketing Hall of Fame</h2>
   <div style={{ display:"flex", gap:8, marginBottom:24, flexWrap:"wrap" }}>
     {[{k:"all",l:"All"},{k:"nike",l:"Nike"},{k:"gatorade",l:"Gatorade"},{k:"espn",l:"ESPN"},{k:"other",l:"Other"}].map((f,i)=>(
-      <button key={i} onClick={()=>setHofCat(f.k)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(hofCat===f.k?"#D4A843":"#1a1f2e"),background:hofCat===f.k?"rgba(212,168,67,0.08)":"transparent",color:hofCat===f.k?"#D4A843":"#64748b",cursor:"pointer" }}>{f.l}</button>
+      <button key={i} onClick={()=>setHofCat(f.k)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(hofCat===f.k?"#D4A843":"#252b3b"),background:hofCat===f.k?"rgba(212,168,67,0.08)":"transparent",color:hofCat===f.k?"#D4A843":"#64748b",cursor:"pointer" }}>{f.l}</button>
     ))}
   </div>
   <div style={{ display:"grid", gap:16 }}>
@@ -1174,7 +1202,7 @@ export default function App() {
   <h2 style={S.h2}>Halftime Show Marketing</h2>
   <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:10, marginBottom:24 }}>
     {[{v:"$1B+",l:"Annual brand value",cl:"#D4A843"},{v:"120M+",l:"Halftime viewers",cl:"#C8102E"},{v:"13 min",l:"Avg performance",cl:"#69BE28"},{v:"500%",l:"Artist streaming spike",cl:"#FF69B4"}].map((s,i)=>(
-      <div key={i} style={{ textAlign:"center", padding:"14px 10px", borderRadius:10, background:"#0f1420", border:"1px solid #1a1f2e" }}>
+      <div key={i} style={{ textAlign:"center", padding:"14px 10px", borderRadius:10, background:"#161b26", border:"1px solid #1a1f2e" }}>
         <div style={{ fontFamily:"Oswald", fontSize:22, fontWeight:700, color:s.cl }}>{s.v}</div>
         <div style={{ fontSize:10, color:"#64748b", letterSpacing:1, textTransform:"uppercase", marginTop:4 }}>{s.l}</div>
       </div>
@@ -1182,7 +1210,7 @@ export default function App() {
   </div>
   <div style={{ display:"flex", gap:8, marginBottom:20, flexWrap:"wrap" }}>
     {[{k:"timeline",l:"Sponsor Timeline"},{k:"brands",l:"Brand Integration"},{k:"artists",l:"Artist Impact"}].map((v,i)=>(
-      <button key={i} onClick={()=>setHtView(v.k)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"8px 16px",borderRadius:20,border:"1px solid "+(htView===v.k?"#D4A843":"#1a1f2e"),background:htView===v.k?"rgba(212,168,67,0.08)":"transparent",color:htView===v.k?"#D4A843":"#64748b",cursor:"pointer" }}>{v.l}</button>
+      <button key={i} onClick={()=>setHtView(v.k)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"8px 16px",borderRadius:20,border:"1px solid "+(htView===v.k?"#D4A843":"#252b3b"),background:htView===v.k?"rgba(212,168,67,0.08)":"transparent",color:htView===v.k?"#D4A843":"#64748b",cursor:"pointer" }}>{v.l}</button>
     ))}
   </div>
   {htView==="timeline"&&<div style={{ display:"grid", gap:12 }}>
@@ -1214,7 +1242,7 @@ export default function App() {
     {[{a:"Shakira/JLo 2020",p:800},{a:"Rihanna 2023",p:640},{a:"Usher 2024",p:550},{a:"Kendrick 2025 est",p:500},{a:"Eminem/Dre 2022",p:420}].map((a,i)=>(
       <div key={i} style={{ marginBottom:10 }}>
         <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ fontSize:12, color:"#e2e8f0" }}>{a.a}</span><span style={{ fontFamily:"Oswald", fontSize:13, color:"#FF69B4" }}>{"+" + a.p + "%"}</span></div>
-        <div style={{ height:6, borderRadius:3, background:"#1a1f2e", overflow:"hidden" }}><div style={{ width:Math.min(a.p/800*100,100)+"%", height:"100%", borderRadius:3, background:"linear-gradient(90deg,#FF69B4,#8B0040)" }}/></div>
+        <div style={{ height:6, borderRadius:3, background:"#252b3b", overflow:"hidden" }}><div style={{ width:Math.min(a.p/800*100,100)+"%", height:"100%", borderRadius:3, background:"linear-gradient(90deg,#FF69B4,#8B0040)" }}/></div>
       </div>
     ))}
   </div></div>}
@@ -1227,7 +1255,7 @@ export default function App() {
   <div style={{ display:"flex", gap:4, marginBottom:20 }}>
     {["Budget","Creative","Crisis","Measure","Score"].map((s,i)=>(
       <div key={i} style={{ flex:1, textAlign:"center" }}>
-        <div style={{ height:4, borderRadius:2, background:cmoStep>=i?"#C8102E":"#1a1f2e", marginBottom:6 }}/>
+        <div style={{ height:4, borderRadius:2, background:cmoStep>=i?"#C8102E":"#252b3b", marginBottom:6 }}/>
         <div style={{ fontFamily:"Oswald", fontSize:9, color:cmoStep>=i?"#C8102E":"#475569", letterSpacing:1 }}>{s}</div>
       </div>
     ))}
@@ -1287,7 +1315,7 @@ export default function App() {
     <div style={{ fontSize:14, color:"#94a3b8", marginTop:12, maxWidth:400, margin:"12px auto 0", lineHeight:1.6 }}>{cmoScore>=30?"Elite CMO material. Board is renewing your contract.":cmoScore>=24?"Solid performance. A few more reps and you run a Fortune 500 brand.":"Tough day. Study the playbooks and try again."}</div>
     <button onClick={()=>{setCmoStep(0);setCmoPicks({});setCmoScore(0)}} style={{...bt("linear-gradient(135deg,#C8102E,#8B0A1E)","#fff"), marginTop:16}}>Play Again</button>
   </div></div>}
-  {cmoStep>0&&cmoStep<4&&<div style={{ marginTop:16, textAlign:"center" }}><button onClick={()=>{setCmoStep(cmoStep-1);setCmoScore(cmoScore-(cmoStep===1?(cmoPicks.bs||0):cmoStep===2?(cmoPicks.cs||0):(cmoPicks.crs||0)))}} style={bt("#1a1f2e","#64748b")}>Back</button></div>}
+  {cmoStep>0&&cmoStep<4&&<div style={{ marginTop:16, textAlign:"center" }}><button onClick={()=>{setCmoStep(cmoStep-1);setCmoScore(cmoScore-(cmoStep===1?(cmoPicks.bs||0):cmoStep===2?(cmoPicks.cs||0):(cmoPicks.crs||0)))}} style={bt("#252b3b","#64748b")}>Back</button></div>}
 </div>}
 
 {tab==="tenm"&&<div>
@@ -1300,14 +1328,14 @@ export default function App() {
       {["130M simultaneous viewers","$5.20 avg ROI per $1","Cultural moment nothing else replicates","Earned media 10-15x paid spend","Single-day awareness = 6 months digital"].map((p,i)=>(
         <div key={i} style={{ padding:"5px 0", fontSize:12, color:"#94a3b8", borderBottom:"1px solid #111827" }}>{p}</div>
       ))}
-      <div style={{ marginTop:12, fontFamily:"Oswald", fontSize:12, textAlign:"center", padding:"8px", borderRadius:20, border:"2px solid "+(tenMVote==="yes"?"#69BE28":"#1a1f2e"), color:tenMVote==="yes"?"#69BE28":"#64748b" }}>{tenMVote==="yes"?"YOUR VOTE":"WORTH IT"}</div>
+      <div style={{ marginTop:12, fontFamily:"Oswald", fontSize:12, textAlign:"center", padding:"8px", borderRadius:20, border:"2px solid "+(tenMVote==="yes"?"#69BE28":"#252b3b"), color:tenMVote==="yes"?"#69BE28":"#64748b" }}>{tenMVote==="yes"?"YOUR VOTE":"WORTH IT"}</div>
     </div></div>
     <div style={{...S.cd, borderColor:"rgba(200,16,46,0.2)", cursor:"pointer"}} onClick={()=>setTenMVote("no")}><div style={{ padding:"20px", borderBottom:tenMVote==="no"?"2px solid #C8102E":"2px solid transparent" }}>
       <div style={{ fontFamily:"Oswald", fontSize:20, fontWeight:700, color:"#C8102E", marginBottom:12 }}>BEAR CASE</div>
       {["$8-10M for 30 seconds","Crypto Bowl proved ads dont guarantee success","Younger demos cord-cutting","Same budget = 6 months targeted digital","One bad ad = meme for wrong reasons"].map((p,i)=>(
         <div key={i} style={{ padding:"5px 0", fontSize:12, color:"#94a3b8", borderBottom:"1px solid #111827" }}>{p}</div>
       ))}
-      <div style={{ marginTop:12, fontFamily:"Oswald", fontSize:12, textAlign:"center", padding:"8px", borderRadius:20, border:"2px solid "+(tenMVote==="no"?"#C8102E":"#1a1f2e"), color:tenMVote==="no"?"#C8102E":"#64748b" }}>{tenMVote==="no"?"YOUR VOTE":"NOT WORTH IT"}</div>
+      <div style={{ marginTop:12, fontFamily:"Oswald", fontSize:12, textAlign:"center", padding:"8px", borderRadius:20, border:"2px solid "+(tenMVote==="no"?"#C8102E":"#252b3b"), color:tenMVote==="no"?"#C8102E":"#64748b" }}>{tenMVote==="no"?"YOUR VOTE":"NOT WORTH IT"}</div>
     </div></div>
   </div>
   <div style={{...S.cd}}><div style={{ padding:"24px 20px" }}>
@@ -1318,7 +1346,7 @@ export default function App() {
         <div style={{ fontFamily:"Oswald", fontSize:12, color:"#64748b", letterSpacing:1, marginBottom:8 }}>1. BRAND STAGE</div>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))", gap:8 }}>
           {["Startup","Growth","Established","Turnaround"].map((s,i)=>(
-            <div key={i} onClick={()=>setTenMTool({...tenMTool,stage:s})} style={{...S.cd, padding:"10px", cursor:"pointer", textAlign:"center", borderColor:tenMTool.stage===s?"#D4A843":"#1a1f2e"}}>
+            <div key={i} onClick={()=>setTenMTool({...tenMTool,stage:s})} style={{...S.cd, padding:"10px", cursor:"pointer", textAlign:"center", borderColor:tenMTool.stage===s?"#D4A843":"#252b3b"}}>
               <div style={{ fontSize:11, color:tenMTool.stage===s?"#D4A843":"#94a3b8" }}>{s}</div>
             </div>
           ))}
@@ -1328,7 +1356,7 @@ export default function App() {
         <div style={{ fontFamily:"Oswald", fontSize:12, color:"#64748b", letterSpacing:1, marginBottom:8 }}>2. ANNUAL MARKETING BUDGET</div>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))", gap:8 }}>
           {["Under $10M","$10-50M","$50-200M","$200M+"].map((b,i)=>(
-            <div key={i} onClick={()=>setTenMTool({...tenMTool,budget:b})} style={{...S.cd, padding:"10px", cursor:"pointer", textAlign:"center", borderColor:tenMTool.budget===b?"#D4A843":"#1a1f2e"}}>
+            <div key={i} onClick={()=>setTenMTool({...tenMTool,budget:b})} style={{...S.cd, padding:"10px", cursor:"pointer", textAlign:"center", borderColor:tenMTool.budget===b?"#D4A843":"#252b3b"}}>
               <div style={{ fontSize:11, color:tenMTool.budget===b?"#D4A843":"#94a3b8" }}>{b}</div>
             </div>
           ))}
@@ -1338,14 +1366,14 @@ export default function App() {
         <div style={{ fontFamily:"Oswald", fontSize:12, color:"#64748b", letterSpacing:1, marginBottom:8 }}>3. PRIMARY GOAL</div>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))", gap:8 }}>
           {["Mass awareness","Cultural relevance","Direct response","Category disruption"].map((g,i)=>(
-            <div key={i} onClick={()=>setTenMTool({...tenMTool,goal:g})} style={{...S.cd, padding:"10px", cursor:"pointer", textAlign:"center", borderColor:tenMTool.goal===g?"#D4A843":"#1a1f2e"}}>
+            <div key={i} onClick={()=>setTenMTool({...tenMTool,goal:g})} style={{...S.cd, padding:"10px", cursor:"pointer", textAlign:"center", borderColor:tenMTool.goal===g?"#D4A843":"#252b3b"}}>
               <div style={{ fontSize:11, color:tenMTool.goal===g?"#D4A843":"#94a3b8" }}>{g}</div>
             </div>
           ))}
         </div>
       </div>
     </div>
-    {tenMTool.stage&&tenMTool.budget&&tenMTool.goal&&<div style={{ marginTop:24, padding:20, borderRadius:10, background:"#0a0d15", border:"1px solid #1a1f2e" }}>
+    {tenMTool.stage&&tenMTool.budget&&tenMTool.goal&&<div style={{ marginTop:24, padding:20, borderRadius:10, background:"#111620", border:"1px solid #1a1f2e" }}>
       <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:12 }}>YOUR RECOMMENDATION</div>
       {tenMTool.budget==="$200M+"&&(tenMTool.goal==="Mass awareness"||tenMTool.goal==="Cultural relevance")?
         <div><div style={{ fontFamily:"Oswald", fontSize:20, color:"#69BE28", marginBottom:8 }}>YES - Strong SB candidate</div><div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.7 }}>Your budget absorbs $8-10M without compromising your full-year plan. Goals align perfectly with what SB delivers. Allocate 15-20% of SB budget to pre and post amplification.</div></div>
@@ -1368,7 +1396,7 @@ export default function App() {
   <p style={{ color:"#94a3b8", marginBottom:20, lineHeight:1.7 }}>Famous Super Bowl ad disasters dissected. What went wrong, why it failed, and how YOU would fix it.</p>
   <div style={{ display:"flex", gap:8, marginBottom:24, flexWrap:"wrap" }}>
     {["Groupon Tibet","FTX Crypto","Quibi Launch","Pepsi Kendall Jenner"].map((b,i)=>(
-      <button key={i} onClick={()=>setAutCase(i)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"8px 16px",borderRadius:20,border:"1px solid "+(autCase===i?"#C8102E":"#1a1f2e"),background:autCase===i?"rgba(200,16,46,0.08)":"transparent",color:autCase===i?"#C8102E":"#64748b",cursor:"pointer" }}>{b}</button>
+      <button key={i} onClick={()=>setAutCase(i)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"8px 16px",borderRadius:20,border:"1px solid "+(autCase===i?"#C8102E":"#252b3b"),background:autCase===i?"rgba(200,16,46,0.08)":"transparent",color:autCase===i?"#C8102E":"#64748b",cursor:"pointer" }}>{b}</button>
     ))}
   </div>
   {[
@@ -1415,7 +1443,7 @@ export default function App() {
         <div style={{ fontSize:12, color:"#64748b", marginBottom:16 }}>Pick the fix you think would have saved the campaign.</div>
         <div style={{ display:"grid", gap:10 }}>
           {c.fix.map((f,i)=>(
-            <div key={i} onClick={()=>setAutFix(f.n)} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:autFix===f.n?(f.s>=8?"#69BE28":"#D4A843"):"#1a1f2e"}}>
+            <div key={i} onClick={()=>setAutFix(f.n)} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:autFix===f.n?(f.s>=8?"#69BE28":"#D4A843"):"#252b3b"}}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                 <div style={{ fontFamily:"Oswald", fontSize:14, color:autFix===f.n?"#e2e8f0":"#94a3b8" }}>{f.n}</div>
                 {autFix===f.n&&<div style={{ fontFamily:"Oswald", fontSize:18, fontWeight:700, color:f.s>=8?"#69BE28":f.s>=6?"#D4A843":"#C8102E" }}>{f.s+"/9"}</div>}
@@ -1438,7 +1466,7 @@ export default function App() {
       <div style={{ fontFamily:"Oswald", fontSize:11, color:"#64748b", letterSpacing:2, marginBottom:8 }}>BRAND A</div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(90px,1fr))", gap:6 }}>
         {["Budweiser","Nike","Apple","Pepsi","DoorDash","Dunkin","Old Spice","ChatGPT"].map((b,i)=>(
-          <div key={i} onClick={()=>setVlabA(b)} style={{ padding:"8px", borderRadius:6, textAlign:"center", cursor:"pointer", fontSize:11, fontFamily:"Oswald", letterSpacing:1, border:"1px solid "+(vlabA===b?"#69BE28":"#1a1f2e"), color:vlabA===b?"#69BE28":"#64748b", background:vlabA===b?"rgba(105,190,40,0.08)":"transparent" }}>{b}</div>
+          <div key={i} onClick={()=>setVlabA(b)} style={{ padding:"8px", borderRadius:6, textAlign:"center", cursor:"pointer", fontSize:11, fontFamily:"Oswald", letterSpacing:1, border:"1px solid "+(vlabA===b?"#69BE28":"#252b3b"), color:vlabA===b?"#69BE28":"#64748b", background:vlabA===b?"rgba(105,190,40,0.08)":"transparent" }}>{b}</div>
         ))}
       </div>
     </div>
@@ -1446,7 +1474,7 @@ export default function App() {
       <div style={{ fontFamily:"Oswald", fontSize:11, color:"#64748b", letterSpacing:2, marginBottom:8 }}>BRAND B</div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(90px,1fr))", gap:6 }}>
         {["Budweiser","Nike","Apple","Pepsi","DoorDash","Dunkin","Old Spice","ChatGPT"].map((b,i)=>(
-          <div key={i} onClick={()=>setVlabB(b)} style={{ padding:"8px", borderRadius:6, textAlign:"center", cursor:"pointer", fontSize:11, fontFamily:"Oswald", letterSpacing:1, border:"1px solid "+(vlabB===b?"#C8102E":"#1a1f2e"), color:vlabB===b?"#C8102E":"#64748b", background:vlabB===b?"rgba(200,16,46,0.08)":"transparent" }}>{b}</div>
+          <div key={i} onClick={()=>setVlabB(b)} style={{ padding:"8px", borderRadius:6, textAlign:"center", cursor:"pointer", fontSize:11, fontFamily:"Oswald", letterSpacing:1, border:"1px solid "+(vlabB===b?"#C8102E":"#252b3b"), color:vlabB===b?"#C8102E":"#64748b", background:vlabB===b?"rgba(200,16,46,0.08)":"transparent" }}>{b}</div>
         ))}
       </div>
     </div>
@@ -1484,7 +1512,7 @@ export default function App() {
         <div style={{...S.cd}}><div style={{ padding:"20px" }}>
           <div style={{...S.lb, color:"#D4A843", marginBottom:12}}>WHAT IF THEY SWAPPED STRATEGIES?</div>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
-            <div style={{ padding:14, borderRadius:8, background:"#0a0d15", border:"1px solid #151a28" }}>
+            <div style={{ padding:14, borderRadius:8, background:"#111620", border:"1px solid #151a28" }}>
               <div style={{ fontFamily:"Oswald", fontSize:13, color:a.color, marginBottom:6 }}>{vlabA+" using "+vlabB+"'s voice"}</div>
               <div style={{ fontSize:12, color:"#94a3b8", lineHeight:1.6 }}>{
                 vlabA==="Budweiser"&&vlabB==="DoorDash"?"Budweiser trolling on TikTok with Clydesdales doing meme dances. Horrifying. 150 years of brand equity destroyed in one viral moment.":
@@ -1493,7 +1521,7 @@ export default function App() {
                 vlabA+"'s brand equity would clash with "+vlabB+"'s tone. The audience expects "+a.tone.toLowerCase()+" and would get "+b.tone.toLowerCase()+". Jarring at best, damaging at worst."
               }</div>
             </div>
-            <div style={{ padding:14, borderRadius:8, background:"#0a0d15", border:"1px solid #151a28" }}>
+            <div style={{ padding:14, borderRadius:8, background:"#111620", border:"1px solid #151a28" }}>
               <div style={{ fontFamily:"Oswald", fontSize:13, color:b.color, marginBottom:6 }}>{vlabB+" using "+vlabA+"'s voice"}</div>
               <div style={{ fontSize:12, color:"#94a3b8", lineHeight:1.6 }}>{
                 vlabB==="Pepsi"&&vlabA==="Budweiser"?"Pepsi doing heritage storytelling. Loses the youthful challenger energy. Becomes a Coke clone. The whole point of Pepsi is NOT being Budweiser.":
@@ -1528,7 +1556,7 @@ export default function App() {
   <div style={{ display:"flex", gap:4, marginBottom:20 }}>
     {["Brand","Strategy","Creative","Media","Pitch"].map((s,i)=>(
       <div key={i} style={{ flex:1, textAlign:"center" }}>
-        <div style={{ height:4, borderRadius:2, background:pitchStep>=i?"#D4A843":"#1a1f2e", marginBottom:6 }}/>
+        <div style={{ height:4, borderRadius:2, background:pitchStep>=i?"#D4A843":"#252b3b", marginBottom:6 }}/>
         <div style={{ fontFamily:"Oswald", fontSize:9, color:pitchStep>=i?"#D4A843":"#475569", letterSpacing:1 }}>{s}</div>
       </div>
     ))}
@@ -1537,7 +1565,7 @@ export default function App() {
     <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>What brand are you pitching for?</div>
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:10 }}>
       {[{n:"Fast Food Chain",d:"Mass market, family audience"},{n:"Tech Startup",d:"Awareness play, need credibility"},{n:"Luxury Auto",d:"Premium positioning, aspirational"},{n:"Beverage Brand",d:"High competition, need differentiation"},{n:"Streaming Service",d:"Subscriber acquisition focused"},{n:"Financial Services",d:"Trust-building, regulation-aware"}].map((b,i)=>(
-        <div key={i} onClick={()=>{setPitchPicks({...pitchPicks,brand:b.n}); setPitchStep(1)}} style={{...S.cd, padding:"16px", cursor:"pointer", textAlign:"center", borderColor:pitchPicks.brand===b.n?"#D4A843":"#1a1f2e"}}>
+        <div key={i} onClick={()=>{setPitchPicks({...pitchPicks,brand:b.n}); setPitchStep(1)}} style={{...S.cd, padding:"16px", cursor:"pointer", textAlign:"center", borderColor:pitchPicks.brand===b.n?"#D4A843":"#252b3b"}}>
           <div style={{ fontFamily:"Oswald", fontSize:13, color:"#e2e8f0" }}>{b.n}</div>
           <div style={{ fontSize:11, color:"#64748b", marginTop:4 }}>{b.d}</div>
         </div>
@@ -1548,7 +1576,7 @@ export default function App() {
     <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>Strategic approach?</div>
     <div style={{ display:"grid", gap:10 }}>
       {[{n:"Heritage Play",d:"Lean into brand history and trust. Emotional storytelling.",s:8},{n:"Challenger Attack",d:"Call out the competition. Provocative, disruptive.",s:7},{n:"Cultural Moment",d:"Tie into a current trend or movement. Timely.",s:9},{n:"Product Demo",d:"Show the product in action. Let it speak for itself.",s:6}].map((s,i)=>(
-        <div key={i} onClick={()=>{setPitchPicks({...pitchPicks,strategy:s.n,ss:s.s}); setPitchStep(2)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:pitchPicks.strategy===s.n?"#D4A843":"#1a1f2e"}}>
+        <div key={i} onClick={()=>{setPitchPicks({...pitchPicks,strategy:s.n,ss:s.s}); setPitchStep(2)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:pitchPicks.strategy===s.n?"#D4A843":"#252b3b"}}>
           <div style={{ fontFamily:"Oswald", fontSize:14, color:"#e2e8f0" }}>{s.n}</div>
           <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{s.d}</div>
         </div>
@@ -1559,7 +1587,7 @@ export default function App() {
     <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>Creative format?</div>
     <div style={{ display:"grid", gap:10 }}>
       {[{n:"60-sec Cinematic Film",d:"Premium production. One big moment.",s:8},{n:"30-sec + Extended YouTube Cut",d:"Hub and spoke. TV drives to digital.",s:9},{n:"Multi-Spot Series",d:"Three 15-sec spots telling one story across the game.",s:7},{n:"Interactive / QR Experience",d:"Drive to second screen. Coinbase-style gamble.",s:6}].map((c,i)=>(
-        <div key={i} onClick={()=>{setPitchPicks({...pitchPicks,creative:c.n,cs:c.s}); setPitchStep(3)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:pitchPicks.creative===c.n?"#D4A843":"#1a1f2e"}}>
+        <div key={i} onClick={()=>{setPitchPicks({...pitchPicks,creative:c.n,cs:c.s}); setPitchStep(3)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:pitchPicks.creative===c.n?"#D4A843":"#252b3b"}}>
           <div style={{ fontFamily:"Oswald", fontSize:14, color:"#e2e8f0" }}>{c.n}</div>
           <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{c.d}</div>
         </div>
@@ -1570,7 +1598,7 @@ export default function App() {
     <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>Amplification strategy?</div>
     <div style={{ display:"grid", gap:10 }}>
       {[{n:"Pre-Release Teaser Campaign",d:"Build anticipation 3-4 weeks before game. Social seeding.",s:9},{n:"Real-Time War Room",d:"200+ pre-loaded responses. Sub-60-sec reply time on social.",s:8},{n:"Influencer Army",d:"500+ creators posting before, during, and after the game.",s:7},{n:"PR-First Approach",d:"Embargo strategy with tier-1 outlets. Earned media focus.",s:7}].map((m,i)=>(
-        <div key={i} onClick={()=>{setPitchPicks({...pitchPicks,media:m.n,ms:m.s}); setPitchStep(4)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:pitchPicks.media===m.n?"#D4A843":"#1a1f2e"}}>
+        <div key={i} onClick={()=>{setPitchPicks({...pitchPicks,media:m.n,ms:m.s}); setPitchStep(4)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:pitchPicks.media===m.n?"#D4A843":"#252b3b"}}>
           <div style={{ fontFamily:"Oswald", fontSize:14, color:"#e2e8f0" }}>{m.n}</div>
           <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{m.d}</div>
         </div>
@@ -1591,7 +1619,7 @@ export default function App() {
       <div style={{...S.lb, color:"#69BE28", marginBottom:12}}>PROJECTED ROI</div>
       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12 }}>
         {[{l:"Media Spend",v:"$8-10M",cl:"#C8102E"},{l:"Earned Media Est.",v:"$"+(((pitchPicks.ss||7)+(pitchPicks.cs||7)+(pitchPicks.ms||7))*4)+"M",cl:"#69BE28"},{l:"Total ROI",v:((pitchPicks.ss||7)+(pitchPicks.cs||7)+(pitchPicks.ms||7)>=23?"5.2x":((pitchPicks.ss||7)+(pitchPicks.cs||7)+(pitchPicks.ms||7))>=20?"3.8x":"2.1x"),cl:"#D4A843"}].map((m,i)=>(
-          <div key={i} style={{ textAlign:"center", padding:12, borderRadius:8, background:"#0a0d15" }}>
+          <div key={i} style={{ textAlign:"center", padding:12, borderRadius:8, background:"#111620" }}>
             <div style={{ fontFamily:"Oswald", fontSize:24, fontWeight:700, color:m.cl }}>{m.v}</div>
             <div style={{ fontSize:10, color:"#64748b", letterSpacing:1, marginTop:4 }}>{m.l}</div>
           </div>
@@ -1605,7 +1633,7 @@ export default function App() {
       <button onClick={()=>{setPitchStep(0);setPitchPicks({})}} style={{...bt("linear-gradient(135deg,#D4A843,#8B6914)","#fff"), marginTop:16}}>Pitch Again</button>
     </div></div>
   </div>}
-  {pitchStep>0&&pitchStep<4&&<div style={{ marginTop:16, textAlign:"center" }}><button onClick={()=>setPitchStep(pitchStep-1)} style={bt("#1a1f2e","#64748b")}>Back</button></div>}
+  {pitchStep>0&&pitchStep<4&&<div style={{ marginTop:16, textAlign:"center" }}><button onClick={()=>setPitchStep(pitchStep-1)} style={bt("#252b3b","#64748b")}>Back</button></div>}
 </div>}
 
 {tab==="mediamix"&&<div>
@@ -1626,7 +1654,7 @@ export default function App() {
       const val=mmSliders[ch.k]||0;
       const spend=Math.round(val/100*15*10)/10;
       return (
-        <div key={i} style={{ padding:"12px 16px", borderRadius:8, background:"#0f1420", border:"1px solid #1a1f2e" }}>
+        <div key={i} style={{ padding:"12px 16px", borderRadius:8, background:"#161b26", border:"1px solid #1a1f2e" }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
             <div style={{ fontFamily:"Oswald", fontSize:13, color:ch.cl }}>{ch.l}</div>
             <div style={{ fontFamily:"Oswald", fontSize:14, color:"#e2e8f0" }}>{"$"+spend+"M ("+val+"%)"}</div>
@@ -1643,7 +1671,7 @@ export default function App() {
   <div style={{...S.cd}}><div style={{ padding:"20px" }}>
     <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12, marginBottom:16 }}>
       {[{l:"Allocated",v:Object.values(mmSliders).reduce((a,b)=>a+b,0)+"%",cl:Object.values(mmSliders).reduce((a,b)=>a+b,0)>100?"#C8102E":"#69BE28"},{l:"Remaining",v:(100-Object.values(mmSliders).reduce((a,b)=>a+b,0))+"%",cl:"#D4A843"},{l:"Blended ROI",v:(Math.round(([{k:"tv",r:5.2},{k:"social",r:3.1},{k:"influencer",r:3.8},{k:"pr",r:8},{k:"youtube",r:4.5},{k:"ooh",r:1.5},{k:"podcast",r:5.5},{k:"experiential",r:2}].reduce((sum,c)=>sum+((mmSliders[c.k]||0)/100*c.r),0)/(Math.max(Object.values(mmSliders).reduce((a,b)=>a+b,0),1)/100))*10)/10)+"x",cl:"#4285F4"}].map((m,i)=>(
-        <div key={i} style={{ textAlign:"center", padding:12, borderRadius:8, background:"#0a0d15" }}>
+        <div key={i} style={{ textAlign:"center", padding:12, borderRadius:8, background:"#111620" }}>
           <div style={{ fontFamily:"Oswald", fontSize:24, fontWeight:700, color:m.cl }}>{m.v}</div>
           <div style={{ fontSize:10, color:"#64748b", letterSpacing:1, marginTop:4 }}>{m.l}</div>
         </div>
@@ -1671,7 +1699,7 @@ export default function App() {
         </div>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(110px,1fr))", gap:6 }}>
           {["Budweiser","Claude","Pepsi","DoorDash","ChatGPT","T-Mobile","Nerds","Google","Dunkin","Uber Eats","Xfinity","Bud Light"].map((brand,bi)=>(
-            <div key={bi} onClick={()=>setAwardVotes({...awardVotes,[award.cat]:brand})} style={{ padding:"8px 10px", borderRadius:6, textAlign:"center", cursor:"pointer", fontSize:11, fontFamily:"Oswald", letterSpacing:0.5, border:"1px solid "+(awardVotes[award.cat]===brand?award.cl:"#1a1f2e"), color:awardVotes[award.cat]===brand?award.cl:"#64748b", background:awardVotes[award.cat]===brand?"rgba(212,168,67,0.06)":"transparent" }}>{brand}</div>
+            <div key={bi} onClick={()=>setAwardVotes({...awardVotes,[award.cat]:brand})} style={{ padding:"8px 10px", borderRadius:6, textAlign:"center", cursor:"pointer", fontSize:11, fontFamily:"Oswald", letterSpacing:0.5, border:"1px solid "+(awardVotes[award.cat]===brand?award.cl:"#252b3b"), color:awardVotes[award.cat]===brand?award.cl:"#64748b", background:awardVotes[award.cat]===brand?"rgba(212,168,67,0.06)":"transparent" }}>{brand}</div>
           ))}
         </div>
         {awardVotes[award.cat]&&<div style={{ marginTop:10, fontSize:12, color:award.cl, fontFamily:"Oswald", letterSpacing:1 }}>{"YOUR PICK: "+awardVotes[award.cat]}</div>}
@@ -1697,7 +1725,7 @@ export default function App() {
   <p style={{ color:"#94a3b8", marginBottom:20, lineHeight:1.7 }}>10 wild Super Bowl marketing stats. Guess if the real number is OVER or UNDER what we show you.</p>
   <div style={{ display:"flex", gap:4, marginBottom:20 }}>
     {Array.from({length:10}).map((_,i)=>(
-      <div key={i} style={{ flex:1, height:4, borderRadius:2, background:ouRound>i?(ouPicks[i]===ouData[i].a?"#69BE28":"#C8102E"):(ouRound===i?"#D4A843":"#1a1f2e") }}/>
+      <div key={i} style={{ flex:1, height:4, borderRadius:2, background:ouRound>i?(ouPicks[i]===ouData[i].a?"#69BE28":"#C8102E"):(ouRound===i?"#D4A843":"#252b3b") }}/>
     ))}
   </div>
   {ouRound<10&&(()=>{
@@ -1708,11 +1736,11 @@ export default function App() {
         <div style={{ fontSize:15, color:"#c8cdd5", lineHeight:1.7, marginBottom:20 }}>{q.q}</div>
         <div style={{ fontFamily:"Oswald", fontSize:48, fontWeight:700, color:"#D4A843", marginBottom:20 }}>{q.shown}</div>
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
-          <div onClick={()=>{const p={...ouPicks};p[ouRound]="over";setOuPicks(p);setOuScore(ouScore+(q.a==="over"?1:0));setTimeout(()=>setOuRound(ouRound+1),800)}} style={{...S.cd, padding:"20px", cursor:"pointer", borderColor:ouPicks[ouRound]==="over"?(q.a==="over"?"#69BE28":"#C8102E"):"#1a1f2e", textAlign:"center" }}>
+          <div onClick={()=>{const p={...ouPicks};p[ouRound]="over";setOuPicks(p);setOuScore(ouScore+(q.a==="over"?1:0));setTimeout(()=>setOuRound(ouRound+1),800)}} style={{...S.cd, padding:"20px", cursor:"pointer", borderColor:ouPicks[ouRound]==="over"?(q.a==="over"?"#69BE28":"#C8102E"):"#252b3b", textAlign:"center" }}>
             <div style={{ fontFamily:"Oswald", fontSize:24, fontWeight:700, color:"#69BE28" }}>OVER</div>
             <div style={{ fontSize:12, color:"#64748b", marginTop:4 }}>Higher than {q.shown}</div>
           </div>
-          <div onClick={()=>{const p={...ouPicks};p[ouRound]="under";setOuPicks(p);setOuScore(ouScore+(q.a==="under"?1:0));setTimeout(()=>setOuRound(ouRound+1),800)}} style={{...S.cd, padding:"20px", cursor:"pointer", borderColor:ouPicks[ouRound]==="under"?(q.a==="under"?"#69BE28":"#C8102E"):"#1a1f2e", textAlign:"center" }}>
+          <div onClick={()=>{const p={...ouPicks};p[ouRound]="under";setOuPicks(p);setOuScore(ouScore+(q.a==="under"?1:0));setTimeout(()=>setOuRound(ouRound+1),800)}} style={{...S.cd, padding:"20px", cursor:"pointer", borderColor:ouPicks[ouRound]==="under"?(q.a==="under"?"#69BE28":"#C8102E"):"#252b3b", textAlign:"center" }}>
             <div style={{ fontFamily:"Oswald", fontSize:24, fontWeight:700, color:"#C8102E" }}>UNDER</div>
             <div style={{ fontSize:12, color:"#64748b", marginTop:4 }}>Lower than {q.shown}</div>
           </div>
@@ -1743,7 +1771,7 @@ export default function App() {
       {[{k:"celeb",l:"A famous celebrity",p:"e.g. Beyonce, The Rock, Martha Stewart"},{k:"animal",l:"An animal",p:"e.g. llama, goldfish, angry raccoon"},{k:"product",l:"A random product",p:"e.g. toaster, yoga mat, chainsaw"},{k:"place",l:"A weird location",p:"e.g. the moon, a Costco, a volcano"},{k:"emotion",l:"An emotion",p:"e.g. confused, furious, suspiciously happy"},{k:"catchphrase",l:"A catchphrase or slogan",p:"e.g. Lets get weird, You deserve this, YOLO"},{k:"number",l:"A large number",p:"e.g. 47 million, 3 billion, 420"},{k:"sound",l:"A sound effect",p:"e.g. air horn, sad trombone, explosion"}].map(field=>(
         <div key={field.k}>
           <div style={{ fontFamily:"Oswald", fontSize:12, color:"#D4A843", letterSpacing:1, marginBottom:4 }}>{field.l.toUpperCase()}</div>
-          <input value={adlibPicks[field.k]||""} onChange={e=>setAdlibPicks({...adlibPicks,[field.k]:e.target.value})} placeholder={field.p} style={{ width:"100%", padding:"10px 14px", borderRadius:8, border:"1px solid #1a1f2e", background:"#0f1420", color:"#e2e8f0", fontSize:14, outline:"none", boxSizing:"border-box" }}/>
+          <input value={adlibPicks[field.k]||""} onChange={e=>setAdlibPicks({...adlibPicks,[field.k]:e.target.value})} placeholder={field.p} style={{ width:"100%", padding:"10px 14px", borderRadius:8, border:"1px solid #1a1f2e", background:"#161b26", color:"#e2e8f0", fontSize:14, outline:"none", boxSizing:"border-box" }}/>
         </div>
       ))}
     </div>
@@ -1762,7 +1790,7 @@ export default function App() {
       <div style={{ fontFamily:"Oswald", fontSize:12, color:"#64748b", letterSpacing:2, marginBottom:10 }}>AD AGENCY REVIEW</div>
       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginBottom:16 }}>
         {[{l:"Virality",v:Math.floor(Math.random()*4)+7,cl:"#FF69B4"},{l:"Absurdity",v:Math.floor(Math.random()*3)+8,cl:"#D4A843"},{l:"Will It Air?",v:Math.floor(Math.random()*5)+1,cl:"#C8102E"}].map((s,i)=>(
-          <div key={i} style={{ padding:10, borderRadius:8, background:"#0a0d15" }}>
+          <div key={i} style={{ padding:10, borderRadius:8, background:"#111620" }}>
             <div style={{ fontFamily:"Oswald", fontSize:24, fontWeight:700, color:s.cl }}>{s.v+"/10"}</div>
             <div style={{ fontSize:10, color:"#64748b", letterSpacing:1, marginTop:2 }}>{s.l}</div>
           </div>
@@ -1779,7 +1807,7 @@ export default function App() {
   <p style={{ color:"#94a3b8", marginBottom:20, lineHeight:1.7 }}>10 rounds of insane Super Bowl ad facts. Two are real. One is fake. Tap the lie.</p>
   <div style={{ display:"flex", gap:4, marginBottom:20 }}>
     {Array.from({length:10}).map((_,i)=>(
-      <div key={i} style={{ flex:1, height:4, borderRadius:2, background:ttRound>i?(ttPicks[i]===ttData[i].lie?"#69BE28":"#C8102E"):(ttRound===i?"#D4A843":"#1a1f2e") }}/>
+      <div key={i} style={{ flex:1, height:4, borderRadius:2, background:ttRound>i?(ttPicks[i]===ttData[i].lie?"#69BE28":"#C8102E"):(ttRound===i?"#D4A843":"#252b3b") }}/>
     ))}
   </div>
   {ttRound<10&&(()=>{
@@ -1789,14 +1817,14 @@ export default function App() {
         <div style={{ fontFamily:"Oswald", fontSize:12, color:"#64748b", letterSpacing:2, marginBottom:16, textAlign:"center" }}>{"ROUND "+(ttRound+1)+" OF 10 | TAP THE LIE"}</div>
         <div style={{ display:"grid", gap:10 }}>
           {q.opts.map((opt,oi)=>(
-            <div key={oi} onClick={()=>{if(!ttPicks[ttRound]&&ttPicks[ttRound]!==0){const p={...ttPicks};p[ttRound]=oi;setTtPicks(p);setTtScore(ttScore+(oi===q.lie?1:0));setTimeout(()=>setTtRound(ttRound+1),1500)}}} style={{...S.cd, padding:"16px 18px", cursor:ttPicks[ttRound]!=null?"default":"pointer", borderColor:ttPicks[ttRound]!=null?(oi===q.lie?"#69BE28":(ttPicks[ttRound]===oi?"#C8102E":"#1a1f2e")):"#1a1f2e", background:ttPicks[ttRound]!=null&&oi===q.lie?"rgba(105,190,40,0.06)":"transparent" }}>
+            <div key={oi} onClick={()=>{if(!ttPicks[ttRound]&&ttPicks[ttRound]!==0){const p={...ttPicks};p[ttRound]=oi;setTtPicks(p);setTtScore(ttScore+(oi===q.lie?1:0));setTimeout(()=>setTtRound(ttRound+1),1500)}}} style={{...S.cd, padding:"16px 18px", cursor:ttPicks[ttRound]!=null?"default":"pointer", borderColor:ttPicks[ttRound]!=null?(oi===q.lie?"#69BE28":(ttPicks[ttRound]===oi?"#C8102E":"#252b3b")):"#252b3b", background:ttPicks[ttRound]!=null&&oi===q.lie?"rgba(105,190,40,0.06)":"transparent" }}>
               <div style={{ fontSize:14, color:"#c8cdd5", lineHeight:1.6 }}>{opt}</div>
               {ttPicks[ttRound]!=null&&oi===q.lie&&<div style={{ fontFamily:"Oswald", fontSize:11, color:"#69BE28", marginTop:6, letterSpacing:1 }}>THIS WAS THE LIE</div>}
               {ttPicks[ttRound]!=null&&ttPicks[ttRound]===oi&&oi!==q.lie&&<div style={{ fontFamily:"Oswald", fontSize:11, color:"#C8102E", marginTop:6, letterSpacing:1 }}>ACTUALLY TRUE!</div>}
             </div>
           ))}
         </div>
-        {ttPicks[ttRound]!=null&&<div style={{ marginTop:14, padding:12, borderRadius:8, background:"#0a0d15", border:"1px solid #151a28" }}>
+        {ttPicks[ttRound]!=null&&<div style={{ marginTop:14, padding:12, borderRadius:8, background:"#111620", border:"1px solid #151a28" }}>
           <div style={{ fontSize:12, color:"#D4A843", fontFamily:"Oswald", letterSpacing:1, marginBottom:4 }}>THE TRUTH</div>
           <div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.6 }}>{q.explain}</div>
         </div>}
@@ -1819,8 +1847,8 @@ export default function App() {
   {!admin?<div style={{...S.cd,textAlign:"center",padding:"40px 20px"}}>
     <p style={{ color:"#94a3b8",marginBottom:16 }}>Enter admin PIN</p>
     <div style={{ display:"flex",justifyContent:"center",gap:8 }}>
-      <input type="password" value={aPin} onChange={e=>sAPin(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&aPin===PIN)sAdmin(true)}} placeholder="PIN" style={{ padding:"10px 14px",borderRadius:6,border:"1px solid #1a1f2e",background:"#0f1420",color:"#e2e8f0",fontFamily:"monospace",fontSize:18,width:100,textAlign:"center",outline:"none" }}/>
-      <button onClick={()=>{if(aPin===PIN)sAdmin(true)}} style={bt("#1a1f2e","#e2e8f0")}>Unlock</button>
+      <input type="password" value={aPin} onChange={e=>sAPin(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&aPin===PIN)sAdmin(true)}} placeholder="PIN" style={{ padding:"10px 14px",borderRadius:6,border:"1px solid #1a1f2e",background:"#161b26",color:"#e2e8f0",fontFamily:"monospace",fontSize:18,width:100,textAlign:"center",outline:"none" }}/>
+      <button onClick={()=>{if(aPin===PIN)sAdmin(true)}} style={bt("#252b3b","#e2e8f0")}>Unlock</button>
     </div>
   </div>:<div style={{...S.cd,padding:20}}>
     <div style={{ padding:"8px 14px",borderRadius:6,background:"rgba(105,190,40,0.06)",marginBottom:16,textAlign:"center" }}>
@@ -1834,7 +1862,7 @@ export default function App() {
         <span style={{ color:vb>va?"#69BE28":"#94a3b8" }}>{m.a2&&m.a2.brand} ({vb})</span>
       </div>})}
     </div>
-    <button onClick={advance} disabled={round>=4} style={{...bt(round>=4?"#1a1f2e":"linear-gradient(135deg,#C8102E,#8b0a1a)",round>=4?"#475569":"#fff"),width:"100%",marginBottom:8}}>
+    <button onClick={advance} disabled={round>=4} style={{...bt(round>=4?"#252b3b":"linear-gradient(135deg,#C8102E,#8b0a1a)",round>=4?"#475569":"#fff"),width:"100%",marginBottom:8}}>
       {round>=3?"Crown Champion":round>=4?"Complete":"Advance to "+RNAMES[round+1]}
     </button>
     <button onClick={async()=>{sRound(0);sBracket(bldB());sLive({});try{await window.storage.set(sk("st"),JSON.stringify({r:0,b:bldB()}),true)}catch(e){}}}
