@@ -1,0 +1,1819 @@
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+
+const ADS = [
+  { id:1, seed:1, brand:"Budweiser", title:"American Icons", celeb:"Clydesdales + Bald Eagle", cat:"Food & Bev", region:"food", color:"#C8102E", agency:"FCB New York", parent:"Anheuser-Busch InBev", founded:1876, revenue:"$57B", hq:"St. Louis, MO", tagline:"This Buds For You", strategy:"Heritage storytelling, emotional Americana, Clydesdale mascot equity", voice:"Proud, patriotic, cinematic", bio:"Celebrating 150 years. A Clydesdale foal befriends a bald eagle chick, set to Free Bird. Forbes predicts it will rank as the most popular ad.", icon:"B", iconBg:"#C8102E", video:"https://www.youtube.com/results?search_query=budweiser+super+bowl+2026", ig:"232K", tw:"145K", fb:"10M", funFact:"Clydesdales have appeared in 45+ SB ads since 1986", buzz:{ preRank:1, sentiment:"Overwhelmingly positive", viral:"Very High", yt:"TBD", social:"TBD", take:"TBD after game" } },
+  { id:2, seed:16, brand:"Nerds", title:"Taste Buds", celeb:"Andy Cohen", cat:"Food & Bev", region:"food", color:"#FF6B9D", agency:"Dentsu Creative", parent:"Ferrara / Ferrero", founded:1983, revenue:"$15B", hq:"Chicago, IL", tagline:"Follow Your Nerds", strategy:"Pop culture crossovers, Gen Z engagement, character-driven", voice:"Playful, irreverent, colorful", bio:"Third consecutive Super Bowl. Andy Cohen helps Gummy prep for a red-carpet debut promoting Juicy Gummy Clusters.", icon:"N", iconBg:"#FF6B9D", video:"https://www.youtube.com/results?search_query=nerds+candy+super+bowl+2026", ig:"85K", tw:"22K", fb:"2.1M", funFact:"Invented in 1983 by the Willy Wonka Candy Company", buzz:{ preRank:12, sentiment:"Positive", viral:"Medium", yt:"TBD", social:"TBD", take:"TBD after game" } },
+  { id:3, seed:8, brand:"Hellmanns", title:"When Sally Met Hellmanns", celeb:"Meg Ryan, Billy Crystal, Andy Samberg", cat:"Food & Bev", region:"food", color:"#003DA5", agency:"VML", parent:"Unilever", founded:1913, revenue:"$64B", hq:"Englewood Cliffs, NJ", tagline:"Bring Out The Best", strategy:"Nostalgia plays, culture-jacking beloved movies", voice:"Warm, witty, food-forward", bio:"Recreates the iconic When Harry Met Sally diner scene. Masterclass of nostalgia marketing with Meg Ryan, Billy Crystal, and Andy Samberg.", icon:"H", iconBg:"#003DA5", video:"https://www.youtube.com/results?search_query=hellmanns+super+bowl+2026", ig:"120K", tw:"18K", fb:"3.2M", funFact:"Original scene filmed at Katzs Deli NYC", buzz:{ preRank:3, sentiment:"Very positive", viral:"High", yt:"TBD", social:"TBD", take:"TBD after game" } },
+  { id:4, seed:9, brand:"Dunkin", title:"America Runs on Dunkin", celeb:"Ben Affleck, Matt Damon", cat:"Food & Bev", region:"food", color:"#FF6600", agency:"Artists Equity / BBDO", parent:"Inspire Brands", founded:1950, revenue:"$1.4B", hq:"Canton, MA", tagline:"America Runs on Dunkin", strategy:"Celebrity humor, Boston authenticity, cultural relevance through self-aware comedy", voice:"Fun, self-deprecating, wicked authentic", bio:"Ben Affleck returns for a third consecutive SB spot with Matt Damon. The Boston bromance continues to be Dunkins secret weapon.", icon:"DK", iconBg:"#FF6600", video:"https://www.youtube.com/results?search_query=dunkin+super+bowl+2026", ig:"2.8M", tw:"1.2M", fb:"12M", funFact:"Ben Affleck was photographed with Dunkin so often they made it official", buzz:{ preRank:4, sentiment:"Very positive", viral:"High", yt:"TBD", social:"TBD", take:"TBD after game" } },
+  { id:6, seed:15, brand:"T-Mobile", title:"Connection", celeb:"Jason Momoa", cat:"Celebrity", region:"celeb", color:"#E20074", agency:"Panay Films", parent:"Deutsche Telekom", founded:1994, revenue:"$80B", hq:"Bellevue, WA", tagline:"The Un-carrier", strategy:"Celebrity comedy, network superiority claims, disruptive positioning vs AT&T and Verizon", voice:"Bold, rebellious, fun", bio:"Jason Momoa leads a comedic spot about connection in the most disconnected places. T-Mobile leans into Un-carrier disruption.", icon:"TM", iconBg:"#E20074", video:"https://www.youtube.com/results?search_query=t-mobile+super+bowl+2026", ig:"2.1M", tw:"8.5M", fb:"9.4M", funFact:"Has aired SB ads in 10 of the last 12 years", buzz:{ preRank:8, sentiment:"Positive", viral:"Medium-High", yt:"TBD", social:"TBD", take:"TBD after game" } },
+  { id:7, seed:7, brand:"Xfinity", title:"The Switch", celeb:"TBA", cat:"Celebrity", region:"celeb", color:"#6138F5", agency:"Goodby Silverstein", parent:"Comcast", founded:2010, revenue:"$121B", hq:"Philadelphia, PA", tagline:"The Future of Awesome", strategy:"Product showcase wrapped in entertainment, smart home narrative", voice:"Techy, accessible, cinematic", bio:"Xfinity showcases next-gen connectivity through a family whose entire home comes alive. Smart home meets Super Bowl spectacle.", icon:"XF", iconBg:"#6138F5", video:"https://www.youtube.com/results?search_query=xfinity+super+bowl+2026", ig:"290K", tw:"520K", fb:"3.8M", funFact:"Comcast is the largest cable company and ISP in the US", buzz:{ preRank:14, sentiment:"Neutral", viral:"Medium", yt:"TBD", social:"TBD", take:"TBD after game" } },
+  { id:14, seed:13, brand:"Claude", title:"Think Deeper", celeb:"None - the AI IS the star", cat:"Tech & Innovation", region:"tech", color:"#D4A06A", agency:"In-House (Anthropic)", parent:"Anthropic", founded:2021, revenue:"~$900M ARR", hq:"San Francisco, CA", tagline:"Think Deeper", strategy:"Thoughtful AI positioning, safety-first narrative, counter-programming vs hype-driven AI competitors", voice:"Warm, thoughtful, intellectually honest", bio:"Anthropic enters the Super Bowl conversation by showcasing Claude as the AI that thinks WITH you, not FOR you. Positioning safety and depth against the speed-first competition.", icon:"CL", iconBg:"#D4A06A", video:"https://www.youtube.com/results?search_query=claude+ai+anthropic+2026", ig:"45K", tw:"180K", fb:"12K", funFact:"Named after Claude Shannon, the father of information theory", buzz:{ preRank:10, sentiment:"Intrigued/thoughtful", viral:"Medium-High", yt:"TBD", social:"TBD", take:"TBD after game" } },
+  { id:16, seed:12, brand:"ChatGPT", title:"Everyday Magic", celeb:"None - user stories", cat:"Tech & Innovation", region:"tech", color:"#10A37F", agency:"In-House (OpenAI)", parent:"OpenAI", founded:2015, revenue:"~$3.4B ARR", hq:"San Francisco, CA", tagline:"Made for Everyone", strategy:"Mass adoption narrative, everyday use cases, demystifying AI for mainstream audiences", voice:"Friendly, accessible, optimistic", bio:"OpenAI goes mainstream with real user stories showing ChatGPT helping with everything from homework to home renovation. The AI arms race hits Americas biggest stage.", icon:"GP", iconBg:"#10A37F", video:"https://www.youtube.com/results?search_query=chatgpt+openai+super+bowl+2026", ig:"3.2M", tw:"5.8M", fb:"1.2M", funFact:"Reached 100M users faster than any app in history", buzz:{ preRank:7, sentiment:"Divided (AI hype vs skepticism)", viral:"Very High", yt:"TBD", social:"TBD", take:"TBD after game" } },
+  { id:5, seed:2, brand:"Bud Light", title:"The Keg", celeb:"Manning, Gillis, Post Malone", cat:"Celebrity", region:"celeb", color:"#004B8D", agency:"Anomaly", parent:"AB InBev", founded:1982, revenue:"$57B", hq:"St. Louis, MO", tagline:"Easy to Drink Easy to Enjoy", strategy:"Celebrity ensemble comedy, brand rehabilitation year 2", voice:"Light, fun, bro-comedy", bio:"Reunites Manning, Gillis, and Post Malone in a chaotic wedding keg chase set to Whitney Houston.", icon:"BL", iconBg:"#004B8D", video:"https://www.youtube.com/results?search_query=bud+light+the+keg+super+bowl+2026", ig:"890K", tw:"410K", fb:"6.8M", funFact:"Was Americas #1 beer for 22 straight years", buzz:{ preRank:2, sentiment:"Positive/excited", viral:"High", yt:"TBD", social:"TBD", take:"TBD after game" } },
+  { id:8, seed:10, brand:"Instacart", title:"Bananas", celeb:"Ben Stiller, dir. Spike Jonze", cat:"Celebrity", region:"celeb", color:"#43B02A", agency:"Local Produce + BBDO", parent:"Maplebear", founded:2012, revenue:"$3.0B", hq:"San Francisco, CA", tagline:"Were Here", strategy:"Multi-agency model, feature marketing via entertainment", voice:"Helpful, modern, fun", bio:"Spike Jonze directs Ben Stiller and Benson Boone as European disco duo fighting over bananas.", icon:"IC", iconBg:"#43B02A", video:"https://www.youtube.com/results?search_query=instacart+bananas+spike+jonze+2026", ig:"410K", tw:"95K", fb:"1.5M", funFact:"Spike Jonze also directed Fatboy Slims Praise You", buzz:{ preRank:7, sentiment:"Excited/curious", viral:"High", yt:"TBD", social:"TBD", take:"TBD after game" } },
+  { id:9, seed:3, brand:"DoorDash", title:"Beef", celeb:"50 Cent", cat:"Heart & Purpose", region:"purpose", color:"#FF3008", agency:"Wieden+Kennedy", parent:"DoorDash Inc.", founded:2013, revenue:"$9.6B", hq:"San Francisco, CA", tagline:"Get Almost Almost Anything", strategy:"Celebrity cultural moments, expanding perception", voice:"Bold, culturally fluent", bio:"50 Cent headlines a beef campaign featuring QB wives from both teams. Entertainment meets advertising.", icon:"DD", iconBg:"#FF3008", video:"https://www.youtube.com/results?search_query=doordash+50+cent+super+bowl+2026", ig:"720K", tw:"210K", fb:"2.8M", funFact:"Founded by Stanford students", buzz:{ preRank:4, sentiment:"Very positive", viral:"Very High", yt:"TBD", social:"TBD", take:"TBD after game" } },
+  { id:10, seed:14, brand:"Dove", title:"The Game Is Ours", celeb:"Young female athletes", cat:"Heart & Purpose", region:"purpose", color:"#1B3A5C", agency:"Ogilvy", parent:"Unilever", founded:1957, revenue:"$64B", hq:"Trumbull, CT", tagline:"Real Beauty", strategy:"Purpose-driven, body positivity in sports, three-peat", voice:"Empowering, authentic", bio:"Third consecutive SB. 70% of girls quit sports by 14 due to body image. Research-backed purpose messaging.", icon:"D", iconBg:"#1B3A5C", video:"https://www.youtube.com/results?search_query=dove+super+bowl+2026", ig:"510K", tw:"180K", fb:"27M", funFact:"Real Beauty campaign started 2004", buzz:{ preRank:8, sentiment:"Inspiring", viral:"Medium-High", yt:"TBD", social:"TBD", take:"TBD after game" } },
+  { id:11, seed:6, brand:"Pepsi", title:"The Choice", celeb:"Polar Bear, dir. Taika Waititi", cat:"Heart & Purpose", region:"purpose", color:"#004B93", agency:"BBDO", parent:"PepsiCo", founded:1893, revenue:"$91B", hq:"Purchase, NY", tagline:"Thats What I Like", strategy:"Challenger positioning, blind taste test heritage", voice:"Bold, confident, challenger", bio:"Taika Waititi directs a polar bear (Cokes mascot) choosing Pepsi Zero Sugar in a blind taste test. Most aggressive cola-war move in years.", icon:"PE", iconBg:"#004B93", video:"https://www.youtube.com/results?search_query=pepsi+the+choice+super+bowl+2026", ig:"1.8M", tw:"3M", fb:"37M", funFact:"1975 Pepsi Challenge was in shopping malls", buzz:{ preRank:3, sentiment:"Controversial/excited", viral:"Very High", yt:"TBD", social:"TBD", take:"TBD after game" } },
+  { id:12, seed:11, brand:"Rocket Homes", title:"Wont You Be My Neighbor", celeb:"Lady Gaga", cat:"Heart & Purpose", region:"purpose", color:"#FF3333", agency:"Camp + King", parent:"Rocket Companies", founded:1985, revenue:"$5.4B", hq:"Detroit, MI", tagline:"Home Is The Start", strategy:"Emotional storytelling, cross-brand synergy", voice:"Heartfelt, aspirational", bio:"Lady Gaga sings Mr Rogers theme in unified Rocket + Redfin spot. Major brand integration moment.", icon:"RH", iconBg:"#FF3333", video:"https://www.youtube.com/results?search_query=rocket+homes+lady+gaga+super+bowl+2026", ig:"52K", tw:"35K", fb:"890K", funFact:"Mr Rogers ran 33 years on PBS", buzz:{ preRank:9, sentiment:"Heartwarming", viral:"Medium-High", yt:"TBD", social:"TBD", take:"TBD after game" } },
+  { id:13, seed:4, brand:"Uber Eats", title:"A Century of Cravings", celeb:"McConaughey, Bradley Cooper", cat:"Tech & Innovation", region:"tech", color:"#06C167", agency:"Special Group", parent:"Uber Technologies", founded:2014, revenue:"$37.3B", hq:"San Francisco, CA", tagline:"Get Almost Anything", strategy:"Celebrity saturation, extended cut strategy", voice:"Entertaining, over-the-top", bio:"McConaughey plus Cooper. Extended online cut is Uber Eats signature SB play for broadcast + digital reach.", icon:"UE", iconBg:"#06C167", video:"https://www.youtube.com/results?search_query=uber+eats+super+bowl+2026", ig:"1.1M", tw:"410K", fb:"5.2M", funFact:"Operates in 6000+ cities across 45 countries", buzz:{ preRank:5, sentiment:"Hilarious", viral:"High", yt:"TBD", social:"TBD", take:"TBD after game" } },
+  { id:15, seed:5, brand:"Google", title:"New Home", celeb:"Gemini AI", cat:"Tech & Innovation", region:"tech", color:"#4285F4", agency:"In-House Brand Studio", parent:"Alphabet Inc.", founded:1998, revenue:"$340B", hq:"Mountain View, CA", tagline:"Search On", strategy:"AI as emotional companion, vulnerability-driven", voice:"Warm, human-first, quietly powerful", bio:"A mother uses Gemini to help her son cope with moving anxiety. AI framed as creative companion.", icon:"G", iconBg:"#4285F4", video:"https://www.youtube.com/results?search_query=google+gemini+super+bowl+2026", ig:"15M", tw:"6.2M", fb:"33M", funFact:"First SB ad cost $0 to produce", buzz:{ preRank:6, sentiment:"Divided (AI debate)", viral:"High", yt:"TBD", social:"TBD", take:"TBD after game" } },
+];
+
+const BINGO_ITEMS = ["Celebrity cameo","Cute animal","Nostalgia callback","Product hidden till end","QR code on screen","AI mentioned","Song everyone knows","Movie/TV reference","Kids being adorable","Athlete non-sports role","Food close-up shot","Dance sequence","Deep voice narrator","Surprise twist ending","Brand rivalry dig","Emotional tears moment","Hashtag on screen","Extended cut tease","Car on empty road","Someone says tagline","Pre-game callback","Split-screen shot","TikToker cameo","Retro aesthetic","Free giveaway promo"];
+
+const INIT = [[1,2],[3,4],[5,6],[7,8],[9,10],[11,12],[13,14],[15,16]];
+const RNAMES = ["Sweet 16","Elite 8","Final 4","Championship"];
+const PIN = "5555";
+const EVT = new Date("2026-02-10T19:00:00Z");
+
+const CRIT = [
+  { n:"Viral Factor", d:"Will people share this? Talk about it Monday?" },
+  { n:"Product Tie-In", d:"Does the ad connect to the actual product?" },
+  { n:"Call to Action", d:"Does it make you want to DO something?" },
+  { n:"Creativity", d:"Original, surprising, memorable?" }
+];
+
+const TRIVIA = [
+  { q:"Which Super Bowl ad is considered the greatest ever?", o:["Apple 1984","Coca-Cola Mean Joe Greene","Budweiser Wassup","Old Spice The Man"], a:0, c:"Ad Legends" },
+  { q:"Cost of a 30-second Super Bowl LX ad in 2026?", o:["$5M","$7M","$8M","$10M"], a:2, c:"SB LX" },
+  { q:"Cost of a 30-second ad in Super Bowl I (1967)?", o:["$10,000","$37,500","$100,000","$250,000"], a:1, c:"History" },
+  { q:"Score of Super Bowl XLIX (Patriots vs Seahawks)?", o:["28-24 Patriots","24-21 Seahawks","31-28 Patriots","34-28 Patriots"], a:0, c:"Rematch" },
+  { q:"Who intercepted at the goal line in XLIX?", o:["Darrelle Revis","Malcolm Butler","Devin McCourty","Brandon Browner"], a:1, c:"Rematch" },
+  { q:"Which year was the Crypto Bowl?", o:["2020","2021","2022","2023"], a:2, c:"History" },
+  { q:"Which city gets more annual rainfall?", o:["Seattle","Boston","About equal","Portland"], a:1, c:"Cities" },
+  { q:"Year original Starbucks was founded in Seattle?", o:["1966","1971","1975","1982"], a:1, c:"Cities" },
+  { q:"How many Super Bowls have the Patriots won?", o:["4","5","6","7"], a:2, c:"Rematch" },
+  { q:"Estimated ROI per $1 of Super Bowl ad spend?", o:["$1.50","$3.00","$5.20","$8.00"], a:2, c:"Marketing" },
+  { q:"Pct of viewers more interested in ads than game?", o:["5-10%","10-15%","20-30%","40-50%"], a:2, c:"Marketing" },
+  { q:"How many dot-com companies advertised in SB 2000?", o:["5","10","17","25"], a:2, c:"History" }
+];
+
+const HIST = [
+  { y:1967, c:0.0375, ev:"First Super Bowl ad at $37.5K for 30 seconds", v:51, lm:true },
+  { y:1979, c:0.185, ev:"Coca-Cola Mean Joe Greene - first emotional masterpiece", v:74, lm:true },
+  { y:1984, c:0.368, ev:"Apple 1984 by Ridley Scott changes advertising forever", v:77, lm:true },
+  { y:1995, c:1, ev:"First $1M ad. Budweiser Frogs debut.", v:84, lm:true },
+  { y:2000, c:2.2, ev:"17 dot-com companies advertise. Most bankrupt by 2001.", v:88, lm:true },
+  { y:2004, c:2.3, ev:"Janet Jackson controversy changes broadcast standards", v:89, lm:false },
+  { y:2010, c:2.8, ev:"Old Spice goes viral. Social amplification begins.", v:106, lm:false },
+  { y:2011, c:3, ev:"VW The Force - first ad to go viral BEFORE the game", v:111, lm:true },
+  { y:2017, c:5, ev:"$5M threshold. Purpose-driven ads rise.", v:111, lm:true },
+  { y:2020, c:5.6, ev:"COVID: Bud skips SB for first time in 37 years", v:102, lm:false },
+  { y:2022, c:6.5, ev:"Crypto Bowl: FTX, Crypto.com flood the game", v:112, lm:true },
+  { y:2025, c:8, ev:"127.7M viewers - most-watched broadcast ever", v:127, lm:true },
+  { y:2026, c:8, ev:"Super Bowl LX. Some slots $10M. AI ads emerge.", v:130, lm:true }
+];
+
+const FAMOUS = [
+  { y:1984, b:"Apple", t:"1984", w:"Ridley Scott directed. Aired once. Changed advertising forever. Introduced the Macintosh.", yt:"https://www.youtube.com/results?search_query=apple+1984+super+bowl+commercial" },
+  { y:1979, b:"Coca-Cola", t:"Mean Joe Greene", w:"A boy offers his Coke to a battered football player. First ad to make America cry.", yt:"https://www.youtube.com/results?search_query=coca+cola+mean+joe+greene+super+bowl+commercial" },
+  { y:2011, b:"Volkswagen", t:"The Force", w:"Kid in Darth Vader costume tries to use the Force. First ad to go viral before game day. 100M+ YouTube views.", yt:"https://www.youtube.com/results?search_query=volkswagen+the+force+darth+vader+super+bowl+commercial" },
+  { y:2000, b:"E-Trade", t:"Wasted Money", w:"A monkey and two guys. Then: We just wasted 2 million bucks. Genius meta-commentary.", yt:"https://www.youtube.com/results?search_query=etrade+monkey+wasted+money+super+bowl+2000" },
+  { y:1995, b:"Budweiser", t:"Frogs", w:"Three frogs croak Bud-Weis-Er. Created modern mascot advertising.", yt:"https://www.youtube.com/results?search_query=budweiser+frogs+super+bowl+commercial+1995" },
+  { y:2010, b:"Old Spice", t:"The Man Your Man Could Smell Like", w:"Isaiah Mustafa one continuous take. Launched social media response campaign era.", yt:"https://www.youtube.com/results?search_query=old+spice+the+man+your+man+could+smell+like" },
+  { y:1999, b:"Monster.com", t:"When I Grow Up", w:"Children sharing dead-end career dreams. Dark humor that perfectly positioned a job search site.", yt:"https://www.youtube.com/results?search_query=monster.com+when+i+grow+up+super+bowl+1999" },
+  { y:2013, b:"Budweiser", t:"Brotherhood", w:"Man raises Clydesdale foal then reunites years later. Named best SB ad in USA Today Ad Meter history.", yt:"https://www.youtube.com/results?search_query=budweiser+brotherhood+clydesdale+super+bowl+2013" },
+  { y:2017, b:"84 Lumber", t:"The Journey", w:"Immigration story so controversial Fox refused to air the ending. Viewers had to visit the website.", yt:"https://www.youtube.com/results?search_query=84+lumber+the+journey+super+bowl+2017" },
+  { y:2022, b:"Coinbase", t:"QR Code", w:"Just a bouncing QR code for 60 seconds. Crashed their app. Then crypto crashed. Ultimate cautionary tale.", yt:"https://www.youtube.com/results?search_query=coinbase+qr+code+super+bowl+2022" }
+];
+
+const ERAS = [
+  { e:"1967-1979", t:"The Pioneers", d:"Simple product demos evolve into emotional storytelling.", k:"TV is king. No digital competition. Emotion beats features." },
+  { e:"1980-1995", t:"The Spectacle Era", d:"Apple 1984 changes everything. Ads become short films.", k:"Cinematic values arrive. Mascots become brand equity." },
+  { e:"1996-2009", t:"Dot-Com Boom & Bust", d:"17 dot-coms advertise in 2000. Most bankrupt by 2001.", k:"Awareness without product-market fit is wasted spend." },
+  { e:"2010-2019", t:"Social Amplification", d:"YouTube changes pre-release. Real-time marketing emerges.", k:"Shift from watch to share. Pre-release triples ROI." },
+  { e:"2020-2023", t:"Purpose, Crypto, Disruption", d:"Crypto Bowl 2022 becomes cautionary tale. Purpose ads rise.", k:"FTX bankrupt within a year. Dove proves purpose sells." },
+  { e:"2024-2026", t:"AI & Challenger Era", d:"AI ads emerge. DTC brands crash the party. $10M ceiling.", k:"Challengers compete with legacy advertisers at scale." }
+];
+
+// ── Components ──
+function BI({ ad, size = 40 }) {
+  return (
+    <div style={{ width:size, height:size, borderRadius:8, background:ad.iconBg||"#1e293b", display:"flex", alignItems:"center", justifyContent:"center", fontSize:size*0.32, fontFamily:"Oswald,sans-serif", fontWeight:700, color:"#fff", letterSpacing:0.5, flexShrink:0 }}>
+      {ad.icon}
+    </div>
+  );
+}
+
+function Timer() {
+  const [n, sN] = useState(Date.now());
+  useEffect(() => { const i = setInterval(() => sN(Date.now()), 1000); return () => clearInterval(i); }, []);
+  const diff = EVT.getTime() - n;
+  if (diff <= 0) return <div style={{ fontFamily:"Oswald", fontSize:14, color:"#69BE28", letterSpacing:2 }}>VOTING IS LIVE</div>;
+  const d=Math.floor(diff/86400000), h=Math.floor((diff%86400000)/3600000), m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
+  const Bx = ({ v, l }) => (
+    <div style={{ textAlign:"center", minWidth:44 }}>
+      <div style={{ fontFamily:"Oswald", fontSize:26, fontWeight:700, color:"#e2e8f0", lineHeight:1, background:"linear-gradient(180deg,#1e293b,#111827)", borderRadius:6, padding:"5px 7px", border:"1px solid #334155" }}>{String(v).padStart(2,"0")}</div>
+      <div style={{ fontSize:9, color:"#64748b", marginTop:3, letterSpacing:1, textTransform:"uppercase" }}>{l}</div>
+    </div>
+  );
+  const Sep = () => <span style={{ color:"#334155", fontSize:18, fontWeight:700, paddingBottom:12 }}>:</span>;
+  return <div style={{ display:"flex", gap:6, justifyContent:"center" }}><Bx v={d} l="Days"/><Sep/><Bx v={h} l="Hrs"/><Sep/><Bx v={m} l="Min"/><Sep/><Bx v={s} l="Sec"/></div>;
+}
+
+function WatchBtn({href, color, small}) {
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" onClick={function(e){e.stopPropagation()}}
+      style={{ display:"inline-flex", alignItems:"center", gap:4, fontSize:small?10:11,
+        color:color||"#D4A843", textDecoration:"none", padding:small?"3px 8px":"4px 12px",
+        borderRadius:4, border:"1px solid "+(color||"#D4A843")+"40",
+        background:(color||"#D4A843")+"08", fontFamily:"Oswald", letterSpacing:1,
+        textTransform:"uppercase", whiteSpace:"nowrap" }}>
+      {"\u25B6 Watch"}
+    </a>
+  );
+}
+
+const S = {
+  cd:{ borderRadius:12, background:"#0f1420", border:"1px solid #1a1f2e", overflow:"hidden" },
+  lb:{ fontFamily:"Oswald", fontSize:10, letterSpacing:3, textTransform:"uppercase", color:"#64748b" },
+  h2:{ fontFamily:"Oswald", fontSize:"clamp(22px,4vw,36px)", fontWeight:700, letterSpacing:2, textTransform:"uppercase", color:"#e2e8f0", marginBottom:8 },
+  h3:{ fontFamily:"Oswald", fontSize:16, fontWeight:600, letterSpacing:2, textTransform:"uppercase", color:"#94a3b8", marginBottom:12 }
+};
+const bt = (bg,c) => ({ padding:"10px 20px", borderRadius:6, border:"none", cursor:"pointer", fontFamily:"Oswald", fontSize:13, fontWeight:600, letterSpacing:1, textTransform:"uppercase", background:bg||"#1e293b", color:c||"#e2e8f0", transition:"all 0.2s" });
+
+// ═══ MAIN APP ═══
+const ouData = [
+  {q:"How much did a 30-second Super Bowl ad cost in 2026?",shown:"$7M",a:"over",real:"$8M",fact:"Up from $7M in 2025. First time crossing the $8M threshold."},
+  {q:"How many Americans watched Super Bowl LIX in 2025?",shown:"125M",a:"over",real:"133.5M",fact:"Most-watched US broadcast in television history."},
+  {q:"How many total SB ads have the Budweiser Clydesdales appeared in since 1986?",shown:"30",a:"over",real:"45+",fact:"The Clydesdales are the longest-running SB mascot franchise ever."},
+  {q:"What percentage of viewers say they watch the Super Bowl PRIMARILY for the ads?",shown:"30%",a:"under",real:"26%",fact:"Still over 1 in 4 viewers tuning in for the commercials."},
+  {q:"How much did Apple spend to produce the 1984 Macintosh ad?",shown:"$1.5M",a:"under",real:"$900K",fact:"Directed by Ridley Scott. Aired exactly once during the game."},
+  {q:"How many dot-com companies advertised in Super Bowl XXXIV in 2000?",shown:"10",a:"over",real:"17",fact:"Most were bankrupt within 18 months. The original cautionary tale."},
+  {q:"How many personalized video responses did Old Spice film in 48 hours?",shown:"100",a:"over",real:"186",fact:"Isaiah Mustafa filmed them in a studio with a team of writers. Average response time: 7 minutes."},
+  {q:"What was the ROI of Burger King Whopper Detour campaign?",shown:"20:1",a:"over",real:"33:1",fact:"1-cent Whoppers if ordered within 600 feet of a McDonalds. 1.5M app downloads in 9 days."},
+  {q:"How much did FTX and other crypto companies spend on SB ads in 2022 combined?",shown:"$20M",a:"over",real:"$30M+",fact:"FTX was bankrupt within 9 months. Larry David probably regrets that one."},
+  {q:"What percentage streaming spike did Shakira and JLo see after their 2020 halftime show?",shown:"500%",a:"over",real:"800%",fact:"The biggest halftime streaming spike in history at the time."}
+];
+
+const ttData = [
+  {opts:["Apple's 1984 ad was so controversial the Apple board tried to sell the airtime before it ran","The 1984 ad aired during the third quarter, not the typical premium fourth quarter slot","Steve Jobs personally directed the 1984 commercial"],lie:2,explain:"Ridley Scott directed the 1984 ad. Jobs championed it but was not the director. The board DID try to sell the slot, and it DID air in Q3."},
+  {opts:["Doritos once let fans create their own SB ads through a contest called Crash the Super Bowl","A fan-made Doritos ad actually beat every professional agency ad on the Ad Meter","Doritos paid $5M to the winning fan creator each year"],lie:2,explain:"The contest ran 2007-2016 and fan ads DID top the Ad Meter multiple times. But the grand prize was $1M, not $5M."},
+  {opts:["GoDaddy was banned from airing a SB ad featuring a puppy being sold online","Budweiser once aired an ad where a Clydesdale played football","A SB ad once consisted entirely of a bouncing QR code for 60 seconds"],lie:1,explain:"GoDaddy really was pulled for the puppy mill controversy. Coinbase really did the QR code ad in 2022. Budweiser never had a football-playing Clydesdale."},
+  {opts:["Pepsi once paid Michael Jackson $5 million for a single SB commercial","During filming of a Pepsi ad, Michael Jacksons hair caught fire from pyrotechnics","Pepsi gave Michael Jackson ownership of their Super Bowl ad rights for 10 years"],lie:2,explain:"Jackson WAS paid $5M and his hair DID catch fire during a 1984 Pepsi shoot (six takes in, the pyro went wrong). He never owned their ad rights."},
+  {opts:["The Coinbase QR code ad crashed their app within 60 seconds of airing","More people Shazamed the Super Bowl halftime show than any other TV event","A company once bought a SB ad just to show a still image of their logo for 30 seconds"],lie:2,explain:"Coinbase really did crash from traffic. The halftime show IS the most-Shazamed TV moment. No company has aired a 30-sec still logo (though Coinbase came close with the QR code)."},
+  {opts:["84 Lumbers 2017 immigration ad was so controversial that Fox refused to air the full version","Nationwide aired an ad about a child who died in a preventable accident during the 2015 game","Groupon once aired a SB ad that mocked Tibetan suffering to sell restaurant deals"],lie:0,explain:"Fox did NOT refuse to air 84 Lumber - they asked for edits to the ending and 84 Lumber chose to put the full version online. Nationwide and Groupon controversies both really happened as described."},
+  {opts:["The average SB ad in 2026 costs more than the entire first Super Bowl broadcast rights in 1967","ETrade spent $2M on an ad in 2000 where a monkey and two guys did nothing, then said they wasted $2M","A car company once aired a SB ad that was filmed entirely by a dashboard camera"],lie:2,explain:"The first SB broadcast rights were $1M in 1967, and a single 2026 ad costs $8M+. ETrade really did air the meta wasted money ad. No dashcam-only car ad has aired."},
+  {opts:["Snickers has used the same tagline in their SB ads for over 15 consecutive years","The phrase Just Do It was inspired by the last words of a convicted murderer","Coca-Colas polar bear mascot was created specifically for a 1993 Super Bowl ad"],lie:0,explain:"Snickers used You Are Not You When You Are Hungry since 2010 (about 15 years) but not consecutively in every SB. Just Do It WAS inspired by Gary Gilmores words, and the Coke polar bears DID debut in a 1993 SB ad."},
+  {opts:["A SB advertiser once hid a real cash prize inside a QR code that only aired for 3 seconds","Hyundai pulled their SB ad in 2019 after a viewer petition got 50K signatures in 2 hours","Mountain Dew aired a SB ad called Puppy Monkey Baby that combined all three into one creature"],lie:0,explain:"No hidden 3-second cash QR has aired. Hyundai really did pull an ad after backlash. Puppy Monkey Baby was a real (and deeply disturbing) 2016 Mountain Dew ad."},
+  {opts:["Amazons Alexa SB ad featured the actual Alexa voice actress who was not told her voice would be in a SB ad","Planters killed off Mr. Peanut in a SB ad and then resurrected him as Baby Nut","Oatly CEO sang a terrible jingle in their SB ad and their stock price dropped the next day"],lie:0,explain:"Amazon uses AI voices, not a single actress for SB ads. Planters DID kill and resurrect Mr. Peanut in 2020. Oatly CEO Toni Petersson DID sing badly on purpose in their 2021 ad (stock was not yet public though)."}
+];
+
+export default function App() {
+  const [tab, sTab] = useState("home");
+  const [voter, sVoter] = useState(null);
+  const [vName, sVName] = useState("");
+  const [votes, sVotes] = useState({});
+  const [round, sRound] = useState(0);
+  const [admin, sAdmin] = useState(false);
+  const [aPin, sAPin] = useState("");
+  const [tIdx, sTIdx] = useState(0);
+  const [tScore, sTScore] = useState(0);
+  const [tAns, sTAns] = useState(null);
+  const [bracket, sBracket] = useState(bldB());
+  const [live, sLive] = useState({});
+  const [reg, sReg] = useState(false);
+  const [bFilt, sBFilt] = useState("all");
+  const [bSrch, sBSrch] = useState("");
+  const [expB, sExpB] = useState(null);
+  const [hView, sHView] = useState("timeline");
+  const [bingo, sBingo] = useState({});
+  const [cityV, sCityV] = useState("vs");
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [pbBrand, setPbBrand] = useState(0);
+  const [calcBudget, setCalcBudget] = useState(8);
+  const [briefStep, setBriefStep] = useState(0);
+  const [briefPicks, setBriefPicks] = useState({});
+  const [glossSrch, setGlossSrch] = useState("");
+  const [rivalPair, setRivalPair] = useState(0);
+  const [hofCat, setHofCat] = useState("all");
+  const [htView, setHtView] = useState("timeline");
+  const [cmoStep, setCmoStep] = useState(0);
+  const [cmoPicks, setCmoPicks] = useState({});
+  const [cmoScore, setCmoScore] = useState(0);
+  const [tenMVote, setTenMVote] = useState(null);
+  const [tenMTool, setTenMTool] = useState({stage:"",budget:"",goal:""});
+  const [autCase, setAutCase] = useState(0);
+  const [autFix, setAutFix] = useState(null);
+  const [vlabA, setVlabA] = useState(null);
+  const [vlabB, setVlabB] = useState(null);
+  const [pitchStep, setPitchStep] = useState(0);
+  const [pitchPicks, setPitchPicks] = useState({});
+  const [mmSliders, setMmSliders] = useState({tv:50,social:15,influencer:10,pr:10,youtube:10,ooh:0,podcast:5,experiential:0});
+  const [awardVotes, setAwardVotes] = useState({});
+  const [ouRound, setOuRound] = useState(0);
+  const [ouPicks, setOuPicks] = useState({});
+  const [ouScore, setOuScore] = useState(0);
+  const [adlibStep, setAdlibStep] = useState(0);
+  const [adlibPicks, setAdlibPicks] = useState({});
+  const [ttRound, setTtRound] = useState(0);
+  const [ttPicks, setTtPicks] = useState({});
+  const [ttScore, setTtScore] = useState(0);
+  const [hubOpen, setHubOpen] = useState({games:true,strat:true,tools:true,data:false,labs:false,ref:false});
+  const [rFilt, sRFilt] = useState("all");
+  const poll = useRef(null);
+
+  function bldB() { return INIT.map(([a,b]) => ({ a1:ADS.find(x=>x.id===a), a2:ADS.find(x=>x.id===b), w:null })); }
+  const sk = k => "adb5:" + k;
+
+  const doVote = useCallback(async (mi, wid) => {
+    if (!voter) return;
+    try {
+      const key = sk("v:r"+round+":m"+mi);
+      const ex = await window.storage.get(key, true).catch(()=>null);
+      let d = ex ? JSON.parse(ex.value) : {};
+      d[voter] = wid;
+      await window.storage.set(key, JSON.stringify(d), true);
+      sVotes(v => ({...v, [round+"-"+mi]: wid}));
+      ldLive();
+    } catch(e) { console.error(e); }
+  }, [voter, round]);
+
+  const ldLive = useCallback(async () => {
+    try {
+      const res = {};
+      for (let r=0; r<=3; r++) {
+        const mc = r===0?8:r===1?4:r===2?2:1;
+        for (let m=0; m<mc; m++) {
+          const d = await window.storage.get(sk("v:r"+r+":m"+m), true).catch(()=>null);
+          if (d) { const p=JSON.parse(d.value), t={}; Object.values(p).forEach(id=>{t[id]=(t[id]||0)+1}); res[r+"-"+m]={votes:p,tally:t}; }
+        }
+      }
+      sLive(res);
+    } catch(e) {}
+  }, []);
+
+  const ldState = useCallback(async () => {
+    try {
+      const d = await window.storage.get(sk("st"), true).catch(()=>null);
+      if (d) { const p=JSON.parse(d.value); sRound(p.r); sBracket(p.b.map(m=>({a1:m.a1?ADS.find(a=>a.id===m.a1.id)||m.a1:null, a2:m.a2?ADS.find(a=>a.id===m.a2.id)||m.a2:null, w:m.w}))); }
+    } catch(e) {}
+  }, []);
+
+  const doReg = useCallback(async () => {
+    if (!vName.trim()) return;
+    const id = vName.trim().toLowerCase().replace(/\s+/g,"-");
+    sVoter(id); sReg(true);
+    try { const key=sk("voters"), ex=await window.storage.get(key,true).catch(()=>null); let v=ex?JSON.parse(ex.value):{}; v[id]={n:vName.trim(),t:new Date().toISOString()}; await window.storage.set(key,JSON.stringify(v),true); } catch(e) {}
+  }, [vName]);
+
+  const advance = useCallback(async () => {
+    const nx = [];
+    for (let i=0; i<bracket.length; i+=2) {
+      const m1=bracket[i], m2=bracket[i+1];
+      const r1=live[round+"-"+i], r2=m2?live[round+"-"+(i+1)]:null;
+      let w1=null, w2=null;
+      if (r1&&r1.tally&&m1.a1&&m1.a2) w1=(r1.tally[m1.a1.id]||0)>=(r1.tally[m1.a2.id]||0)?m1.a1:m1.a2;
+      if (r2&&r2.tally&&m2&&m2.a1&&m2.a2) w2=(r2.tally[m2.a1.id]||0)>=(r2.tally[m2.a2.id]||0)?m2.a1:m2.a2;
+      if (w1&&w2) nx.push({a1:w1,a2:w2,w:null});
+    }
+    const nr=round+1; sRound(nr); sBracket(nx);
+    try { await window.storage.set(sk("st"),JSON.stringify({r:nr,b:nx}),true); } catch(e) {}
+  }, [bracket, round, live]);
+
+  useEffect(() => { ldState(); ldLive(); poll.current=setInterval(()=>{ldLive();ldState()},5000); return()=>clearInterval(poll.current); }, []);
+
+  const fBrands = useMemo(() => {
+    let f=ADS;
+    if(bFilt!=="all")f=f.filter(a=>a.region===bFilt);
+    if(bSrch)f=f.filter(a=>a.brand.toLowerCase().includes(bSrch.toLowerCase())||a.celeb.toLowerCase().includes(bSrch.toLowerCase()));
+    return f;
+  }, [bFilt, bSrch]);
+
+  const fResults = useMemo(() => rFilt==="all"?ADS:ADS.filter(a=>a.region===rFilt), [rFilt]);
+
+  const tabs = [{id:"home",l:"Home"},{id:"bracket",l:"Bracket"},{id:"brands",l:"Brand Intel"},{id:"results",l:"Ad Results"},{id:"history",l:"Ad History"},{id:"teams",l:"Teams"},{id:"cities",l:"Cities"},{id:"more",l:"More"},{id:"admin",l:"Host"}];
+  const regions = ["Food & Bev","Celebrity","Heart & Purpose","Tech & Innovation"];
+
+  return (
+    <div style={{ minHeight:"100vh", background:"#080b14", color:"#e2e8f0", fontFamily:"'Source Sans 3',sans-serif" }}>
+      <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+      <div style={{ position:"fixed",top:"-30%",left:"-15%",width:"50%",height:"70%",background:"radial-gradient(ellipse,rgba(105,190,40,0.02)0%,transparent 70%)",pointerEvents:"none" }}/>
+      <div style={{ position:"fixed",bottom:"-30%",right:"-15%",width:"50%",height:"70%",background:"radial-gradient(ellipse,rgba(200,16,46,0.02)0%,transparent 70%)",pointerEvents:"none" }}/>
+
+      <header style={{ position:"sticky",top:0,zIndex:100,background:"rgba(8,11,20,0.92)",backdropFilter:"blur(20px)",borderBottom:"1px solid #1a1f2e" }}>
+        <div style={{ maxWidth:1200,margin:"0 auto",padding:"0 16px",display:"flex",alignItems:"center",justifyContent:"space-between",height:56 }}>
+          <div style={{ cursor:"pointer" }} onClick={()=>sTab("home")}>
+            <div style={{ fontFamily:"Oswald",fontSize:9,color:"#94a3b8",letterSpacing:3,lineHeight:1 }}>5TH ANNUAL</div>
+            <div style={{ fontFamily:"Oswald",fontSize:16,fontWeight:700,letterSpacing:2,lineHeight:1.1 }}><span style={{color:"#D4A843"}}>SUPER AD BOWL</span> <span style={{color:"#e2e8f0"}}>LX</span></div>
+          </div>
+          <nav style={{ display:"flex",gap:2,flexWrap:"wrap" }}>
+            {tabs.map(t=><button key={t.id} onClick={()=>sTab(t.id)} style={{ fontFamily:"Oswald",fontSize:11,fontWeight:tab===t.id?600:400,padding:"6px 10px",borderRadius:4,border:"none",cursor:"pointer",letterSpacing:1,textTransform:"uppercase",transition:"all .2s",background:tab===t.id?"#1a1f2e":"transparent",color:tab===t.id?"#e2e8f0":"#64748b" }}>{t.l}</button>)}
+          </nav>
+        </div>
+      </header>
+
+      <main style={{ maxWidth:1200,margin:"0 auto",padding:"24px 16px 60px" }}>
+
+{/* ══════ HOME ══════ */}
+{tab==="home"&&<div>
+  <div style={{ textAlign:"center",padding:"48px 20px 40px",borderRadius:16,background:"linear-gradient(135deg,#002244 0%,#0a0e1a 40%,#0a0e1a 60%,#1a0508 100%)",border:"1px solid #1a1f2e",marginBottom:24,position:"relative",overflow:"hidden" }}>
+    <div style={{ position:"absolute",left:0,top:0,bottom:0,width:3,background:"linear-gradient(180deg,#69BE28,transparent)" }}/>
+    <div style={{ position:"absolute",right:0,top:0,bottom:0,width:3,background:"linear-gradient(180deg,#C8102E,transparent)" }}/>
+    <div style={{ fontFamily:"Oswald",fontSize:11,color:"#94a3b8",letterSpacing:4,marginBottom:4 }}>5TH ANNUAL</div>
+    <div style={{ fontFamily:"Oswald",fontSize:"clamp(32px,6vw,56px)",fontWeight:700,color:"#D4A843",letterSpacing:4,lineHeight:1 }}>SUPER AD BOWL <span style={{color:"#e2e8f0"}}>LX</span></div>
+    <div style={{ marginTop:16,marginBottom:20 }}><Timer/></div>
+    <p style={S.lb}>LIVE MARKETING BRACKET EVENT</p>
+    <p style={{ fontFamily:"Oswald",fontSize:16,color:"#D4A843",letterSpacing:1,margin:"6px 0" }}>Tuesday, Feb 10 at 11:00 AM PST</p>
+    <p style={{ maxWidth:620,margin:"16px auto 0",color:"#94a3b8",lineHeight:1.7,fontSize:15 }}>16 of the biggest Super Bowl LX ads go head-to-head in a marketing bracket tournament. Evaluate each ad on Viral Factor, Product Tie-In, Call to Action, and Creativity, then vote to crown our 5th Annual Super Ad Bowl Champion.</p>
+    {!reg?<div style={{ marginTop:24,display:"flex",justifyContent:"center",gap:8,flexWrap:"wrap" }}>
+      <input value={vName} onChange={e=>sVName(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doReg()} placeholder="Enter your name to vote..." style={{ padding:"12px 20px",borderRadius:8,border:"1px solid #1a1f2e",background:"#0f1420",color:"#e2e8f0",fontSize:15,width:"clamp(200px,50vw,320px)",outline:"none" }}/>
+      <button onClick={doReg} style={bt("linear-gradient(135deg,#69BE28,#4a9e1c)","#fff")}>Register</button>
+    </div>:<div style={{ marginTop:24,padding:"10px 20px",borderRadius:8,background:"rgba(105,190,40,0.07)",border:"1px solid rgba(105,190,40,0.15)",display:"inline-block" }}>
+      <span style={{ fontFamily:"Oswald",fontSize:13,color:"#69BE28",letterSpacing:1 }}>REGISTERED: {vName.toUpperCase()}</span>
+    </div>}
+  </div>
+  <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))",gap:8,marginBottom:24 }}>
+    {[{v:"$8-10M",l:"Per 30-Sec Spot"},{v:"16",l:"Ads in Bracket"},{v:"130M+",l:"Est. Viewers"},{v:"4",l:"Rounds"},{v:"$5.20",l:"ROI Per $1"},{v:"1",l:"Champion"}].map((n,i)=><div key={i} style={{ textAlign:"center",padding:"12px 8px",borderRadius:8,background:"#0f1420",border:"1px solid #1a1f2e" }}>
+      <div style={{ fontFamily:"Oswald",fontSize:20,fontWeight:700,color:"#D4A843" }}>{n.v}</div>
+      <div style={{ fontSize:10,color:"#64748b",letterSpacing:1,textTransform:"uppercase",marginTop:2 }}>{n.l}</div>
+    </div>)}
+  </div>
+  <h3 style={S.h3}>Evaluation Criteria</h3>
+  <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:10,marginBottom:24 }}>
+    {CRIT.map(c=><div key={c.n} style={{...S.cd,padding:"16px 18px"}}><div style={{ fontFamily:"Oswald",fontSize:14,fontWeight:600,letterSpacing:1,color:"#D4A843",marginBottom:4 }}>{c.n}</div><div style={{ fontSize:13,color:"#94a3b8",lineHeight:1.5 }}>{c.d}</div></div>)}
+  </div>
+  <h3 style={S.h3}>The Sweet 16 Bracket</h3>
+  <div style={{...S.cd,padding:20,marginBottom:24,overflowX:"auto"}}>
+    <div style={{ display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,minWidth:680 }}>
+      {regions.map((rg,ri)=><div key={rg}>
+        <div style={{...S.lb,textAlign:"center",marginBottom:10,color:"#D4A843"}}>{rg}</div>
+        {INIT.slice(ri*2,ri*2+2).map(([a,b],mi)=>{const a1=ADS.find(x=>x.id===a),a2=ADS.find(x=>x.id===b);return(
+          <div key={mi} style={{ marginBottom:8,borderRadius:8,overflow:"hidden",border:"1px solid #1a1f2e" }}>
+            {[a1,a2].map((ad,i)=><div key={ad.id} onClick={()=>{sExpB(ad.id);sTab("brands")}} style={{ display:"flex",alignItems:"center",gap:8,padding:"7px 10px",background:i?"#0a0d15":"#0c0f18",borderBottom:i===0?"1px solid #1a1f2e":"none",cursor:"pointer",transition:"background .2s" }}
+              onMouseEnter={e=>{e.currentTarget.style.background="#151a28"}} onMouseLeave={e=>{e.currentTarget.style.background=i?"#0a0d15":"#0c0f18"}}>
+              <div style={{ fontFamily:"Oswald",fontSize:10,color:"#475569",minWidth:16 }}>#{ad.seed}</div>
+              <BI ad={ad} size={22}/>
+              <div style={{ fontFamily:"Oswald",fontSize:12,fontWeight:500,color:"#e2e8f0",flex:1 }}>{ad.brand}</div>
+            </div>)}
+          </div>
+        )})}
+      </div>)}
+    </div>
+  </div>
+  <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:10 }}>
+    {[{t:"bracket",n:"Vote Now",d:"Cast votes in live bracket",cl:"#69BE28"},{t:"brands",n:"Brand Intel",d:"Advertiser deep-dives",cl:"#D4A843"},{t:"results",n:"Ad Results",d:"Post-game viral stats",cl:"#FF3008"},{t:"history",n:"Ad History",d:"60 years of SB ads",cl:"#4285F4"},{t:"bingo",n:"Ad Bingo",d:"Play during the game!",cl:"#FF69B4"},{t:"cities",n:"Cities",d:"Seattle vs Boston",cl:"#9C27B0"},{t:"trivia",n:"Trivia",d:"Test your knowledge",cl:"#C8102E"},{t:"more",n:"More \u2192",d:"Playbooks, calculators & deep dives",cl:"#D4A843"}].map(n=><div key={n.t} onClick={()=>sTab(n.t)} style={{...S.cd,padding:"18px 16px",cursor:"pointer",transition:"all .3s",borderColor:n.cl+"20"}}
+      onMouseEnter={e=>{e.currentTarget.style.borderColor=n.cl+"50";e.currentTarget.style.transform="translateY(-2px)"}} onMouseLeave={e=>{e.currentTarget.style.borderColor=n.cl+"20";e.currentTarget.style.transform="none"}}>
+      <div style={{ fontFamily:"Oswald",fontSize:16,fontWeight:600,color:n.cl,marginBottom:4 }}>{n.n}</div>
+      <div style={{ fontSize:13,color:"#94a3b8" }}>{n.d}</div>
+    </div>)}
+  </div>
+</div>}
+
+{/* ══════ BRACKET ══════ */}
+{tab==="bracket"&&<div>
+  <div style={{ textAlign:"center",marginBottom:24 }}>
+    <h2 style={S.h2}>{RNAMES[round]||"CHAMPION CROWNED"}</h2>
+    <p style={S.lb}>Round {round+1} of 4 | {bracket.length} matchup{bracket.length!==1?"s":""}</p>
+    {!reg&&<div style={{ marginTop:12,padding:"8px 16px",borderRadius:6,background:"rgba(200,16,46,0.07)",border:"1px solid rgba(200,16,46,0.15)",display:"inline-block",fontSize:13,color:"#C8102E" }}>Register on Home tab to vote</div>}
+    <div style={{ marginTop:16,padding:"12px 16px",borderRadius:8,background:"#0f1420",border:"1px solid #1a1f2e",maxWidth:500,margin:"16px auto 0" }}>
+      <div style={{ fontFamily:"Oswald",fontSize:12,color:"#D4A843",letterSpacing:1,marginBottom:6 }}>HOW TO PLAY</div>
+      <div style={{ fontSize:13,color:"#94a3b8",lineHeight:1.5 }}>Click the ad you think wins each matchup. Judge by Viral Factor, Product Tie-In, Call to Action, and Creativity. Host advances rounds live.</div>
+    </div>
+  </div>
+  <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(340px,1fr))",gap:16 }}>
+    {bracket.map((mu,idx)=>{
+      const res=live[round+"-"+idx], mv=votes[round+"-"+idx];
+      const t1=(res&&res.tally&&mu.a1&&res.tally[mu.a1.id])||0, t2=(res&&res.tally&&mu.a2&&res.tally[mu.a2.id])||0, tot=t1+t2;
+      return(<div key={idx} style={S.cd}>
+        <div style={{ padding:"8px 14px",background:"#111827",display:"flex",justifyContent:"space-between",borderBottom:"1px solid #1a1f2e" }}>
+          <span style={S.lb}>Match {idx+1}</span>
+          <span style={{...S.lb,color:tot?"#69BE28":"#475569"}}>{tot} vote{tot!==1?"s":""}</span>
+        </div>
+        {[mu.a1,mu.a2].map((ad,i)=>ad&&<div key={ad.id}>
+          {i===1&&<div style={{ textAlign:"center",padding:"4px 0",background:"#060810",fontFamily:"Oswald",fontSize:12,fontWeight:700,color:"#334155",letterSpacing:2 }}>VS</div>}
+          <div onClick={()=>reg&&doVote(idx,ad.id)} style={{ display:"flex",alignItems:"center",gap:12,padding:"14px 16px",cursor:reg?"pointer":"default",transition:"all .2s",background:mv===ad.id?(ad.color+"12"):"transparent" }}
+            onMouseEnter={e=>{if(reg)e.currentTarget.style.background=ad.color+"0a"}} onMouseLeave={e=>{if(mv!==ad.id)e.currentTarget.style.background="transparent"}}>
+            <BI ad={ad} size={40}/>
+            <div style={{ flex:1 }}>
+              <div style={{ display:"flex",alignItems:"center",gap:6 }}>
+                <span style={{ fontFamily:"Oswald",fontSize:11,color:ad.color }}>#{ad.seed}</span>
+                <span style={{ fontFamily:"Oswald",fontSize:16,fontWeight:600,color:"#e2e8f0" }}>{ad.brand}</span>
+                {mv===ad.id&&<span style={{ fontFamily:"Oswald",fontSize:10,color:"#69BE28",letterSpacing:1 }}>VOTED</span>}
+              </div>
+              <div style={{ fontSize:12,color:"#64748b" }}>{ad.title} | {ad.celeb}</div>
+                  {ad.video && <div style={{marginTop:4}}><WatchBtn href={ad.video} color={ad.color} small/></div>}
+            </div>
+            {tot>0&&<div style={{ textAlign:"right",minWidth:60 }}>
+              <div style={{ fontFamily:"Oswald",fontSize:16,fontWeight:600,color:ad.color }}>{Math.round(((i===0?t1:t2)/tot)*100)}%</div>
+              <div style={{ width:60,height:4,borderRadius:2,background:"#1a1f2e",overflow:"hidden",marginTop:2 }}>
+                <div style={{ width:(((i===0?t1:t2)/tot)*100)+"%",height:"100%",borderRadius:2,background:ad.color,transition:"width .5s" }}/>
+              </div>
+            </div>}
+          </div>
+        </div>)}
+      </div>);
+    })}
+  </div>
+</div>}
+
+{/* ══════ BRAND INTEL ══════ */}
+{tab==="brands"&&<div>
+  <h2 style={S.h2}>Brand Intelligence Dossiers</h2>
+  <p style={{ color:"#94a3b8",marginBottom:20,maxWidth:600,lineHeight:1.6 }}>Marketing deep-dive into each Super Bowl LX advertiser.</p>
+  <div style={{ display:"flex",gap:8,marginBottom:16,flexWrap:"wrap",alignItems:"center" }}>
+    {[{k:"all",l:"All"},{k:"food",l:"Food"},{k:"celeb",l:"Celebrity"},{k:"purpose",l:"Purpose"},{k:"tech",l:"Tech"}].map(f=><button key={f.k} onClick={()=>sBFilt(f.k)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(bFilt===f.k?"#D4A843":"#1a1f2e"),background:bFilt===f.k?"rgba(212,168,67,0.08)":"transparent",color:bFilt===f.k?"#D4A843":"#64748b",cursor:"pointer" }}>{f.l}</button>)}
+    <input placeholder="Search..." value={bSrch} onChange={e=>sBSrch(e.target.value)} style={{ marginLeft:"auto",padding:"6px 14px",borderRadius:20,border:"1px solid #1a1f2e",background:"#0f1420",color:"#e2e8f0",fontSize:13,outline:"none",width:180 }}/>
+  </div>
+  <div style={{ display:"grid",gap:12 }}>
+    {fBrands.map(ad=>{const isO=expB===ad.id;return(<div key={ad.id} style={{...S.cd,borderColor:isO?(ad.color+"30"):"#1a1f2e",transition:"all .3s"}}>
+      <div onClick={()=>sExpB(isO?null:ad.id)} style={{ display:"flex",alignItems:"center",gap:14,padding:"14px 18px",cursor:"pointer" }}
+        onMouseEnter={e=>{e.currentTarget.style.background="#111827"}} onMouseLeave={e=>{e.currentTarget.style.background="transparent"}}>
+        <BI ad={ad} size={36}/>
+        <div style={{ flex:1 }}><div style={{ fontFamily:"Oswald",fontSize:16,fontWeight:600,color:"#e2e8f0" }}>{ad.brand}</div><div style={{ fontSize:12,color:"#64748b" }}>{ad.title} | {ad.celeb}</div></div>
+        <div style={{...S.lb,color:ad.color,padding:"4px 10px",borderRadius:4,border:"1px solid "+ad.color+"30"}}>{ad.cat}</div>
+      </div>
+      {isO&&<div style={{ padding:"0 18px 18px",borderTop:"1px solid #1a1f2e" }}><div style={{ paddingTop:16 }}>
+        <p style={{ color:"#c8cdd5",lineHeight:1.7,fontSize:14,marginBottom:16 }}>{ad.bio}</p>
+        {ad.video&&<div style={{ marginBottom:16 }}><WatchBtn href={ad.video} color={ad.color}/></div>}
+        <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:10,marginBottom:16 }}>
+          {[{l:"Founded",v:ad.founded},{l:"Parent Co.",v:ad.parent},{l:"Headquarters",v:ad.hq},{l:"Parent Revenue",v:ad.revenue},{l:"Agency",v:ad.agency},{l:"Tagline",v:'"'+ad.tagline+'"'}].map(it=><div key={it.l} style={{ padding:"10px 12px",borderRadius:6,background:"#0a0d15",border:"1px solid #151a28" }}>
+            <div style={S.lb}>{it.l}</div><div style={{ fontFamily:"Oswald",fontSize:13,color:"#e2e8f0",marginTop:3 }}>{it.v}</div>
+          </div>)}
+        </div>
+        <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:12,marginBottom:16 }}>
+          <div style={{ padding:14,borderRadius:8,background:"#0a0d15",border:"1px solid #151a28" }}>
+            <div style={{...S.lb,color:ad.color,marginBottom:8}}>Marketing Strategy</div>
+            <div style={{ fontSize:13,color:"#94a3b8",lineHeight:1.7 }}>{ad.strategy}</div>
+          </div>
+          <div style={{ padding:14,borderRadius:8,background:"#0a0d15",border:"1px solid #151a28" }}>
+            <div style={{...S.lb,color:ad.color,marginBottom:8}}>Brand Voice</div>
+            <div style={{ fontSize:13,color:"#94a3b8",lineHeight:1.7 }}>{ad.voice}</div>
+          </div>
+        </div>
+        <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:12,marginBottom:16 }}>
+          <div style={{ padding:14,borderRadius:8,background:"#0a0d15",border:"1px solid "+ad.color+"20" }}>
+            <div style={{...S.lb,color:"#D4A843",marginBottom:10}}>Social Media Presence</div>
+            <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8 }}>
+              {[{p:"Instagram",v:ad.ig,cl:"#E4405F",url:"https://www.instagram.com/"+ad.brand.toLowerCase().replace(/[^a-z]/g,"")},{p:"X / Twitter",v:ad.tw,cl:"#e2e8f0",url:"https://x.com/"+ad.brand.toLowerCase().replace(/[^a-z]/g,"")},{p:"Facebook",v:ad.fb,cl:"#1877F2",url:"https://www.facebook.com/"+ad.brand.toLowerCase().replace(/[^a-z]/g,"")}].map((s,si)=>(
+                <a key={si} href={s.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration:"none",display:"block",textAlign:"center",padding:"10px 6px",borderRadius:6,background:"#111827",border:"1px solid #1a1f2e",cursor:"pointer",transition:"border-color 0.2s" }}>
+                  <div style={{ fontFamily:"Oswald",fontSize:16,fontWeight:700,color:s.cl }}>{s.v}</div>
+                  <div style={{ fontSize:10,color:"#64748b",letterSpacing:1,marginTop:2 }}>{s.p}</div>
+                </a>
+              ))}
+            </div>
+          </div>
+          <div style={{ padding:14,borderRadius:8,background:"#0a0d15",border:"1px solid "+ad.color+"20" }}>
+            <div style={{...S.lb,color:"#D4A843",marginBottom:10}}>Pre-Game Buzz Intel</div>
+            <div style={{ display:"grid",gap:8 }}>
+              {[{l:"Pre-Game Hype Rank",v:"#"+ad.buzz.preRank+" of 16",cl:ad.buzz.preRank<=3?"#69BE28":ad.buzz.preRank<=8?"#D4A843":"#64748b"},{l:"Sentiment",v:ad.buzz.sentiment,cl:ad.buzz.sentiment.indexOf("positive")>=0||ad.buzz.sentiment.indexOf("Positive")>=0?"#69BE28":"#D4A843"},{l:"Viral Prediction",v:ad.buzz.viral,cl:ad.buzz.viral==="Very High"?"#69BE28":ad.buzz.viral==="High"?"#D4A843":"#64748b"}].map((b,bi)=>(
+                <div key={bi} style={{ display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:"1px solid #111827" }}>
+                  <span style={{ fontSize:12,color:"#64748b" }}>{b.l}</span>
+                  <span style={{ fontFamily:"Oswald",fontSize:13,fontWeight:600,color:b.cl }}>{b.v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        {ad.funFact&&<div style={{ padding:14,borderRadius:8,background:"rgba(212,168,67,0.04)",border:"1px solid rgba(212,168,67,0.15)",marginBottom:0 }}>
+          <div style={{...S.lb,color:"#D4A843",marginBottom:4}}>Fun Fact</div>
+          <div style={{ fontSize:13,color:"#c8cdd5",lineHeight:1.6 }}>{ad.funFact}</div>
+        </div>}
+      </div></div>}
+    </div>)})}
+  </div>
+</div>}
+
+{/* ══════ AD RESULTS ══════ */}
+{tab==="results"&&<div>
+  <h2 style={S.h2}>Post-Game Ad Scoreboard</h2>
+  <div style={{ padding:"12px 16px",borderRadius:8,background:"rgba(212,168,67,0.06)",border:"1px solid rgba(212,168,67,0.15)",marginBottom:20 }}>
+    <div style={{ fontFamily:"Oswald",fontSize:12,color:"#D4A843",letterSpacing:1,marginBottom:4 }}>UPDATING MONDAY-TUESDAY</div>
+    <div style={{ fontSize:13,color:"#94a3b8",lineHeight:1.5 }}>This page will be populated with real viral stats, social engagement, YouTube views, sentiment analysis, and top social media reactions after the game airs. Check back Monday for the full breakdown.</div>
+  </div>
+  <div style={{ display:"flex",gap:8,marginBottom:16,flexWrap:"wrap" }}>
+    {[{k:"all",l:"All Ads"},{k:"food",l:"Food"},{k:"celeb",l:"Celebrity"},{k:"purpose",l:"Purpose"},{k:"tech",l:"Tech"}].map(f=><button key={f.k} onClick={()=>sRFilt(f.k)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(rFilt===f.k?"#FF3008":"#1a1f2e"),background:rFilt===f.k?"rgba(255,48,8,0.08)":"transparent",color:rFilt===f.k?"#FF3008":"#64748b",cursor:"pointer" }}>{f.l}</button>)}
+  </div>
+  <div style={{ display:"grid",gap:12 }}>
+    {fResults.sort((a,b)=>a.buzz.preRank-b.buzz.preRank).map((ad,i)=><div key={ad.id} style={S.cd}>
+      <div style={{ display:"flex",alignItems:"center",gap:14,padding:"14px 18px" }}>
+        <div style={{ fontFamily:"Oswald",fontSize:24,fontWeight:700,color:i<3?"#D4A843":"#334155",minWidth:30 }}>{i+1}</div>
+        <BI ad={ad} size={36}/>
+        <div style={{ flex:1 }}><div style={{ fontFamily:"Oswald",fontSize:16,fontWeight:600,color:"#e2e8f0" }}>{ad.brand}</div><div style={{ fontSize:12,color:"#64748b" }}>{ad.title} | {ad.celeb}</div></div>
+        <div style={{ textAlign:"right" }}>{ad.video && <WatchBtn href={ad.video} color={ad.color} small/>}<div style={{...S.lb,color:ad.buzz.viral==="Very High"?"#69BE28":ad.buzz.viral==="High"?"#D4A843":"#64748b"}}>{ad.buzz.viral} VIRAL</div></div>
+      </div>
+      <div style={{ padding:"0 18px 14px",display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:8 }}>
+        {[{l:"Pre-Game Sentiment",v:ad.buzz.sentiment},{l:"YouTube Views",v:ad.buzz.yt},{l:"Social Mentions",v:ad.buzz.social},{l:"Top Take",v:ad.buzz.take}].map(item=><div key={item.l} style={{ padding:"8px 10px",borderRadius:6,background:"#0a0d15",border:"1px solid #151a28" }}>
+          <div style={{ fontSize:9,color:"#475569",letterSpacing:1,textTransform:"uppercase" }}>{item.l}</div>
+          <div style={{ fontFamily:"Oswald",fontSize:12,color:item.v==="TBD"||item.v==="TBD after game"?"#334155":"#e2e8f0",marginTop:2 }}>{item.v}</div>
+        </div>)}
+      </div>
+    </div>)}
+  </div>
+</div>}
+
+{/* ══════ AD HISTORY ══════ */}
+{tab==="history"&&<div>
+  <h2 style={S.h2}>60 Years of Super Bowl Advertising</h2>
+  <p style={{ color:"#94a3b8",marginBottom:16,maxWidth:700,lineHeight:1.7 }}>From $37,500 in 1967 to $10M in 2026. $5.20 ROI per $1. 20-30% of viewers tune in primarily for the commercials.</p>
+  <div style={{ display:"flex",gap:8,marginBottom:20,flexWrap:"wrap" }}>
+    {[{k:"timeline",l:"Timeline"},{k:"chart",l:"Cost Chart"},{k:"famous",l:"Most Famous Ads"},{k:"themes",l:"Era Themes"}].map(v=><button key={v.k} onClick={()=>sHView(v.k)} style={{...bt(hView===v.k?"rgba(212,168,67,0.12)":"#0f1420",hView===v.k?"#D4A843":"#64748b"),border:"1px solid "+(hView===v.k?"rgba(212,168,67,0.25)":"#1a1f2e"),fontSize:11,padding:"6px 16px"}}>{v.l}</button>)}
+  </div>
+
+  {hView==="timeline"&&<div style={{ position:"relative",paddingLeft:32 }}>
+    <div style={{ position:"absolute",left:12,top:0,bottom:0,width:2,background:"linear-gradient(180deg,#69BE28,#D4A843,#C8102E)" }}/>
+    {HIST.map((h,i)=><div key={i} style={{ marginBottom:14,position:"relative" }}>
+      <div style={{ position:"absolute",left:-26,top:4,width:10,height:10,borderRadius:"50%",background:h.lm?"#D4A843":"#1a1f2e",border:"2px solid "+(h.lm?"#D4A843":"#334155") }}/>
+      <div style={S.cd}><div style={{ padding:"12px 16px" }}>
+        <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4 }}>
+          <div style={{ fontFamily:"Oswald",fontSize:18,fontWeight:700,color:h.lm?"#D4A843":"#e2e8f0" }}>{h.y}</div>
+          <div style={{ display:"flex",gap:10 }}>
+            <span style={{...S.lb,color:"#69BE28"}}>{h.c>=1?"$"+h.c+"M":"$"+Math.round(h.c*1000)+"K"}</span>
+            <span style={{...S.lb,color:"#94a3b8"}}>{h.v}M viewers</span>
+          </div>
+        </div>
+        <p style={{ fontSize:14,color:"#c8cdd5",lineHeight:1.5 }}>{h.ev}</p>
+      </div></div>
+    </div>)}
+  </div>}
+
+  {hView==="chart"&&<div style={S.cd}><div style={{ padding:"20px 18px" }}>
+    <div style={{...S.lb,marginBottom:16}}>30-Second Ad Cost (Millions)</div>
+    <div style={{ display:"flex",alignItems:"flex-end",gap:4,height:260 }}>
+      {HIST.map((h,i)=><div key={i} style={{ flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-end",height:"100%" }} title={h.y+": $"+(h.c>=1?h.c+"M":Math.round(h.c*1000)+"K")}>
+        <div style={{ width:"100%",maxWidth:36,height:((h.c/10)*100)+"%",minHeight:3,borderRadius:"3px 3px 0 0",background:h.y===2026?"linear-gradient(180deg,#D4A843,#8B6914)":h.y>=2022?"linear-gradient(180deg,#C8102E,#6b0a18)":"linear-gradient(180deg,#69BE28,#2d5c10)" }}/>
+        <div style={{ fontSize:9,color:"#475569",marginTop:4,fontFamily:"Oswald" }}>{h.y}</div>
+      </div>)}
+    </div>
+    <div style={{ display:"flex",justifyContent:"space-between",marginTop:16,paddingTop:10,borderTop:"1px solid #1a1f2e" }}>
+      <div><span style={S.lb}>1967: </span><span style={{ color:"#69BE28",fontFamily:"Oswald" }}>$37.5K</span></div>
+      <div><span style={S.lb}>2026: </span><span style={{ color:"#D4A843",fontFamily:"Oswald" }}>$8-10M</span></div>
+      <div><span style={S.lb}>Growth: </span><span style={{ color:"#C8102E",fontFamily:"Oswald" }}>213x</span></div>
+    </div>
+  </div></div>}
+
+  {hView==="famous"&&<div>
+    <p style={{ color:"#94a3b8",marginBottom:16,lineHeight:1.6 }}>The 10 most iconic Super Bowl ads of all time, ranked by cultural impact, creativity, and lasting influence on advertising.</p>
+    <div style={{ display:"grid",gap:10 }}>
+      {FAMOUS.map((ad,i)=><div key={i} style={S.cd}><div style={{ display:"flex",alignItems:"flex-start",gap:14,padding:"16px 18px" }}>
+        <div style={{ fontFamily:"Oswald",fontSize:28,fontWeight:700,color:i<3?"#D4A843":"#334155",minWidth:36,lineHeight:1 }}>{i+1}</div>
+        <div style={{ flex:1 }}>
+          <div style={{ display:"flex",alignItems:"center",gap:8,marginBottom:4 }}>
+            <span style={{ fontFamily:"Oswald",fontSize:16,fontWeight:600,color:"#e2e8f0" }}>{ad.b}</span>
+            <span style={{ fontFamily:"Oswald",fontSize:13,color:"#D4A843" }}>{ad.t}</span>
+            <span style={{ fontFamily:"Oswald",fontSize:12,color:"#475569" }}>{ad.y}</span>
+                  {ad.yt && <WatchBtn href={ad.yt}/>}
+          </div>
+          <p style={{ fontSize:13,color:"#94a3b8",lineHeight:1.6 }}>{ad.w}</p>
+        </div>
+      </div></div>)}
+    </div>
+  </div>}
+
+  {hView==="themes"&&<div style={{ display:"grid",gap:10 }}>
+    {ERAS.map((er,i)=><div key={i} style={S.cd}><div style={{ padding:"16px 18px" }}>
+      <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8 }}>
+        <div style={{ fontFamily:"Oswald",fontSize:18,fontWeight:600,color:"#e2e8f0" }}>{er.t}</div>
+        <div style={{ fontFamily:"Oswald",fontSize:13,color:"#D4A843" }}>{er.e}</div>
+      </div>
+      <p style={{ fontSize:14,color:"#c8cdd5",lineHeight:1.6,marginBottom:8 }}>{er.d}</p>
+      <p style={{ fontSize:13,color:"#64748b",lineHeight:1.5,fontStyle:"italic",padding:"10px 12px",background:"#0a0d15",borderRadius:6,borderLeft:"3px solid rgba(212,168,67,0.25)" }}>Marketing takeaway: {er.k}</p>
+    </div></div>)}
+  </div>}
+</div>}
+
+{/* ══════ TEAMS ══════ */}
+{tab==="teams"&&<div>
+  <h2 style={S.h2}>The Rematch: Seahawks vs Patriots</h2>
+  <p style={{ color:"#94a3b8",marginBottom:8,lineHeight:1.6 }}>XLIX ended with Malcolm Butlers goal-line interception. Twelve years later, two completely different rosters, one of the most improbable matchups in Super Bowl history.</p>
+  <div style={{ padding:"14px 18px",borderRadius:8,background:"rgba(212,168,67,0.06)",border:"1px solid rgba(212,168,67,0.15)",marginBottom:20 }}>
+    <div style={{ fontFamily:"Oswald",fontSize:12,color:"#D4A843",letterSpacing:1,marginBottom:6 }}>SUPER BOWL XLIX FLASHBACK | FEB 1, 2015</div>
+    <div style={{ fontSize:13,color:"#94a3b8",lineHeight:1.6 }}>Patriots 28, Seahawks 24. With 26 seconds left and the ball at the 1-yard line, Seattle called a pass play instead of handing to Marshawn Lynch. Malcolm Butler intercepted Russell Wilson to seal the game. It remains the most debated play-call in Super Bowl history.</div>
+  </div>
+
+  {/* Head to Head */}
+  <h3 style={S.h3}>Head-to-Head Comparison</h3>
+  <div style={{...S.cd,padding:16,marginBottom:20}}>
+    {[{cat:"Record",sea:"14-6",ne:"15-5"},{cat:"Seed",sea:"#5 NFC",ne:"#6 AFC"},{cat:"Quarterback",sea:"Sam Darnold",ne:"Drake Maye"},{cat:"Head Coach",sea:"Mike Macdonald (2nd yr)",ne:"Mike Vrabel (1st yr)"},{cat:"Preseason Odds",sea:"50-1+",ne:"50-1+"},{cat:"SB Appearances",sea:"3rd",ne:"12th"},{cat:"SB Wins",sea:"1 (XLVIII)",ne:"6 (XXXVI-LIII)"}].map((r,i)=><div key={i} style={{ display:"grid",gridTemplateColumns:"1fr auto 1fr",padding:"8px 0",borderBottom:i<6?"1px solid #151a28":"none" }}>
+      <div style={{ textAlign:"right",fontFamily:"Oswald",fontSize:13,color:"#69BE28",paddingRight:12 }}>{r.sea}</div>
+      <div style={{ fontFamily:"Oswald",fontSize:10,color:"#64748b",letterSpacing:1,minWidth:100,textAlign:"center",paddingTop:2 }}>{r.cat}</div>
+      <div style={{ fontFamily:"Oswald",fontSize:13,color:"#C8102E",paddingLeft:12 }}>{r.ne}</div>
+    </div>)}
+  </div>
+
+  <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(340px,1fr))",gap:16 }}>
+    {[
+      { nm:"Seattle Seahawks", cl:"#69BE28", dk:"#002244", rec:"14-6", sd:"#5 NFC", qb:"Sam Darnold", hc:"Mike Macdonald",
+        path:["def. 49ers (WC)","def. Rams (Div)","def. Eagles (NFC)"],
+        players:[
+          {n:"Sam Darnold",p:"QB",s:"Career renaissance after signing as FA in 2025. Former #3 overall pick finally fulfilling potential."},
+          {n:"Jaxon Smith-Njigba",p:"WR",s:"2025 NFL Offensive Player of the Year. 1,793 rec yards (led NFL). 16 games with 70+ yds (tied NFL record)."},
+          {n:"Cooper Kupp",p:"WR",s:"Veteran WR2. Super Bowl LVI MVP with Rams. Adds championship experience."},
+          {n:"Rashid Shaheed",p:"KR/PR",s:"Only player with both KO and punt return TDs this year. 95-yd return TD vs 49ers in playoffs."},
+          {n:"Devon Witherspoon",p:"CB",s:"Force multiplier on defense. Pro Bowl corner."}
+        ],
+        facts:["Geno Smith traded to Raiders in 2025 offseason","Complete QB overhaul: Darnold, Lock, Milroe drafted","Macdonald defense ranked top 5 in NFL","CenturyLink once registered on seismic monitors","First SB since XLIX heartbreak"],
+        tl:[{y:"1976",e:"Founded as NFL expansion team"},{y:"2005",e:"First SB appearance (XL) - lost to Steelers"},{y:"2013",e:"SB XLVIII: destroyed Broncos 43-8"},{y:"2014",e:"SB XLIX: Butler INT at goal line"},{y:"2025",e:"Complete QB overhaul in offseason"},{y:"2026",e:"Back in Super Bowl - the revenge game"}]
+      },
+      { nm:"New England Patriots", cl:"#C8102E", dk:"#002244", rec:"15-5", sd:"#6 AFC", qb:"Drake Maye", hc:"Mike Vrabel",
+        path:["def. Texans (WC)","def. Chiefs (Div)","def. Bills (AFC)"],
+        players:[
+          {n:"Drake Maye",p:"QB",s:"#1 EPA per pass on 20+ yard throws. 15 playoff sacks taken (2nd most in single postseason ever)."},
+          {n:"Christian Gonzalez",p:"CB",s:"All-Pro cornerback. Lockdown defender tasked with containing JSN."},
+          {n:"Mike Vrabel",p:"HC",s:"First-year HC. Former Patriots LB and 3x SB champion as player (XXXVI, XXXVIII, XXXIX)."}
+        ],
+        facts:["Greatest single-season turnaround in NFL history (4 wins to SB)","12th Super Bowl appearance - most in NFL history","First SB since Brady era (LIII, 2018 season)","Both teams had 50-1+ preseason Super Bowl odds","First SB matchup since 1981 with both teams 50-1+ preseason","Vrabel: 3x SB champ as Pats player, now HC"],
+        tl:[{y:"1960",e:"Founded as Boston Patriots (AFL)"},{y:"1971",e:"Renamed New England Patriots"},{y:"2001",e:"SB XXXVI: Brady/Belichick dynasty begins"},{y:"2007",e:"18-0 regular season, lost SB XLII"},{y:"2014",e:"SB XLIX: beat Seahawks on Butler INT"},{y:"2018",e:"SB LIII: 6th title, last of Brady era"},{y:"2024",e:"4-win season, worst in history"},{y:"2026",e:"Impossible: worst to first to Super Bowl"}]
+      }
+    ].map(t=><div key={t.nm} style={{...S.cd,borderColor:t.cl+"20"}}>
+      <div style={{ padding:"18px 20px",background:"linear-gradient(135deg,"+t.dk+"40,#0f1420)",borderBottom:"2px solid "+t.cl+"30" }}>
+        <div style={{ fontFamily:"Oswald",fontSize:22,fontWeight:700,color:"#e2e8f0" }}>{t.nm}</div>
+        <div style={{ fontFamily:"Oswald",fontSize:13,color:t.cl,letterSpacing:1,marginTop:2 }}>{t.rec} | {t.sd} | QB: {t.qb}</div>
+        <div style={{ fontSize:12,color:"#64748b",marginTop:2 }}>Head Coach: {t.hc}</div>
+      </div>
+      <div style={{ padding:"16px 20px" }}>
+        <div style={S.lb}>Playoff Path</div>
+        <div style={{ display:"flex",gap:6,flexWrap:"wrap",margin:"8px 0 16px" }}>
+          {t.path.map((p,i)=><span key={i} style={{ padding:"4px 10px",borderRadius:4,fontSize:11,fontFamily:"Oswald",background:t.cl+"10",border:"1px solid "+t.cl+"25",color:t.cl }}>{p}</span>)}
+        </div>
+        <div style={S.lb}>Key Players</div>
+        {t.players.map((p,i)=><div key={i} style={{ padding:"8px 0",borderBottom:"1px solid #151a28" }}>
+          <div style={{ display:"flex",gap:8,alignItems:"center" }}>
+            <span style={{ fontFamily:"Oswald",fontSize:13,fontWeight:600,color:"#e2e8f0" }}>{p.n}</span>
+            <span style={{ fontFamily:"Oswald",fontSize:10,color:t.cl }}>{p.p}</span>
+          </div>
+          <div style={{ fontSize:12,color:"#94a3b8",marginTop:2,lineHeight:1.5 }}>{p.s}</div>
+        </div>)}
+        <div style={{...S.lb,marginTop:16}}>Season Facts</div>
+        {t.facts.map((f,i)=><div key={i} style={{ padding:"6px 0",borderBottom:"1px solid #151a28",fontSize:13,color:"#94a3b8",lineHeight:1.5 }}>{f}</div>)}
+        <div style={{...S.lb,marginTop:16}}>Franchise Timeline</div>
+        {t.tl.map((tl,i)=><div key={i} style={{ display:"flex",gap:12,padding:"5px 0" }}>
+          <span style={{ fontFamily:"Oswald",fontSize:13,fontWeight:600,color:t.cl,minWidth:42 }}>{tl.y}</span>
+          <span style={{ fontSize:13,color:"#94a3b8" }}>{tl.e}</span>
+        </div>)}
+      </div>
+    </div>)}
+  </div>
+</div>}
+
+
+{/* ══════ BINGO ══════ */}
+{tab==="bingo"&&<div>
+  <h2 style={S.h2}>Super Bowl Ad Bingo</h2>
+  <p style={{ color:"#94a3b8", marginBottom:16, lineHeight:1.6 }}>Check off ad tropes as you watch the game! Get 5 in a row to win.</p>
+  <div style={{ display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:6, maxWidth:600, margin:"0 auto" }}>
+    {BINGO_ITEMS.map(function(item, i) {
+      var ck = !!bingo[i];
+      return (
+        <div key={i} onClick={function(){ sBingo(function(prev){ var next=Object.assign({},prev); next[i]=!next[i]; return next; }); }}
+          style={{ aspectRatio:"1", display:"flex", alignItems:"center", justifyContent:"center",
+            textAlign:"center", padding:8, borderRadius:10, fontSize:11, lineHeight:1.3,
+            cursor:"pointer", fontFamily:"Oswald", letterSpacing:0.5, transition:"all .2s",
+            background:ck?"rgba(105,190,40,0.15)":"#0f1420",
+            border:"2px solid "+(ck?"rgba(105,190,40,0.4)":"#1a1f2e"),
+            color:ck?"#69BE28":"#94a3b8", fontWeight:ck?600:400,
+            boxShadow:ck?"0 0 12px rgba(105,190,40,0.1)":"none" }}>
+          {i===12 ? <span style={{fontSize:16,fontWeight:700,color:"#D4A843"}}>{"\u2B50"} FREE</span> : item}
+        </div>
+      );
+    })}
+  </div>
+  <div style={{ textAlign:"center", marginTop:20 }}>
+    <div style={{ fontFamily:"Oswald", fontSize:18, fontWeight:700, color:"#D4A843", marginBottom:4 }}>{Object.values(bingo).filter(Boolean).length} / 25</div>
+    <div style={{ fontSize:12, color:"#64748b", marginBottom:12 }}>squares checked</div>
+    <button onClick={function(){ sBingo({}); }} style={bt("#1a1f2e","#64748b")}>Reset Board</button>
+  </div>
+</div>}
+
+{/* ══════ CITIES ══════ */}
+{tab==="cities"&&<div>
+  <h2 style={S.h2}>Seattle vs Boston</h2>
+  <p style={{ color:"#94a3b8", marginBottom:16, lineHeight:1.6 }}>Two iconic American cities go head-to-head. The Emerald City vs Beantown.</p>
+  <div style={{ display:"flex", gap:8, marginBottom:24 }}>
+    <button onClick={function(){ sCityV("vs"); }} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(cityV==="vs"?"#D4A843":"#1a1f2e"),background:cityV==="vs"?"rgba(212,168,67,0.08)":"transparent",color:cityV==="vs"?"#D4A843":"#64748b",cursor:"pointer" }}>Compare</button>
+    <button onClick={function(){ sCityV("sea"); }} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(cityV==="sea"?"#69BE28":"#1a1f2e"),background:cityV==="sea"?"rgba(105,190,40,0.08)":"transparent",color:cityV==="sea"?"#69BE28":"#64748b",cursor:"pointer" }}>Seattle</button>
+    <button onClick={function(){ sCityV("bos"); }} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(cityV==="bos"?"#C8102E":"#1a1f2e"),background:cityV==="bos"?"rgba(200,16,46,0.08)":"transparent",color:cityV==="bos"?"#C8102E":"#64748b",cursor:"pointer" }}>Boston</button>
+  </div>
+
+  {cityV==="vs"&&<div>
+    <div style={{...S.cd, overflow:"hidden", marginBottom:20}}>
+      <div style={{ padding:"14px 18px", background:"linear-gradient(90deg,#002244 0%,#0f1420 50%,#1a0508 100%)", borderBottom:"1px solid #1a1f2e", display:"flex", justifyContent:"space-between" }}>
+        <span style={{ fontFamily:"Oswald", fontSize:16, fontWeight:700, color:"#69BE28" }}>SEATTLE</span>
+        <span style={{ fontFamily:"Oswald", fontSize:12, color:"#64748b", letterSpacing:2 }}>HEAD TO HEAD</span>
+        <span style={{ fontFamily:"Oswald", fontSize:16, fontWeight:700, color:"#C8102E" }}>BOSTON</span>
+      </div>
+      {[{c:"Population",s:"749K (4M metro)",b:"675K (4.9M metro)"},{c:"Founded",s:"1851",b:"1630"},{c:"Nickname",s:"Emerald City",b:"Beantown"},{c:"Annual Rainfall",s:"37 inches",b:"44 in + 48 in snow"},{c:"Pro Sports Titles",s:"5",b:"40+"},{c:"Top Landmark",s:"Space Needle",b:"Fenway Park"},{c:"Known For",s:"Coffee, tech, rain",b:"History, sports, accents"},{c:"Oldest Company",s:"Starbucks (1971)",b:"State Street (1792)"},{c:"Top University",s:"UW (1861)",b:"Harvard (1636)"},{c:"Vibe",s:"Chill + innovative",b:"Gritty + proud"}].map(function(r, i) {
+        return (
+          <div key={i} style={{ display:"grid", gridTemplateColumns:"1fr auto 1fr", padding:"10px 18px", borderBottom:"1px solid #111827", background:i%2===0?"#0a0d15":"transparent" }}>
+            <div style={{ textAlign:"right", fontFamily:"Oswald", fontSize:13, color:"#69BE28", paddingRight:16 }}>{r.s}</div>
+            <div style={{ fontFamily:"Oswald", fontSize:10, color:"#64748b", letterSpacing:2, minWidth:120, textAlign:"center", paddingTop:2 }}>{r.c.toUpperCase()}</div>
+            <div style={{ fontFamily:"Oswald", fontSize:13, color:"#C8102E", paddingLeft:16 }}>{r.b}</div>
+          </div>
+        );
+      })}
+    </div>
+  </div>}
+
+  {cityV==="sea"&&<div>
+    <div style={{...S.cd, marginBottom:20}}>
+      <div style={{ padding:"24px 20px", background:"linear-gradient(135deg,rgba(105,190,40,0.08),#0f1420)", borderBottom:"2px solid rgba(105,190,40,0.2)" }}>
+        <div style={{ fontFamily:"Oswald", fontSize:32, fontWeight:700, color:"#69BE28" }}>Seattle</div>
+        <div style={{ fontFamily:"Oswald", fontSize:14, color:"#94a3b8", marginTop:4 }}>The Emerald City | Pop: 749K (4M metro) | Est. 1851</div>
+        <div style={{ fontSize:14, color:"#c8cdd5", marginTop:10, lineHeight:1.7 }}>Coffee-fueled tech innovation meets Pacific Northwest nature. Born from lumber and gold rush ambition, Seattle evolved from grunge birthplace to global tech capital. Home to Amazon, Microsoft, Starbucks, and the 12th Man.</div>
+      </div>
+    </div>
+    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))", gap:14 }}>
+      {[
+        {t:"Major Companies",cl:"#69BE28",d:["Amazon (HQ)","Microsoft (Redmond)","Starbucks (HQ)","Costco (HQ)","Expedia","Zillow","T-Mobile (HQ)","Boeing (legacy)"]},
+        {t:"Must-Try Food",cl:"#D4A843",d:["Pike Place clam chowder","Seattle-style teriyaki","Dungeness crab","Ivars fish n chips","Dicks Drive-In burgers","Paseo Cuban sandwiches","Pho in Rainier Valley","Beechers mac and cheese"]},
+        {t:"Landmarks & Culture",cl:"#4285F4",d:["Space Needle (1962)","Pike Place Market (1907)","MoPOP (music museum)","Chihuly Garden and Glass","Pioneer Square","Capitol Hill nightlife","Fremont Troll","Olympic Sculpture Park"]},
+        {t:"Sports Teams",cl:"#69BE28",d:["Seahawks (NFL) - 1 SB","Mariners (MLB)","Kraken (NHL)","Sounders (MLS) - 2 titles","Storm (WNBA) - 4 titles","Reign (NWSL)"]},
+        {t:"Timeline",cl:"#94a3b8",d:["1851 - City founded","1889 - Great Seattle Fire","1907 - Pike Place opens","1962 - Worlds Fair, Space Needle built","1971 - Starbucks opens first store","1991 - Nirvana, grunge goes global","1994 - Jeff Bezos founds Amazon","2013 - Seahawks win Super Bowl XLVIII","2014 - Lost SB XLIX on the 1-yard line","2026 - Return to the Super Bowl"]},
+        {t:"Fun Facts",cl:"#FF69B4",d:["More dogs than children","Gets less rain than NYC or Miami","First gas station in America (1907)","Named after Chief Siahl","Home of the first Starbucks","Birthplace of Jimi Hendrix","Underground city beneath Pioneer Square"]}
+      ].map(function(sec) {
+        return (
+          <div key={sec.t} style={S.cd}>
+            <div style={{ padding:"16px 18px" }}>
+              <div style={{...S.lb, color:sec.cl, marginBottom:10}}>{sec.t}</div>
+              {sec.d.map(function(x, i) {
+                return (<div key={i} style={{ padding:"6px 0", fontSize:13, color:"#c8cdd5", borderBottom:"1px solid #111827", lineHeight:1.5 }}>{x}</div>);
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>}
+
+  {cityV==="bos"&&<div>
+    <div style={{...S.cd, marginBottom:20}}>
+      <div style={{ padding:"24px 20px", background:"linear-gradient(135deg,rgba(200,16,46,0.08),#0f1420)", borderBottom:"2px solid rgba(200,16,46,0.2)" }}>
+        <div style={{ fontFamily:"Oswald", fontSize:32, fontWeight:700, color:"#C8102E" }}>Boston</div>
+        <div style={{ fontFamily:"Oswald", fontSize:14, color:"#94a3b8", marginTop:4 }}>Beantown | Pop: 675K (4.9M metro) | Est. 1630</div>
+        <div style={{ fontSize:14, color:"#c8cdd5", marginTop:10, lineHeight:1.7 }}>Where American history began meets world-class academia meets championship sports culture. From the Boston Tea Party to Brady dynasty, this city has 400 years of not backing down. The most decorated sports city in America.</div>
+      </div>
+    </div>
+    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))", gap:14 }}>
+      {[
+        {t:"Major Companies",cl:"#C8102E",d:["Fidelity Investments","State Street (est. 1792)","Wayfair","HubSpot","DraftKings","Liberty Mutual","New Balance","Bain & Company","Boston Consulting Group"]},
+        {t:"Must-Try Food",cl:"#D4A843",d:["New England clam chowder","Lobster roll","Boston cream pie (official state dessert)","North End cannoli","Fenway Franks","Dunkin Donuts (its a religion)","Three-way roast beef sandwich","Boston baked beans"]},
+        {t:"Landmarks & Culture",cl:"#4285F4",d:["Freedom Trail (2.5 miles of history)","Fenway Park (1912, oldest MLB park)","Harvard University (1636)","MIT","Boston Common (1634, oldest park)","Faneuil Hall","New England Aquarium","Isabella Stewart Gardner Museum"]},
+        {t:"Sports Teams",cl:"#C8102E",d:["Patriots (NFL) - 6 Super Bowls","Red Sox (MLB) - 9 World Series","Celtics (NBA) - 18 titles (most ever)","Bruins (NHL) - 6 Stanley Cups","Revolution (MLS)","40+ total championships"]},
+        {t:"Timeline",cl:"#94a3b8",d:["1630 - Founded by Puritans","1770 - Boston Massacre","1773 - Boston Tea Party","1897 - First Boston Marathon","1912 - Fenway Park opens","2001 - Tom Brady era begins","2004 - Red Sox break 86-year curse","2008 - Celtics win 17th title","2024 - Patriots hit rock bottom (4 wins)","2026 - Greatest turnaround to Super Bowl"]},
+        {t:"Fun Facts",cl:"#FF69B4",d:["Oldest subway system in America (1897)","Harvard is oldest US university (1636)","First public school in America (1635)","Pahk the cah in Hahvahd Yahd","Sam Adams is both a founding father AND a beer","Cheers bar is a real place (originally Bull & Finch)"]}
+      ].map(function(sec) {
+        return (
+          <div key={sec.t} style={S.cd}>
+            <div style={{ padding:"16px 18px" }}>
+              <div style={{...S.lb, color:sec.cl, marginBottom:10}}>{sec.t}</div>
+              {sec.d.map(function(x, i) {
+                return (<div key={i} style={{ padding:"6px 0", fontSize:13, color:"#c8cdd5", borderBottom:"1px solid #111827", lineHeight:1.5 }}>{x}</div>);
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>}
+</div>}
+
+{/* ══════ TRIVIA ══════ */}
+{tab==="trivia"&&<div style={{ maxWidth:620,margin:"0 auto" }}>
+  <h2 style={{...S.h2,textAlign:"center"}}>Super Bowl Trivia</h2>
+  <div style={{ textAlign:"center",marginBottom:20 }}>
+    <span style={{ fontFamily:"Oswald",fontSize:14,color:"#69BE28" }}>{tScore}/{TRIVIA.length}</span>
+    <span style={{ margin:"0 10px",color:"#1a1f2e" }}>|</span>
+    <span style={{ fontFamily:"Oswald",fontSize:14,color:"#64748b" }}>Q{Math.min(tIdx+1,TRIVIA.length)}/{TRIVIA.length}</span>
+  </div>
+  {tIdx<TRIVIA.length?<div style={S.cd}><div style={{ padding:"22px 20px" }}>
+    <div style={{...S.lb,color:"#D4A843",marginBottom:10}}>{TRIVIA[tIdx].c}</div>
+    <div style={{ fontFamily:"Oswald",fontSize:18,fontWeight:600,color:"#e2e8f0",marginBottom:18,lineHeight:1.4 }}>{TRIVIA[tIdx].q}</div>
+    <div style={{ display:"grid",gap:8 }}>
+      {TRIVIA[tIdx].o.map((opt,i)=>{
+        const ans=tAns!==null,isC=i===TRIVIA[tIdx].a,isSel=tAns===i;
+        let bg="#0a0d15",bd="#1a1f2e",cl="#e2e8f0";
+        if(ans){if(isC){bg="rgba(105,190,40,0.07)";bd="rgba(105,190,40,0.25)";cl="#69BE28";}else if(isSel){bg="rgba(200,16,46,0.07)";bd="rgba(200,16,46,0.25)";cl="#C8102E";}else cl="#475569";}
+        return <button key={i} disabled={ans} onClick={()=>{sTAns(i);if(isC)sTScore(s=>s+1)}} style={{ padding:"12px 14px",borderRadius:6,border:"1px solid "+bd,background:bg,color:cl,fontSize:14,cursor:ans?"default":"pointer",textAlign:"left",transition:"all .2s" }}>
+          <span style={{ fontFamily:"Oswald",marginRight:8,opacity:0.4 }}>{String.fromCharCode(65+i)}.</span>{opt}
+        </button>;
+      })}
+    </div>
+    {tAns!==null&&<button onClick={()=>{sTIdx(i=>i+1);sTAns(null)}} style={{...bt("linear-gradient(135deg,#69BE28,#4a9e1c)","#fff"),width:"100%",marginTop:14}}>{tIdx<TRIVIA.length-1?"Next Question":"See Results"}</button>}
+  </div></div>:<div style={{...S.cd,textAlign:"center",padding:"40px 20px"}}>
+    <div style={{ fontFamily:"Oswald",fontSize:36,fontWeight:700,color:"#e2e8f0",marginBottom:8 }}>{tScore}/{TRIVIA.length}</div>
+    <p style={{ color:"#94a3b8",marginBottom:20 }}>{tScore>=10?"Super Bowl scholar!":tScore>=7?"Impressive!":tScore>=4?"Solid effort!":"Study up before game day!"}</p>
+    <button onClick={()=>{sTIdx(0);sTScore(0);sTAns(null)}} style={bt("#1a1f2e","#94a3b8")}>Try Again</button>
+  </div>}
+</div>}
+
+
+{tab==="more"&&<div>
+  <h2 style={S.h2}>Marketing Deep Dives</h2>
+  <p style={{ color:"#94a3b8", marginBottom:24, lineHeight:1.7 }}>Strategy breakdowns, data tools, and interactive experiences for the marketing-obsessed. 16 deep-dive pages organized by category.</p>
+  <div style={{ display:"grid", gap:12 }}>
+    {[
+      {key:"games",label:"Event Games",ic:"\uD83C\uDFB2",cl:"#FF69B4",desc:"Interactive games for game day",pages:[{id:"bingo",n:"Ad Bingo",d:"Check off tropes as you spot them during the game."},{id:"trivia",n:"Trivia",d:"Test your Super Bowl ad knowledge."},{id:"overunder",n:"Over / Under",d:"Guess if wild SB stats are over or under. 10 rounds."},{id:"adlibs",n:"Ad Libs",d:"Mad Libs for Super Bowl ads. Hilarious results."},{id:"twotruth",n:"Two Truths and a Lie",d:"Spot the fake SB ad fact. 10 rounds."}]},
+      {key:"strat",label:"Strategy & Frameworks",ic:"\uD83C\uDF93",cl:"#D4A843",desc:"Deep strategy teardowns and competitive analysis",pages:[{id:"playbooks",n:"Campaign Playbooks",d:"4 iconic SB campaign teardowns from brief to measurement."},{id:"sbeffect",n:"The SB Effect",d:"5 paradigm shifts that reshaped advertising forever."},{id:"rivalries",n:"Rivalry Marketing",d:"Pepsi vs Coke. Nike vs Adidas. Brand wars dissected."},{id:"hofame",n:"Sports Mktg Hall of Fame",d:"The most iconic sports marketing campaigns ever."}]},
+      {key:"tools",label:"Interactive Tools",ic:"\uD83D\uDD27",cl:"#69BE28",desc:"Hands-on calculators, builders, and simulations",pages:[{id:"calculator",n:"Ad Spend Calculator",d:"What does $8M buy? Compare across 5 channels."},{id:"mediamix",n:"Media Mix Optimizer",d:"Allocate $15M across 8 channels with live sliders."},{id:"brief",n:"Create Your Brief",d:"Build a mock SB creative brief and get scored."},{id:"pitchroom",n:"The Pitch Room",d:"Full SB ad pitch builder. Strategy to ROI projection."},{id:"cmoseat",n:"The CMO Hot Seat",d:"4-scenario CMO simulation with scoring."}]},
+      {key:"data",label:"Data & Insights",ic:"\uD83D\uDCCA",cl:"#4285F4",desc:"Audience data, halftime economics, and ROI analysis",pages:[{id:"audience",n:"Audience Insights",d:"Demographics, second-screen behavior, social surge data."},{id:"halftime",n:"Halftime Show Marketing",d:"13 minutes worth $1B+. Brand integration decoded."},{id:"tenm",n:"The $10M Question",d:"Is a SB ad still worth it? Vote and get a recommendation."}]},
+      {key:"labs",label:"Labs & Experiments",ic:"\uD83D\uDD2C",cl:"#C8102E",desc:"Forensic analysis, brand comparisons, and awards",pages:[{id:"autopsy",n:"Ad Autopsy",d:"Famous SB ad disasters dissected with interactive fixes."},{id:"voicelab",n:"Brand Voice Lab",d:"Pick 2 brands. Compare voice, tone, strategy head-to-head."},{id:"awards",n:"SB Ad Awards",d:"Cast your vote across 6 award categories."}]},
+      {key:"ref",label:"Reference",ic:"\uD83D\uDCD6",cl:"#9C27B0",desc:"Terminology and quick-reference guides",pages:[{id:"glossary",n:"Marketing Glossary",d:"Every marketing term in this app, explained."}]}
+    ].map((section,si)=>(
+      <div key={si} style={{ borderRadius:10, border:"1px solid #1a1f2e", overflow:"hidden", background:"#0a0d15" }}>
+        <div onClick={()=>setHubOpen({...hubOpen,[section.key]:!hubOpen[section.key]})} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px 20px", cursor:"pointer", background:hubOpen[section.key]?"#0f1420":"#0a0d15", transition:"background 0.2s" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+            <span style={{ fontSize:22 }}>{section.ic}</span>
+            <div>
+              <div style={{ fontFamily:"Oswald", fontSize:15, fontWeight:600, color:section.cl, letterSpacing:0.5 }}>{section.label}</div>
+              <div style={{ fontSize:11, color:"#64748b", marginTop:2 }}>{section.desc}</div>
+            </div>
+          </div>
+          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+            <div style={{ fontFamily:"Oswald", fontSize:11, color:"#475569", letterSpacing:1 }}>{section.pages.length}</div>
+            <div style={{ fontFamily:"Oswald", fontSize:16, color:hubOpen[section.key]?section.cl:"#475569", transition:"transform 0.2s", transform:hubOpen[section.key]?"rotate(180deg)":"rotate(0deg)" }}>{hubOpen[section.key]?"\u25B2":"\u25BC"}</div>
+          </div>
+        </div>
+        {hubOpen[section.key]&&<div style={{ padding:"4px 12px 12px", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))", gap:10 }}>
+          {section.pages.map((pg,pi)=>(
+            <div key={pg.id} onClick={()=>sTab(pg.id)} style={{ padding:"14px 16px", borderRadius:8, border:"1px solid #1a1f2e", cursor:"pointer", background:"#0f1420", transition:"border-color 0.2s" }}>
+              <div style={{ fontFamily:"Oswald", fontSize:14, fontWeight:600, color:section.cl, marginBottom:4 }}>{pg.n}</div>
+              <div style={{ fontSize:12, color:"#94a3b8", lineHeight:1.5 }}>{pg.d}</div>
+            </div>
+          ))}
+        </div>}
+      </div>
+    ))}
+  </div>
+</div>}
+
+{tab==="playbooks"&&<div>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>Campaign Playbooks</h2>
+  <p style={{ color:"#94a3b8", marginBottom:20, lineHeight:1.7 }}>Full content strategy teardowns. How 4 iconic brands approached their Super Bowl campaigns from brief to measurement.</p>
+  <div style={{ display:"flex", gap:8, marginBottom:24, flexWrap:"wrap" }}>
+    {["Budweiser (Heritage)","Old Spice (Viral)","DoorDash (Challenger)","Dunkin (Comedy)"].map((b,i)=>(
+      <button key={i} onClick={()=>setPbBrand(i)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"8px 16px",borderRadius:20,border:"1px solid "+(pbBrand===i?"#D4A843":"#1a1f2e"),background:pbBrand===i?"rgba(212,168,67,0.08)":"transparent",color:pbBrand===i?"#D4A843":"#64748b",cursor:"pointer" }}>{b}</button>
+    ))}
+  </div>
+  {pbBrand===0&&<div style={{ display:"grid", gap:14 }}>
+    <div style={{...S.cd, borderColor:"#C8102E20"}}><div style={{ padding:"20px", borderBottom:"2px solid #C8102E30" }}>
+      <div style={{ fontFamily:"Oswald", fontSize:26, fontWeight:700, color:"#C8102E" }}>Budweiser</div>
+      <div style={{ fontFamily:"Oswald", fontSize:13, color:"#D4A843", marginTop:4 }}>THE HERITAGE PLAYBOOK</div>
+      <div style={{ fontSize:14, color:"#c8cdd5", marginTop:10, lineHeight:1.7 }}>Budweiser has built the most recognized SB advertising franchise in history. Never chase trends, own emotional storytelling, let the Clydesdales do the heavy lifting.</div>
+    </div></div>
+    {[{t:"Strategy Framework",cl:"#C8102E",items:[{h:"Core Insight",v:"Americans have a deep emotional connection to heritage brands that feel authentically American."},{h:"Big Idea",v:"Each ad is a chapter in an ongoing American saga. Clydesdales = trust, heritage, loyalty. Not selling beer - selling belonging."},{h:"Tone",v:"Cinematic, patriotic, emotional. Never ironic. Never trendy. Always earnest."},{h:"Agency",v:"Long-term FCB New York partnership. Consistency in creative leadership = consistency in brand voice."}]},{t:"Pre-Launch (4-6 weeks)",cl:"#D4A843",items:[{h:"Teaser",v:"30-sec teaser released 3-4 weeks before game. Behind-the-scenes Clydesdale moment. Drives speculation."},{h:"Social Seeding",v:"BTS TikToks from the Clydesdale ranch. Real handlers, real horses. Authenticity over production."},{h:"PR Play",v:"Exclusive preview to 2-3 tier-1 outlets. Embargo strategy creates staggered buzz."},{h:"Paid Media",v:"Pre-roll teaser on YouTube. Targeted social on FB/IG to 35+ demo. Minimal spend - earned media does the work."}]},{t:"Game Day Execution",cl:"#69BE28",items:[{h:"Placement",v:"Premium Q4 slot. First or last ad in a pod. Usually 60-sec for SB."},{h:"Hub and Spoke",v:"TV spot is the hub. Spokes: YouTube directors cut, Twitter real-time, IG carousel stills, Snapchat AR filter."},{h:"War Room",v:"20+ person social team. Pre-loaded response content. Sub-60-second response time."},{h:"Second Screen",v:"Shazam integration for bonus content. QR to landing page with Clydesdale history."}]},{t:"Post-Game Measurement",cl:"#4285F4",items:[{h:"KPIs",v:"Ad Meter ranking, YouTube views target 50M+ in 7 days, social mentions, earned media value, brand favorability lift."},{h:"Earned Media",v:"Target $50M+ earned media value from a single 60-sec spot."},{h:"Attribution",v:"Sales lift measured via IRI/Nielsen panel data. Typically 5-8% volume lift in 4 weeks post-SB."},{h:"Long-Tail",v:"Content repurposed for 3-6 months. Directors cut, making-of series, Clydesdale naming contest drives UGC."}]}].map((sec,si)=>(
+      <div key={si} style={S.cd}><div style={{ padding:"18px 20px" }}>
+        <div style={{...S.lb, color:sec.cl, marginBottom:12}}>{sec.t}</div>
+        {sec.items.map((it,ii)=>(
+          <div key={ii} style={{ padding:"10px 0", borderBottom:"1px solid #111827" }}>
+            <div style={{ fontFamily:"Oswald", fontSize:13, fontWeight:600, color:"#e2e8f0", marginBottom:4 }}>{it.h}</div>
+            <div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.6 }}>{it.v}</div>
+          </div>
+        ))}
+      </div></div>
+    ))}
+  </div>}
+  {pbBrand===1&&<div style={{ display:"grid", gap:14 }}>
+    <div style={{...S.cd, borderColor:"#FF300820"}}><div style={{ padding:"20px", borderBottom:"2px solid #FF300830" }}>
+      <div style={{ fontFamily:"Oswald", fontSize:26, fontWeight:700, color:"#FF3008" }}>Old Spice</div>
+      <div style={{ fontFamily:"Oswald", fontSize:13, color:"#D4A843", marginTop:4 }}>THE VIRAL PLAYBOOK</div>
+      <div style={{ fontSize:14, color:"#c8cdd5", marginTop:10, lineHeight:1.7 }}>Old Spice invented real-time social marketing. The TV spot was the match; 186 personalized YouTube responses in 48 hours were the wildfire. Sales jumped 107% in one month.</div>
+    </div></div>
+    {[{t:"Strategy",cl:"#FF3008",items:[{h:"Core Insight",v:"Body wash was purchased by women but used by men. Target the buyer, not the user."},{h:"Big Idea",v:"The Man Your Man Could Smell Like. Speak directly to women. Humor disarms, aspiration converts."},{h:"Agency",v:"Wieden+Kennedy Portland. Their masterclass in social-first thinking."}]},{t:"The Innovation: Response Campaign",cl:"#D4A843",items:[{h:"Concept",v:"48 hours after airing, Isaiah Mustafa filmed 186 personalized video responses to real tweets and comments."},{h:"Execution",v:"War room with writers, director, and Mustafa in-costume. Average response time: 7 minutes from tweet to posted video."},{h:"Scale",v:"186 videos. 40M+ views in first week. More views than Obamas victory speech at the time."}]},{t:"Results",cl:"#69BE28",items:[{h:"Sales",v:"+107% body wash sales in ONE MONTH. +55% over 3 months."},{h:"Social",v:"Twitter followers up 2,700%. YouTube: most-viewed branded channel. 1.4B earned impressions."},{h:"Awards",v:"Grand Prix at Cannes Lions. Emmy for Outstanding Commercial. Effie Grand Effie."},{h:"Legacy",v:"Invented the real-time social response playbook. Every brand war room since 2010 exists because of this campaign."}]}].map((sec,si)=>(
+      <div key={si} style={S.cd}><div style={{ padding:"18px 20px" }}>
+        <div style={{...S.lb, color:sec.cl, marginBottom:12}}>{sec.t}</div>
+        {sec.items.map((it,ii)=>(
+          <div key={ii} style={{ padding:"10px 0", borderBottom:"1px solid #111827" }}>
+            <div style={{ fontFamily:"Oswald", fontSize:13, fontWeight:600, color:"#e2e8f0", marginBottom:4 }}>{it.h}</div>
+            <div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.6 }}>{it.v}</div>
+          </div>
+        ))}
+      </div></div>
+    ))}
+  </div>}
+  {pbBrand===2&&<div style={{ display:"grid", gap:14 }}>
+    <div style={{...S.cd, borderColor:"#FF300820"}}><div style={{ padding:"20px", borderBottom:"2px solid #FF300830" }}>
+      <div style={{ fontFamily:"Oswald", fontSize:26, fontWeight:700, color:"#FF3008" }}>DoorDash</div>
+      <div style={{ fontFamily:"Oswald", fontSize:13, color:"#D4A843", marginTop:4 }}>THE CHALLENGER PLAYBOOK</div>
+      <div style={{ fontSize:14, color:"#c8cdd5", marginTop:10, lineHeight:1.7 }}>DoorDash culture-jacks the Super Bowl. 50 Cent beef campaign, Wieden+Kennedy creative, and willingness to be controversial.</div>
+    </div></div>
+    {[{t:"Strategy",cl:"#FF3008",items:[{h:"Core Insight",v:"Delivery is a commodity. Win on CULTURE and brand affinity, not features."},{h:"Big Idea 2026",v:"Beef campaign with 50 Cent. Hijack his trolling persona. Be the most talked-about, not most-liked."},{h:"Risk Tolerance",v:"High. Challenger brands must polarize. Playing safe = invisible next to Budweiser and Pepsi."}]},{t:"Multi-Platform Arc",cl:"#D4A843",items:[{h:"Pre-Game",v:"50 Cent social trolling. Cryptic posts hinting at beef. Earned media from entertainment press."},{h:"Game Day",v:"60-sec TV spot. 50 Cent mediates beef between QB wives. Comedy + delivery tie-in."},{h:"Post-Game",v:"Extended cut YouTube. User promo codes. Measurement against Uber Eats head-to-head."}]},{t:"Measurement",cl:"#69BE28",items:[{h:"Primary KPI",v:"App downloads in 72 hours post-game. Secondary: SOV vs Uber Eats during SB window."},{h:"Long-term",v:"Brand tracker: unaided awareness, consideration, preference vs. Uber Eats over 6 months."}]}].map((sec,si)=>(
+      <div key={si} style={S.cd}><div style={{ padding:"18px 20px" }}>
+        <div style={{...S.lb, color:sec.cl, marginBottom:12}}>{sec.t}</div>
+        {sec.items.map((it,ii)=>(
+          <div key={ii} style={{ padding:"10px 0", borderBottom:"1px solid #111827" }}>
+            <div style={{ fontFamily:"Oswald", fontSize:13, fontWeight:600, color:"#e2e8f0", marginBottom:4 }}>{it.h}</div>
+            <div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.6 }}>{it.v}</div>
+          </div>
+        ))}
+      </div></div>
+    ))}
+  </div>}
+    {pbBrand===3&&<div style={{ display:"grid", gap:14 }}>
+    <div style={{...S.cd, borderColor:"#FF660020"}}><div style={{ padding:"20px", borderBottom:"2px solid #FF660030" }}>
+      <div style={{ fontFamily:"Oswald", fontSize:26, fontWeight:700, color:"#FF6600" }}>Dunkin</div>
+      <div style={{ fontFamily:"Oswald", fontSize:13, color:"#D4A843", marginTop:4 }}>THE COMEDY PLAYBOOK</div>
+      <div style={{ fontSize:14, color:"#c8cdd5", marginTop:10, lineHeight:1.7 }}>Ben Affleck turned an accidental brand association into the most entertaining SB franchise of the 2020s. Third consecutive year. Self-deprecating humor, Boston authenticity, A-list friends.</div>
+    </div></div>
+    {[{t:"Strategy",cl:"#FF6600",items:[{h:"Core Insight",v:"Ben Affleck was already Dunkins unpaid ambassador. Paparazzi photos of him with iced coffee were memes for years. Lean into what is already true."},{h:"Big Idea",v:"Celebrity as genuine fan, not paid spokesperson. The humor works because Afflecks Dunkin obsession is REAL. Authenticity you cannot manufacture."},{h:"Agency Evolution",v:"Artists Equity (Affleck and Damons production company) co-creates with BBDO. The talent IS the creative team."}]},{t:"Three-Year Arc",cl:"#D4A843",items:[{h:"Year 1 (2024)",v:"Affleck works the drive-through. Simple, surprising, huge. Proved the concept."},{h:"Year 2 (2025)",v:"Affleck and Damon together. Doubled down on Boston bromance. DunKings tracksuit became merch phenomenon."},{h:"Year 3 (2026)",v:"The trilogy. Expectations are sky-high. Must evolve without losing the magic."},{h:"The Risk",v:"Diminishing returns. Third time must surprise harder or the franchise becomes predictable."}]},{t:"Results Framework",cl:"#69BE28",items:[{h:"Social",v:"Drive-through video hit 150M+ views across platforms. DunKings tracksuit sold out in hours."},{h:"Sales Impact",v:"Cold brew sales up 20% in weeks following each SB spot. Brand relevance with under-35 demo surged."},{h:"Cultural Impact",v:"Turned a regional coffee chain into a national pop culture moment. Boston identity went from local to universal."},{h:"Lesson",v:"The best celebrity partnerships amplify what is already true. Do not create a narrative - find one that exists."}]}].map((sec,si)=>(
+      <div key={si} style={S.cd}><div style={{ padding:"18px 20px" }}>
+        <div style={{...S.lb, color:sec.cl, marginBottom:12}}>{sec.t}</div>
+        {sec.items.map((it,ii)=>(
+          <div key={ii} style={{ padding:"10px 0", borderBottom:"1px solid #111827" }}>
+            <div style={{ fontFamily:"Oswald", fontSize:13, fontWeight:600, color:"#e2e8f0", marginBottom:4 }}>{it.h}</div>
+            <div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.6 }}>{it.v}</div>
+          </div>
+        ))}
+      </div></div>
+    ))}
+  </div>}
+{tab==="calculator"&&<div>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>Ad Spend Calculator</h2>
+  <p style={{ color:"#94a3b8", marginBottom:24, lineHeight:1.7 }}>What does your budget buy? Drag the slider to compare a Super Bowl spot against other channels.</p>
+  <div style={{...S.cd, padding:"24px 20px", marginBottom:24 }}>
+    <div style={{ fontFamily:"Oswald", fontSize:14, color:"#D4A843", letterSpacing:1, marginBottom:16 }}>YOUR BUDGET</div>
+    <div style={{ textAlign:"center", marginBottom:12 }}>
+      <div style={{ fontFamily:"Oswald", fontSize:48, fontWeight:700, color:"#e2e8f0" }}>{"$"+calcBudget+"M"}</div>
+    </div>
+    <input type="range" min="1" max="20" value={calcBudget} onChange={e=>setCalcBudget(Number(e.target.value))} style={{ width:"100%", accentColor:"#D4A843" }}/>
+    <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:"#64748b", marginTop:4 }}><span>$1M</span><span>$10M</span><span>$20M</span></div>
+  </div>
+  <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:14 }}>
+    {[{ch:"Super Bowl Spot",cl:"#C8102E",val:Math.round(calcBudget/8*30),unit:"seconds of airtime",reach:"130M simultaneous viewers",roi:"$5.20 per $1 avg",note:"One moment. Maximum cultural impact."},{ch:"TikTok Influencers",cl:"#FF69B4",val:Math.round(calcBudget*1000000/5000),unit:"creator posts at $5K avg",reach:(Math.round(calcBudget*1000000/5000*15000)).toLocaleString()+" impressions",roi:"$2-4 per $1 variable",note:"Fragmented but targeted. Longer tail."},{ch:"Programmatic Display",cl:"#4285F4",val:Math.round(calcBudget*1000000/8),unit:"impressions at $8 CPM",reach:"Highly targeted segments",roi:"$1.50-3 per $1 trackable",note:"Data-driven. Measurable. Not memorable."},{ch:"YouTube Pre-Roll",cl:"#FF3008",val:Math.round(calcBudget*1000000/20),unit:"completed views at $20 CPV",reach:(Math.round(calcBudget*1000000/20)).toLocaleString()+" guaranteed views",roi:"$2-5 per $1 with retargeting",note:"Skippable = self-selecting audience."},{ch:"Podcast Sponsorship",cl:"#D4A843",val:Math.round(calcBudget*1000000/25000),unit:"podcast reads at $25K avg",reach:(Math.round(calcBudget*1000000/25000*50000)).toLocaleString()+" listens",roi:"$3-6 per $1 high trust",note:"Host-read = built-in endorsement."}].map((ch,i)=>(
+      <div key={i} style={{...S.cd, borderColor:ch.cl+"20"}}><div style={{ padding:"18px 20px" }}>
+        <div style={{ fontFamily:"Oswald", fontSize:16, fontWeight:600, color:ch.cl, marginBottom:10 }}>{ch.ch}</div>
+        <div style={{ fontFamily:"Oswald", fontSize:32, fontWeight:700, color:"#e2e8f0", lineHeight:1 }}>{typeof ch.val==="number"?ch.val.toLocaleString():ch.val}</div>
+        <div style={{ fontSize:12, color:"#64748b", marginBottom:12 }}>{ch.unit}</div>
+        <div style={{ padding:"8px 0", borderTop:"1px solid #111827", fontSize:12, color:"#94a3b8" }}><strong style={{color:"#e2e8f0"}}>Reach:</strong> {ch.reach}</div>
+        <div style={{ padding:"8px 0", borderTop:"1px solid #111827", fontSize:12, color:"#94a3b8" }}><strong style={{color:"#e2e8f0"}}>ROI:</strong> {ch.roi}</div>
+        <div style={{ fontSize:11, color:"#64748b", fontStyle:"italic", marginTop:6 }}>{ch.note}</div>
+      </div></div>
+    ))}
+  </div>
+</div>}
+
+{tab==="audience"&&<div>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>Audience Insights</h2>
+  <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:10, marginBottom:24 }}>
+    {[{v:"130M+",l:"Viewers 2026 est",cl:"#D4A843"},{v:"26%",l:"Watch for ads",cl:"#69BE28"},{v:"50%",l:"Use second screen",cl:"#4285F4"},{v:"72%",l:"Discuss on social",cl:"#FF69B4"}].map((s,i)=>(
+      <div key={i} style={{ textAlign:"center", padding:"16px 10px", borderRadius:10, background:"#0f1420", border:"1px solid #1a1f2e" }}>
+        <div style={{ fontFamily:"Oswald", fontSize:24, fontWeight:700, color:s.cl }}>{s.v}</div>
+        <div style={{ fontSize:10, color:"#64748b", letterSpacing:1, textTransform:"uppercase", marginTop:4 }}>{s.l}</div>
+      </div>
+    ))}
+  </div>
+  <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
+    <div style={S.cd}><div style={{ padding:"18px 20px" }}>
+      <div style={{...S.lb, color:"#D4A843", marginBottom:12}}>DEMOGRAPHICS</div>
+      {[{d:"Male 18-49",p:38},{d:"Female 18-49",p:34},{d:"Male 50+",p:15},{d:"Female 50+",p:13}].map((dm,i)=>(
+        <div key={i} style={{ marginBottom:10 }}>
+          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}><span style={{ fontSize:13, color:"#e2e8f0" }}>{dm.d}</span><span style={{ fontFamily:"Oswald", fontSize:13, color:"#D4A843" }}>{dm.p+"%"}</span></div>
+          <div style={{ height:6, borderRadius:3, background:"#1a1f2e", overflow:"hidden" }}><div style={{ width:dm.p+"%", height:"100%", borderRadius:3, background:"linear-gradient(90deg,#D4A843,#8B6914)" }}/></div>
+        </div>
+      ))}
+    </div></div>
+    <div style={S.cd}><div style={{ padding:"18px 20px" }}>
+      <div style={{...S.lb, color:"#4285F4", marginBottom:12}}>SECOND-SCREEN BEHAVIOR</div>
+      {[{b:"Checking social during ads",p:72},{b:"Searching products from ads",p:45},{b:"Texting about ads",p:58},{b:"Visiting advertiser sites",p:31}].map((bh,i)=>(
+        <div key={i} style={{ marginBottom:10 }}>
+          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}><span style={{ fontSize:12, color:"#94a3b8" }}>{bh.b}</span><span style={{ fontFamily:"Oswald", fontSize:13, color:"#4285F4" }}>{bh.p+"%"}</span></div>
+          <div style={{ height:6, borderRadius:3, background:"#1a1f2e", overflow:"hidden" }}><div style={{ width:bh.p+"%", height:"100%", borderRadius:3, background:"linear-gradient(90deg,#4285F4,#1a56c4)" }}/></div>
+        </div>
+      ))}
+    </div></div>
+    <div style={S.cd}><div style={{ padding:"18px 20px" }}>
+      <div style={{...S.lb, color:"#69BE28", marginBottom:12}}>SOCIAL SURGE PATTERN</div>
+      {[{t:"Pre-game",v:"12%",w:12},{t:"Q1-Q2 ad breaks",v:"22%",w:22},{t:"Halftime",v:"28%",w:28},{t:"Q3-Q4 ad breaks",v:"18%",w:18},{t:"Post-game",v:"12%",w:12}].map((sg,i)=>(
+        <div key={i} style={{ marginBottom:8 }}>
+          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ fontSize:11, color:"#94a3b8" }}>{sg.t}</span><span style={{ fontFamily:"Oswald", fontSize:12, color:"#69BE28" }}>{sg.v}</span></div>
+          <div style={{ height:6, borderRadius:3, background:"#1a1f2e", overflow:"hidden" }}><div style={{ width:(sg.w/28*100)+"%", height:"100%", borderRadius:3, background:"linear-gradient(90deg,#69BE28,#2d5c10)" }}/></div>
+        </div>
+      ))}
+    </div></div>
+  </div>
+</div>}
+
+{tab==="brief"&&<div style={{ maxWidth:700, margin:"0 auto" }}>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>Create Your SB Brief</h2>
+  <div style={{ display:"flex", gap:4, marginBottom:20 }}>
+    {["Category","Celeb","Tone","Hook","Results"].map((s,i)=>(
+      <div key={i} style={{ flex:1, textAlign:"center" }}>
+        <div style={{ height:4, borderRadius:2, background:briefStep>=i?"#D4A843":"#1a1f2e", marginBottom:6 }}/>
+        <div style={{ fontFamily:"Oswald", fontSize:10, color:briefStep>=i?"#D4A843":"#475569", letterSpacing:1 }}>{s}</div>
+      </div>
+    ))}
+  </div>
+  {briefStep===0&&<div style={S.cd}><div style={{ padding:"24px 20px" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>What are you advertising?</div>
+    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:10 }}>
+      {["Food and Bev","Tech / App","Auto","Financial","Entertainment","CPG / Retail"].map((cat,i)=>(
+        <div key={i} onClick={()=>{setBriefPicks({...briefPicks,cat:cat}); setBriefStep(1)}} style={{...S.cd, padding:"16px", cursor:"pointer", textAlign:"center", borderColor:briefPicks.cat===cat?"#D4A843":"#1a1f2e"}}>
+          <div style={{ fontFamily:"Oswald", fontSize:13, color:briefPicks.cat===cat?"#D4A843":"#e2e8f0" }}>{cat}</div>
+        </div>
+      ))}
+    </div>
+  </div></div>}
+  {briefStep===1&&<div style={S.cd}><div style={{ padding:"24px 20px" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>Pick your celebrity strategy</div>
+    <div style={{ display:"grid", gap:10 }}>
+      {[{n:"A-List Actor",d:"Broad appeal, safe",s:7},{n:"Musician / Pop Star",d:"Younger demo, social amp",s:8},{n:"Comedian",d:"Shareability, meme potential",s:9},{n:"Athlete",d:"Built-in SB audience",s:7},{n:"No Celebrity",d:"Bold. Forces creative to carry",s:6},{n:"Influencer / Creator",d:"Gen Z native. Emerging play",s:5}].map((c,i)=>(
+        <div key={i} onClick={()=>{setBriefPicks({...briefPicks,celeb:c.n,celebScore:c.s}); setBriefStep(2)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:briefPicks.celeb===c.n?"#D4A843":"#1a1f2e"}}>
+          <div style={{ fontFamily:"Oswald", fontSize:14, color:briefPicks.celeb===c.n?"#D4A843":"#e2e8f0" }}>{c.n}</div>
+          <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{c.d}</div>
+        </div>
+      ))}
+    </div>
+  </div></div>}
+  {briefStep===2&&<div style={S.cd}><div style={{ padding:"24px 20px" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>Choose your tone</div>
+    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:10 }}>
+      {[{n:"Humor / Comedy",s:9},{n:"Emotional",s:8},{n:"Epic / Cinematic",s:7},{n:"Nostalgic",s:8},{n:"Provocative",s:6},{n:"Wholesome",s:7}].map((t,i)=>(
+        <div key={i} onClick={()=>{setBriefPicks({...briefPicks,tone:t.n,toneScore:t.s}); setBriefStep(3)}} style={{...S.cd, padding:"16px", cursor:"pointer", textAlign:"center", borderColor:briefPicks.tone===t.n?"#D4A843":"#1a1f2e"}}>
+          <div style={{ fontFamily:"Oswald", fontSize:13, color:briefPicks.tone===t.n?"#D4A843":"#e2e8f0" }}>{t.n}</div>
+        </div>
+      ))}
+    </div>
+  </div></div>}
+  {briefStep===3&&<div style={S.cd}><div style={{ padding:"24px 20px" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>Emotional hook?</div>
+    <div style={{ display:"grid", gap:10 }}>
+      {[{n:"Surprise Twist",d:"Unexpected ending",s:9},{n:"Nostalgia Trip",d:"Callback to beloved moment",s:8},{n:"Underdog Story",d:"Small beats big",s:7},{n:"Pure Spectacle",d:"Visual wow factor",s:6},{n:"Social Commentary",d:"Take a stance",s:7},{n:"Absurdist Humor",d:"So weird it works",s:8}].map((h,i)=>(
+        <div key={i} onClick={()=>{setBriefPicks({...briefPicks,hook:h.n,hookScore:h.s}); setBriefStep(4)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:briefPicks.hook===h.n?"#D4A843":"#1a1f2e"}}>
+          <div style={{ fontFamily:"Oswald", fontSize:14, color:briefPicks.hook===h.n?"#D4A843":"#e2e8f0" }}>{h.n}</div>
+          <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{h.d}</div>
+        </div>
+      ))}
+    </div>
+  </div></div>}
+  {briefStep===4&&<div>
+    <div style={{...S.cd, marginBottom:16}}><div style={{ padding:"24px 20px" }}>
+      <div style={{ fontFamily:"Oswald", fontSize:18, color:"#D4A843", marginBottom:16 }}>Your Creative Brief</div>
+      {[{l:"Category",v:briefPicks.cat},{l:"Celebrity",v:briefPicks.celeb},{l:"Tone",v:briefPicks.tone},{l:"Hook",v:briefPicks.hook}].map((f,i)=>(
+        <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"10px 0", borderBottom:"1px solid #111827" }}>
+          <span style={{ fontFamily:"Oswald", fontSize:12, color:"#64748b" }}>{f.l}</span>
+          <span style={{ fontFamily:"Oswald", fontSize:14, color:"#e2e8f0" }}>{f.v}</span>
+        </div>
+      ))}
+    </div></div>
+    <div style={{...S.cd}}><div style={{ padding:"24px 20px", textAlign:"center" }}>
+      <div style={{ fontFamily:"Oswald", fontSize:64, fontWeight:700, color:((briefPicks.celebScore||0)+(briefPicks.toneScore||0)+(briefPicks.hookScore||0))>=24?"#69BE28":"#D4A843" }}>{(briefPicks.celebScore||0)+(briefPicks.toneScore||0)+(briefPicks.hookScore||0)}</div>
+      <div style={{ fontFamily:"Oswald", fontSize:14, color:"#64748b" }}>out of 27</div>
+      <div style={{ fontSize:14, color:"#94a3b8", marginTop:8 }}>{((briefPicks.celebScore||0)+(briefPicks.toneScore||0)+(briefPicks.hookScore||0))>=24?"Agency-ready! Real SB potential.":"Solid brief. A few tweaks and you are in the game."}</div>
+      <button onClick={()=>{setBriefStep(0);setBriefPicks({})}} style={{...bt("linear-gradient(135deg,#D4A843,#8B6914)","#fff"), marginTop:16}}>Build Another Brief</button>
+    </div></div>
+  </div>}
+</div>}
+
+  {briefStep>0&&briefStep<4&&<div style={{ marginTop:16, textAlign:"center" }}><button onClick={()=>setBriefStep(briefStep-1)} style={bt("#1a1f2e","#64748b")}>Back</button></div>}
+</div>}
+
+{tab==="glossary"&&<div>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>Marketing Glossary</h2>
+  <input placeholder="Search terms..." value={glossSrch} onChange={e=>setGlossSrch(e.target.value)} style={{ width:"100%", padding:"12px 18px", borderRadius:8, border:"1px solid #1a1f2e", background:"#0f1420", color:"#e2e8f0", fontSize:14, outline:"none", marginBottom:20, boxSizing:"border-box" }}/>
+  <div style={{ display:"grid", gap:8 }}>
+    {[{t:"SOV (Share of Voice)",d:"Percentage of total advertising in a category owned by one brand."},{t:"Earned Media",d:"Free publicity from PR, social shares, news coverage. Great SB ads generate 10-15x their cost."},{t:"CPM (Cost Per Mille)",d:"Cost per 1,000 impressions. SB LX CPM is roughly $62."},{t:"Ad Meter",d:"USA Today real-time viewer ranking. The industry most-cited SB ad ranking."},{t:"Hub and Spoke Model",d:"TV spot hub amplified by digital spokes: social, YouTube, PR, influencers."},{t:"Sentiment Analysis",d:"AI measurement of whether social mentions are positive, negative, or neutral."},{t:"Second Screen",d:"Viewers using phones while watching TV. 50%+ of SB viewers use a second screen."},{t:"Brand Lift",d:"Measurable increase in awareness, favorability, or purchase intent after a campaign."},{t:"War Room",d:"Real-time command center during the game. Social team monitoring and responding live."},{t:"Attribution",d:"Connecting ad exposure to business outcomes. The hardest part of SB measurement."},{t:"Challenger Brand",d:"Brand competing against leaders by being disruptive or unconventional."},{t:"DTC (Direct-to-Consumer)",d:"Brand selling directly without retail intermediaries."},{t:"ROI (Return on Investment)",d:"Revenue per dollar spent. Average SB ROI is $5.20 per $1."},{t:"Viral Coefficient",d:"How many new viewers each viewer generates through sharing."},{t:"UGC (User-Generated Content)",d:"Content created by fans rather than the brand."}].filter(g=>!glossSrch||g.t.toLowerCase().indexOf(glossSrch.toLowerCase())>=0||g.d.toLowerCase().indexOf(glossSrch.toLowerCase())>=0).map((g,i)=>(
+      <div key={i} style={S.cd}><div style={{ padding:"14px 18px" }}>
+        <div style={{ fontFamily:"Oswald", fontSize:14, fontWeight:600, color:"#D4A843", marginBottom:6 }}>{g.t}</div>
+        <div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.6 }}>{g.d}</div>
+      </div></div>
+    ))}
+  </div>
+</div>}
+
+{tab==="rivalries"&&<div>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>Rivalry Marketing</h2>
+  <p style={{ color:"#94a3b8", marginBottom:20, lineHeight:1.7 }}>The greatest brand wars in marketing history. Strategy frameworks, competitive playbooks, and real lessons.</p>
+  <div style={{ display:"flex", gap:8, marginBottom:24, flexWrap:"wrap" }}>
+    {["Pepsi vs Coca-Cola","Nike vs Adidas","Burger King vs McDonalds","Mac vs PC","Uber vs Lyft"].map((b,i)=>(
+      <button key={i} onClick={()=>setRivalPair(i)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"8px 16px",borderRadius:20,border:"1px solid "+(rivalPair===i?"#FF3008":"#1a1f2e"),background:rivalPair===i?"rgba(255,48,8,0.08)":"transparent",color:rivalPair===i?"#FF3008":"#64748b",cursor:"pointer" }}>{b}</button>
+    ))}
+  </div>
+  {[{idx:0,a:"Pepsi",ac:"#004B93",b2:"Coca-Cola",bc:"#C8102E",desc:"The 130-year war that invented competitive marketing.",secs:[{t:"Strategic Framework",cl:"#FF3008",items:[{h:"Positioning",v:"Coke owns HERITAGE. Pepsi owns YOUTH. Foundational challenger vs incumbent framework."},{h:"Pepsi Challenge",v:"Blind taste test. Pepsi won on taste. Forced Coke into the disastrous New Coke reformulation."},{h:"New Coke Lesson",v:"Brand equity is more powerful than product superiority. Customers buy identity, not ingredients."},{h:"The Real Lesson",v:"Pepsi never overtook Coke in share. The rivalry itself became the positioning."}]},{t:"SB Head-to-Head",cl:"#D4A843",items:[{h:"Coke Strategy",v:"Emotional, universal, unifying. Never mentions Pepsi. Incumbent playbook: do not engage."},{h:"Pepsi Strategy",v:"Celebrity-driven, provocative, comparative. Challenger playbook: force the comparison."},{h:"2026",v:"Pepsi back with The Choice callback. Coke absent this year."}]},{t:"Monday Morning Framework",cl:"#69BE28",items:[{h:"Know Your Role",v:"Are you Coke or Pepsi? Challenger and incumbent require different playbooks."},{h:"Rivalry Is Strategy",v:"Pepsi NEEDS Coke. Without rivalry, Pepsi is just another soda. Who is YOUR Coke?"},{h:"Never Change Formula",v:"New Coke is the ultimate cautionary tale. Brand equity beats product features."}]}]},{idx:1,a:"Nike",ac:"#FF6B00",b2:"Adidas",bc:"#e2e8f0",desc:"Performance vs lifestyle. Athlete-first vs culture-first.",secs:[{t:"Positioning",cl:"#FF6B00",items:[{h:"Nike",v:"Just Do It. Every campaign starts with athletic performance. Jordan, LeBron, Serena. The athlete IS the brand."},{h:"Adidas",v:"Culture and collaboration. Kanye, Pharrell, Bad Bunny. Three stripes on a runway, not just a track."},{h:"Market Share",v:"Nike: 27% global. Adidas: 15%. But Adidas leads in lifestyle segments."}]},{t:"Content Comparison",cl:"#D4A843",items:[{h:"Nike",v:"Hero brand films. 300M+ IG followers. Inspirational athlete content at massive scale."},{h:"Adidas",v:"Collabs as content events. Each drop IS the campaign. Less advertising, more culture."},{h:"Kaepernick Play",v:"Dream Crazy: stock dipped 3% day one, rose 5% within a month. $6B brand value added."}]},{t:"Framework",cl:"#69BE28",items:[{h:"Choose Your Lane",v:"Performance/aspiration or culture/identity? Both work. Straddling both fails."},{h:"Controversy as Strategy",v:"Brand stance drives loyalty IF your existing customers are aligned. Research first."}]}]},{idx:2,a:"Burger King",ac:"#FF8732",b2:"McDonalds",bc:"#FFC72C",desc:"The QSR war that invented troll marketing.",secs:[{t:"The Troll Playbook",cl:"#FF8732",items:[{h:"Whopper Detour",v:"1-cent Whoppers ONLY if ordered within 600 feet of a McDonalds. 1.5M app downloads. 33:1 ROI."},{h:"Moldy Whopper",v:"Showed Whopper decomposing to prove no preservatives. Won Grand Prix at Cannes. Sales rose 14%."},{h:"McDonalds Response",v:"Almost NEVER responds directly. Acknowledging BK would elevate BK."}]},{t:"When Trolling Works",cl:"#D4A843",items:[{h:"Do",v:"Be the underdog. Target someone too big to respond. Have a PRODUCT TRUTH underneath the troll."},{h:"Do Not",v:"Troll without substance. Generate controversy without conversion. Make it more than 15% of your content."}]}]},{idx:3,a:"Mac",ac:"#A3AAAE",b2:"PC",bc:"#00A4EF",desc:"66 ads that proved personality-based positioning moves market share.",secs:[{t:"Campaign",cl:"#A3AAAE",items:[{h:"Setup",v:"Justin Long vs John Hodgman. Each 30-sec sketch compared one feature. Simple, repeatable. 66 total ads."},{h:"Why It Worked",v:"Compared IDENTITIES not specs. Turned product choice into personality choice."},{h:"Results",v:"Mac share: 2.6% to 9.1%. Most-recalled ad campaign of the decade."}]},{t:"Identity Framework",cl:"#D4A843",items:[{h:"The Model",v:"Stop selling features. Start selling identity. Your customer buys who they want to be."},{h:"Modern Examples",v:"Tesla vs traditional auto. Slack vs email. Oatly vs dairy. Same framework, different categories."}]}]},{idx:4,a:"Uber",ac:"#e2e8f0",b2:"Lyft",bc:"#FF00BF",desc:"How Lyft turned scandals into values positioning, then watched Uber outspend its way back.",secs:[{t:"Values Play",cl:"#FF00BF",items:[{h:"Lyft 2017-2019",v:"Delete Uber movement. Lyft positioned as ethical alternative. Did not need to attack - Uber scandals did the work."},{h:"Uber Comeback",v:"New CEO. Brand refresh. Uber Eats expansion. Outspent Lyft 5:1. Scale plus cash overcame brand damage."},{h:"Current State",v:"Uber: 76% US rideshare. Values positioning was real but insufficient against unlimited capital."}]},{t:"Framework",cl:"#D4A843",items:[{h:"When Values Win",v:"When competitor has genuine ethical issues and your audience cares and you deliver on the promise."},{h:"When Values Lose",v:"When competitor fixes the problem and outspends you. Values are a temporary moat, not permanent."}]}]}].filter(r=>r.idx===rivalPair).map(r=>(
+    <div key={r.idx}>
+      <div style={{...S.cd, marginBottom:16}}><div style={{ padding:"20px" }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+          <div style={{ fontFamily:"Oswald", fontSize:26, fontWeight:700, color:r.ac }}>{r.a}</div>
+          <div style={{ fontFamily:"Oswald", fontSize:16, color:"#64748b" }}>vs</div>
+          <div style={{ fontFamily:"Oswald", fontSize:26, fontWeight:700, color:r.bc }}>{r.b2}</div>
+        </div>
+        <div style={{ fontSize:14, color:"#c8cdd5", lineHeight:1.7 }}>{r.desc}</div>
+      </div></div>
+      <div style={{ display:"grid", gap:14 }}>
+        {r.secs.map((sec,si)=>(
+          <div key={si} style={S.cd}><div style={{ padding:"18px 20px" }}>
+            <div style={{...S.lb, color:sec.cl, marginBottom:12}}>{sec.t}</div>
+            {sec.items.map((it,ii)=>(
+              <div key={ii} style={{ padding:"10px 0", borderBottom:"1px solid #111827" }}>
+                <div style={{ fontFamily:"Oswald", fontSize:13, fontWeight:600, color:"#e2e8f0", marginBottom:4 }}>{it.h}</div>
+                <div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.7 }}>{it.v}</div>
+              </div>
+            ))}
+          </div></div>
+        ))}
+      </div>
+    </div>
+  ))}
+</div>}
+
+{tab==="hofame"&&<div>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>Sports Marketing Hall of Fame</h2>
+  <div style={{ display:"flex", gap:8, marginBottom:24, flexWrap:"wrap" }}>
+    {[{k:"all",l:"All"},{k:"nike",l:"Nike"},{k:"gatorade",l:"Gatorade"},{k:"espn",l:"ESPN"},{k:"other",l:"Other"}].map((f,i)=>(
+      <button key={i} onClick={()=>setHofCat(f.k)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid "+(hofCat===f.k?"#D4A843":"#1a1f2e"),background:hofCat===f.k?"rgba(212,168,67,0.08)":"transparent",color:hofCat===f.k?"#D4A843":"#64748b",cursor:"pointer" }}>{f.l}</button>
+    ))}
+  </div>
+  <div style={{ display:"grid", gap:16 }}>
+    {[{y:"1988",b:"Nike",cat:"nike",n:"Just Do It",d:"Three words that built a $50B brand. Transcended sports to become universal.",m:"Revenue: $800M to $51B"},{y:"1991",b:"Gatorade",cat:"gatorade",n:"Be Like Mike",d:"First true athlete-as-lifestyle endorsement. Kids wanted to drink what Mike drank.",m:"85% US sports drink market share"},{y:"1993",b:"ESPN",cat:"espn",n:"This Is SportsCenter",d:"200+ ads over 30 years. Proved a network could have brand personality.",m:"Most-awarded sports media campaign ever"},{y:"2003",b:"Nike",cat:"nike",n:"Write the Future",d:"World Cup 3-min film. Ronaldo, Rooney, Drogba. Bigger than most movie trailers.",m:"100M+ YouTube views"},{y:"2012",b:"Nike",cat:"nike",n:"Find Your Greatness",d:"London Olympics ambush marketing genius. No sponsorship needed. Won the conversation over Adidas.",m:"Nike buzz 5x higher than official sponsor"},{y:"2018",b:"Nike",cat:"nike",n:"Dream Crazy",d:"Kaepernick. Most divisive and successful sports ad ever. People burned Nikes. Stock soared.",m:"$6B brand value increase"},{y:"2023",b:"Other",cat:"other",n:"Welcome to Wrexham",d:"Ryan Reynolds bought a Welsh club and made it a docuseries. The show IS the marketing.",m:"Club value: $5M to $85M+"}].filter(c=>hofCat==="all"||c.cat===hofCat).map((c,i)=>(
+      <div key={i} style={S.cd}><div style={{ padding:"20px" }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:10 }}>
+          <div><div style={{ fontFamily:"Oswald", fontSize:20, fontWeight:700, color:"#D4A843" }}>{c.n}</div><div style={{ fontFamily:"Oswald", fontSize:12, color:"#64748b", marginTop:2 }}>{c.b+" | "+c.y}</div></div>
+        </div>
+        <div style={{ fontSize:13, color:"#c8cdd5", lineHeight:1.7, marginBottom:14 }}>{c.d}</div>
+        <div style={{ padding:8, borderRadius:6, background:"rgba(212,168,67,0.05)", border:"1px solid rgba(212,168,67,0.15)" }}>
+          <div style={{ fontFamily:"Oswald", fontSize:10, color:"#D4A843", letterSpacing:2 }}>KEY METRIC</div>
+          <div style={{ fontSize:12, color:"#e2e8f0", marginTop:2 }}>{c.m}</div>
+        </div>
+      </div></div>
+    ))}
+  </div>
+</div>}
+
+{tab==="halftime"&&<div>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>Halftime Show Marketing</h2>
+  <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:10, marginBottom:24 }}>
+    {[{v:"$1B+",l:"Annual brand value",cl:"#D4A843"},{v:"120M+",l:"Halftime viewers",cl:"#C8102E"},{v:"13 min",l:"Avg performance",cl:"#69BE28"},{v:"500%",l:"Artist streaming spike",cl:"#FF69B4"}].map((s,i)=>(
+      <div key={i} style={{ textAlign:"center", padding:"14px 10px", borderRadius:10, background:"#0f1420", border:"1px solid #1a1f2e" }}>
+        <div style={{ fontFamily:"Oswald", fontSize:22, fontWeight:700, color:s.cl }}>{s.v}</div>
+        <div style={{ fontSize:10, color:"#64748b", letterSpacing:1, textTransform:"uppercase", marginTop:4 }}>{s.l}</div>
+      </div>
+    ))}
+  </div>
+  <div style={{ display:"flex", gap:8, marginBottom:20, flexWrap:"wrap" }}>
+    {[{k:"timeline",l:"Sponsor Timeline"},{k:"brands",l:"Brand Integration"},{k:"artists",l:"Artist Impact"}].map((v,i)=>(
+      <button key={i} onClick={()=>setHtView(v.k)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"8px 16px",borderRadius:20,border:"1px solid "+(htView===v.k?"#D4A843":"#1a1f2e"),background:htView===v.k?"rgba(212,168,67,0.08)":"transparent",color:htView===v.k?"#D4A843":"#64748b",cursor:"pointer" }}>{v.l}</button>
+    ))}
+  </div>
+  {htView==="timeline"&&<div style={{ display:"grid", gap:12 }}>
+    {[{yr:"1993-2001",s:"Early Corporate Era",d:"Michael Jackson changed everything by proving halftime could be a cultural event.",cl:"#94a3b8"},{yr:"2004",s:"Janet Jackson Moment",d:"Wardrobe malfunction changed FCC regulation and halftime risk calculus overnight.",cl:"#C8102E"},{yr:"2012-2022",s:"The Pepsi Decade",d:"$50M/year for title sponsorship. Beyonce, Katy Perry, Lady Gaga, Shakira/JLo. The golden era.",cl:"#004B93"},{yr:"2023-now",s:"Apple Music Era",d:"Tech replaces CPG. Rihanna, Usher, Kendrick Lamar. Cultural association over reach.",cl:"#FF2D55"}].map((e,i)=>(
+      <div key={i} style={S.cd}><div style={{ padding:"18px 20px" }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
+          <div style={{ fontFamily:"Oswald", fontSize:16, fontWeight:600, color:e.cl }}>{e.s}</div>
+          <div style={{ fontFamily:"Oswald", fontSize:13, color:"#475569" }}>{e.yr}</div>
+        </div>
+        <div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.7 }}>{e.d}</div>
+      </div></div>
+    ))}
+  </div>}
+  {htView==="brands"&&<div style={{ display:"grid", gap:14 }}>
+    {[{t:"Title Sponsor Value",cl:"#D4A843",items:[{h:"What $50M/year buys",v:"Logo on stage, name in broadcast, exclusive social content, backstage branding. Est $400M+ in media value."},{h:"Pepsi Play",v:"Reached young demographics cord-cutting from traditional TV. Halftime skews 18-34."},{h:"Apple Strategy",v:"Does not need awareness. Needs cultural association. Positioning play, not reach play."}]},{t:"Secondary Integration",cl:"#69BE28",items:[{h:"Artist Partnerships",v:"Rihanna launched Fenty Beauty during halftime. Visible pregnant belly = $5.6M earned for Fenty in 12 hours."},{h:"Wardrobe as Marketing",v:"Every outfit is a brand deal. Designers pay $1-5M for the artist to wear their work."},{h:"Social Content Rights",v:"Backstage social content can reach 50M+ within hours. Content rights are now as valuable as logo placement."}]}].map((sec,si)=>(
+      <div key={si} style={S.cd}><div style={{ padding:"18px 20px" }}>
+        <div style={{...S.lb, color:sec.cl, marginBottom:12}}>{sec.t}</div>
+        {sec.items.map((it,ii)=>(
+          <div key={ii} style={{ padding:"10px 0", borderBottom:"1px solid #111827" }}>
+            <div style={{ fontFamily:"Oswald", fontSize:13, fontWeight:600, color:"#e2e8f0", marginBottom:4 }}>{it.h}</div>
+            <div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.7 }}>{it.v}</div>
+          </div>
+        ))}
+      </div></div>
+    ))}
+  </div>}
+  {htView==="artists"&&<div style={S.cd}><div style={{ padding:"18px 20px" }}>
+    <div style={{...S.lb, color:"#FF69B4", marginBottom:12}}>STREAMING SPIKE POST-HALFTIME</div>
+    {[{a:"Shakira/JLo 2020",p:800},{a:"Rihanna 2023",p:640},{a:"Usher 2024",p:550},{a:"Kendrick 2025 est",p:500},{a:"Eminem/Dre 2022",p:420}].map((a,i)=>(
+      <div key={i} style={{ marginBottom:10 }}>
+        <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}><span style={{ fontSize:12, color:"#e2e8f0" }}>{a.a}</span><span style={{ fontFamily:"Oswald", fontSize:13, color:"#FF69B4" }}>{"+" + a.p + "%"}</span></div>
+        <div style={{ height:6, borderRadius:3, background:"#1a1f2e", overflow:"hidden" }}><div style={{ width:Math.min(a.p/800*100,100)+"%", height:"100%", borderRadius:3, background:"linear-gradient(90deg,#FF69B4,#8B0040)" }}/></div>
+      </div>
+    ))}
+  </div></div>}
+</div>}
+
+{tab==="cmoseat"&&<div style={{ maxWidth:700, margin:"0 auto" }}>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>The CMO Hot Seat</h2>
+  <p style={{ color:"#94a3b8", marginBottom:24, lineHeight:1.7 }}>You are the CMO. The Super Bowl is in 6 weeks. Every decision will be judged by 130 million people.</p>
+  <div style={{ display:"flex", gap:4, marginBottom:20 }}>
+    {["Budget","Creative","Crisis","Measure","Score"].map((s,i)=>(
+      <div key={i} style={{ flex:1, textAlign:"center" }}>
+        <div style={{ height:4, borderRadius:2, background:cmoStep>=i?"#C8102E":"#1a1f2e", marginBottom:6 }}/>
+        <div style={{ fontFamily:"Oswald", fontSize:9, color:cmoStep>=i?"#C8102E":"#475569", letterSpacing:1 }}>{s}</div>
+      </div>
+    ))}
+  </div>
+  {cmoStep===0&&<div style={S.cd}><div style={{ padding:"24px 20px" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#C8102E", marginBottom:6 }}>BUDGET ALLOCATION</div>
+    <div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.6, marginBottom:20 }}>CEO approved $12M. The 30-sec spot costs $8M. You have $4M remaining. How?</div>
+    <div style={{ display:"grid", gap:10 }}>
+      {[{n:"All-in on production",d:"$4M on a cinematic masterpiece.",s:5},{n:"Hub and Spoke",d:"$1.5M production, $1.5M social, $1M influencer.",s:9},{n:"Extended cut strategy",d:"$2M TV + YouTube, $2M paid amplification.",s:8},{n:"Celebrity premium",d:"$3M on A-list celeb, $1M basic production.",s:4}].map((o,i)=>(
+        <div key={i} onClick={()=>{setCmoPicks({...cmoPicks,budget:o.n,bs:o.s}); setCmoStep(1); setCmoScore(cmoScore+o.s)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer"}}>
+          <div style={{ fontFamily:"Oswald", fontSize:14, color:"#e2e8f0" }}>{o.n}</div>
+          <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{o.d}</div>
+        </div>
+      ))}
+    </div>
+  </div></div>}
+  {cmoStep===1&&<div style={S.cd}><div style={{ padding:"24px 20px" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#C8102E", marginBottom:6 }}>CREATIVE DIRECTION</div>
+    <div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.6, marginBottom:20 }}>Agency presents 3 concepts. Funny one tests highest on Ad Meter. But your brand is known for emotional storytelling.</div>
+    <div style={{ display:"grid", gap:10 }}>
+      {[{n:"Go with funny one",d:"Trust the research data.",s:6},{n:"Stay true to brand DNA",d:"Consistency is your equity.",s:9},{n:"Merge both concepts",d:"Emotional with humor elements.",s:7},{n:"Kill all three, start over",d:"None feel like a cultural moment.",s:4}].map((o,i)=>(
+        <div key={i} onClick={()=>{setCmoPicks({...cmoPicks,creative:o.n,cs:o.s}); setCmoStep(2); setCmoScore(cmoScore+o.s)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer"}}>
+          <div style={{ fontFamily:"Oswald", fontSize:14, color:"#e2e8f0" }}>{o.n}</div>
+          <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{o.d}</div>
+        </div>
+      ))}
+    </div>
+  </div></div>}
+  {cmoStep===2&&<div style={S.cd}><div style={{ padding:"24px 20px" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#C8102E", marginBottom:6 }}>GAME DAY CRISIS</div>
+    <div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.6, marginBottom:20 }}>Your ad airs in Q2. Twitter is split: 60% love it, 40% call it tone-deaf. Social team awaits direction.</div>
+    <div style={{ display:"grid", gap:10 }}>
+      {[{n:"Acknowledge and pivot",d:"Post sincere statement. Pull extended cut.",s:8},{n:"Ride it out",d:"40% negative is 60% positive. Do not amplify.",s:7},{n:"Lean into conversation",d:"Respond with humor and grace.",s:9},{n:"Go dark on social",d:"Stop all posts. Resume tomorrow.",s:3}].map((o,i)=>(
+        <div key={i} onClick={()=>{setCmoPicks({...cmoPicks,crisis:o.n,crs:o.s}); setCmoStep(3); setCmoScore(cmoScore+o.s)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer"}}>
+          <div style={{ fontFamily:"Oswald", fontSize:14, color:"#e2e8f0" }}>{o.n}</div>
+          <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{o.d}</div>
+        </div>
+      ))}
+    </div>
+  </div></div>}
+  {cmoStep===3&&<div style={S.cd}><div style={{ padding:"24px 20px" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#C8102E", marginBottom:6 }}>POST-GAME MEASUREMENT</div>
+    <div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.6, marginBottom:20 }}>Monday. Board wants results. Ranked #8 Ad Meter. YouTube 2x target. Sentiment 78% positive. Sales data in 3 weeks.</div>
+    <div style={{ display:"grid", gap:10 }}>
+      {[{n:"Lead with YouTube wins",d:"Reframe around digital metrics.",s:7},{n:"Set expectations for sales data",d:"True ROI takes 3-4 weeks. Share leading indicators.",s:9},{n:"Spin Ad Meter ranking",d:"Top 8 out of 50+ is strong.",s:5},{n:"Full transparency",d:"Share all data honestly. Propose optimization plan.",s:8}].map((o,i)=>(
+        <div key={i} onClick={()=>{setCmoPicks({...cmoPicks,measure:o.n,ms:o.s}); setCmoStep(4); setCmoScore(cmoScore+o.s)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer"}}>
+          <div style={{ fontFamily:"Oswald", fontSize:14, color:"#e2e8f0" }}>{o.n}</div>
+          <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{o.d}</div>
+        </div>
+      ))}
+    </div>
+  </div></div>}
+  {cmoStep===4&&<div style={{...S.cd}}><div style={{ padding:"24px 20px", textAlign:"center" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:14, color:"#64748b", letterSpacing:2, marginBottom:8 }}>YOUR CMO SCORE</div>
+    <div style={{ fontFamily:"Oswald", fontSize:72, fontWeight:700, color:cmoScore>=30?"#69BE28":cmoScore>=24?"#D4A843":"#C8102E" }}>{cmoScore}</div>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#64748b" }}>out of 36</div>
+    <div style={{ fontSize:14, color:"#94a3b8", marginTop:12, maxWidth:400, margin:"12px auto 0", lineHeight:1.6 }}>{cmoScore>=30?"Elite CMO material. Board is renewing your contract.":cmoScore>=24?"Solid performance. A few more reps and you run a Fortune 500 brand.":"Tough day. Study the playbooks and try again."}</div>
+    <button onClick={()=>{setCmoStep(0);setCmoPicks({});setCmoScore(0)}} style={{...bt("linear-gradient(135deg,#C8102E,#8B0A1E)","#fff"), marginTop:16}}>Play Again</button>
+  </div></div>}
+  {cmoStep>0&&cmoStep<4&&<div style={{ marginTop:16, textAlign:"center" }}><button onClick={()=>{setCmoStep(cmoStep-1);setCmoScore(cmoScore-(cmoStep===1?(cmoPicks.bs||0):cmoStep===2?(cmoPicks.cs||0):(cmoPicks.crs||0)))}} style={bt("#1a1f2e","#64748b")}>Back</button></div>}
+</div>}
+
+{tab==="tenm"&&<div>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>The $10M Question</h2>
+  <p style={{ color:"#94a3b8", marginBottom:24, lineHeight:1.7 }}>Is a Super Bowl ad still worth it in 2026? Vote and get a personalized recommendation.</p>
+  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:24 }}>
+    <div style={{...S.cd, borderColor:"rgba(105,190,40,0.2)", cursor:"pointer"}} onClick={()=>setTenMVote("yes")}><div style={{ padding:"20px", borderBottom:tenMVote==="yes"?"2px solid #69BE28":"2px solid transparent" }}>
+      <div style={{ fontFamily:"Oswald", fontSize:20, fontWeight:700, color:"#69BE28", marginBottom:12 }}>BULL CASE</div>
+      {["130M simultaneous viewers","$5.20 avg ROI per $1","Cultural moment nothing else replicates","Earned media 10-15x paid spend","Single-day awareness = 6 months digital"].map((p,i)=>(
+        <div key={i} style={{ padding:"5px 0", fontSize:12, color:"#94a3b8", borderBottom:"1px solid #111827" }}>{p}</div>
+      ))}
+      <div style={{ marginTop:12, fontFamily:"Oswald", fontSize:12, textAlign:"center", padding:"8px", borderRadius:20, border:"2px solid "+(tenMVote==="yes"?"#69BE28":"#1a1f2e"), color:tenMVote==="yes"?"#69BE28":"#64748b" }}>{tenMVote==="yes"?"YOUR VOTE":"WORTH IT"}</div>
+    </div></div>
+    <div style={{...S.cd, borderColor:"rgba(200,16,46,0.2)", cursor:"pointer"}} onClick={()=>setTenMVote("no")}><div style={{ padding:"20px", borderBottom:tenMVote==="no"?"2px solid #C8102E":"2px solid transparent" }}>
+      <div style={{ fontFamily:"Oswald", fontSize:20, fontWeight:700, color:"#C8102E", marginBottom:12 }}>BEAR CASE</div>
+      {["$8-10M for 30 seconds","Crypto Bowl proved ads dont guarantee success","Younger demos cord-cutting","Same budget = 6 months targeted digital","One bad ad = meme for wrong reasons"].map((p,i)=>(
+        <div key={i} style={{ padding:"5px 0", fontSize:12, color:"#94a3b8", borderBottom:"1px solid #111827" }}>{p}</div>
+      ))}
+      <div style={{ marginTop:12, fontFamily:"Oswald", fontSize:12, textAlign:"center", padding:"8px", borderRadius:20, border:"2px solid "+(tenMVote==="no"?"#C8102E":"#1a1f2e"), color:tenMVote==="no"?"#C8102E":"#64748b" }}>{tenMVote==="no"?"YOUR VOTE":"NOT WORTH IT"}</div>
+    </div></div>
+  </div>
+  <div style={{...S.cd}}><div style={{ padding:"24px 20px" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:18, color:"#D4A843", marginBottom:6 }}>Should YOUR Brand Buy a Super Bowl Ad?</div>
+    <div style={{ fontSize:13, color:"#94a3b8", marginBottom:20 }}>Answer 3 questions for a personalized recommendation.</div>
+    <div style={{ display:"grid", gap:16 }}>
+      <div>
+        <div style={{ fontFamily:"Oswald", fontSize:12, color:"#64748b", letterSpacing:1, marginBottom:8 }}>1. BRAND STAGE</div>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))", gap:8 }}>
+          {["Startup","Growth","Established","Turnaround"].map((s,i)=>(
+            <div key={i} onClick={()=>setTenMTool({...tenMTool,stage:s})} style={{...S.cd, padding:"10px", cursor:"pointer", textAlign:"center", borderColor:tenMTool.stage===s?"#D4A843":"#1a1f2e"}}>
+              <div style={{ fontSize:11, color:tenMTool.stage===s?"#D4A843":"#94a3b8" }}>{s}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <div style={{ fontFamily:"Oswald", fontSize:12, color:"#64748b", letterSpacing:1, marginBottom:8 }}>2. ANNUAL MARKETING BUDGET</div>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))", gap:8 }}>
+          {["Under $10M","$10-50M","$50-200M","$200M+"].map((b,i)=>(
+            <div key={i} onClick={()=>setTenMTool({...tenMTool,budget:b})} style={{...S.cd, padding:"10px", cursor:"pointer", textAlign:"center", borderColor:tenMTool.budget===b?"#D4A843":"#1a1f2e"}}>
+              <div style={{ fontSize:11, color:tenMTool.budget===b?"#D4A843":"#94a3b8" }}>{b}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <div style={{ fontFamily:"Oswald", fontSize:12, color:"#64748b", letterSpacing:1, marginBottom:8 }}>3. PRIMARY GOAL</div>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))", gap:8 }}>
+          {["Mass awareness","Cultural relevance","Direct response","Category disruption"].map((g,i)=>(
+            <div key={i} onClick={()=>setTenMTool({...tenMTool,goal:g})} style={{...S.cd, padding:"10px", cursor:"pointer", textAlign:"center", borderColor:tenMTool.goal===g?"#D4A843":"#1a1f2e"}}>
+              <div style={{ fontSize:11, color:tenMTool.goal===g?"#D4A843":"#94a3b8" }}>{g}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+    {tenMTool.stage&&tenMTool.budget&&tenMTool.goal&&<div style={{ marginTop:24, padding:20, borderRadius:10, background:"#0a0d15", border:"1px solid #1a1f2e" }}>
+      <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:12 }}>YOUR RECOMMENDATION</div>
+      {tenMTool.budget==="$200M+"&&(tenMTool.goal==="Mass awareness"||tenMTool.goal==="Cultural relevance")?
+        <div><div style={{ fontFamily:"Oswald", fontSize:20, color:"#69BE28", marginBottom:8 }}>YES - Strong SB candidate</div><div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.7 }}>Your budget absorbs $8-10M without compromising your full-year plan. Goals align perfectly with what SB delivers. Allocate 15-20% of SB budget to pre and post amplification.</div></div>
+      :tenMTool.budget==="Under $10M"?
+        <div><div style={{ fontFamily:"Oswald", fontSize:20, color:"#C8102E", marginBottom:8 }}>NO - Not at this budget</div><div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.7 }}>A SB spot would consume your entire annual budget. Even if the ad performs well, you have nothing left for sustained marketing. Better: targeted digital, influencer partnerships, or ambush marketing at 1/10th the cost.</div></div>
+      :tenMTool.goal==="Direct response"?
+        <div><div style={{ fontFamily:"Oswald", fontSize:20, color:"#C8102E", marginBottom:8 }}>NO - Wrong channel for DR</div><div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.7 }}>SB is a brand awareness play. If your primary goal is direct response, $8-10M in performance marketing delivers dramatically better ROAS.</div></div>
+      :tenMTool.stage==="Startup"?
+        <div><div style={{ fontFamily:"Oswald", fontSize:20, color:"#D4A843", marginBottom:8 }}>HIGH RISK, HIGH REWARD</div><div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.7 }}>Can work if you have clear PMF, can fund post-SB demand, and your concept is genuinely disruptive. If any of those are shaky, wait.</div></div>
+      :<div><div style={{ fontFamily:"Oswald", fontSize:20, color:"#D4A843", marginBottom:8 }}>CONSIDER CAREFULLY</div><div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.7 }}>Your combination suggests a SB ad could work but is not a slam dunk. Key questions: Is the creative genuinely SB-worthy? Can you afford robust amplification? Do you have 6+ months of budget after the spot?</div></div>
+      }
+    </div>}
+  </div></div>
+</div>}
+
+
+{tab==="autopsy"&&<div>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>Ad Autopsy</h2>
+  <p style={{ color:"#94a3b8", marginBottom:20, lineHeight:1.7 }}>Famous Super Bowl ad disasters dissected. What went wrong, why it failed, and how YOU would fix it.</p>
+  <div style={{ display:"flex", gap:8, marginBottom:24, flexWrap:"wrap" }}>
+    {["Groupon Tibet","FTX Crypto","Quibi Launch","Pepsi Kendall Jenner"].map((b,i)=>(
+      <button key={i} onClick={()=>setAutCase(i)} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"8px 16px",borderRadius:20,border:"1px solid "+(autCase===i?"#C8102E":"#1a1f2e"),background:autCase===i?"rgba(200,16,46,0.08)":"transparent",color:autCase===i?"#C8102E":"#64748b",cursor:"pointer" }}>{b}</button>
+    ))}
+  </div>
+  {[
+    {idx:0,brand:"Groupon",yr:"2011",title:"Tibet Ad",verdict:"CULTURALLY OFFENSIVE",cost:"Est. $3M media + CEO public apology",cl:"#53A318",
+     what:"Timothy Hutton starts by describing Tibetan suffering under Chinese occupation, then pivots to: 'But they still whip up an amazing fish curry. And since 200 of us bought on Groupon.com...' Attempted satire. Landed as cruelty.",
+     why:[{h:"Satire vs Cruelty",v:"The creative team intended to parody celebrity cause campaigns. But the pivot from human suffering to discount fish curry read as mocking genocide."},{h:"Testing Bubble",v:"Agency creatives thought it was clever. Nobody in the room said 'this trivializes ethnic cleansing' because the room lacked diverse perspectives."},{h:"Brand Stage Mismatch",v:"Groupon was a growth-stage startup trying to seem edgy. Edgy requires earned cultural credibility. They had coupons."},{h:"No Recovery Plan",v:"No crisis playbook existed. CEO Andrew Mason posted a confused blog. The non-apology made it worse."}],
+     fix:[{n:"Flip the Script",d:"'200 of us bought Groupon deals at this Tibetan restaurant. $5 from every deal goes to Free Tibet.' Same structure, opposite message. Brand looks generous, not callous.",s:9},{n:"Pick a Safe Cause",d:"If you want cause-comedy, pick something universally safe. Animal rescue, local parks, school funding. Not active ethnic persecution.",s:7},{n:"Skip the Cause Angle Entirely",d:"You are a coupon company in 2011. Just be funny about saving money. You do not need to reference geopolitics.",s:8}]},
+    {idx:1,brand:"FTX",yr:"2022",title:"Crypto Bowl",verdict:"CATASTROPHIC FRAUD",cost:"$30M+ combined crypto SB spend. FTX collapsed 9 months later.",cl:"#00D2FF",
+     what:"Larry David starred in FTX's 'Don't Miss Out' ad, comparing crypto skeptics to people who doubted the wheel, democracy, and the moon landing. Nine months later, FTX was bankrupt, Sam Bankman-Fried arrested for fraud.",
+     why:[{h:"Product-Market Lie",v:"FTX did not have product-market fit. It had fraud dressed as innovation. No amount of Super Bowl advertising fixes a fundamentally broken product."},{h:"Celebrity Wash",v:"Larry David's credibility was used to launder a scam. The ad explicitly told viewers their skepticism was wrong. That skepticism was correct."},{h:"Industry Herding",v:"Crypto.com, FTX, Coinbase, eToro all advertised in the same game. Herding created false legitimacy. If everyone is advertising, it must be real."},{h:"Measurement Illusion",v:"FTX reported massive app download spikes post-game. But downloads without a real product are just future victims."}],
+     fix:[{n:"There Is No Fix",d:"When the product is fraud, marketing is complicity. The lesson is not 'how to advertise better.' It is 'verify the product before spending $30M.'",s:0},{n:"The Real Lesson for Marketers",d:"Ask before every SB buy: if this company disappeared tomorrow, would this ad make us look foolish? If the answer is anything but 'impossible,' reconsider.",s:9},{n:"Due Diligence as Marketing Strategy",d:"If you are in an emerging category, your SB ad should BUILD trust, not paper over its absence. Show audited numbers, real users, regulatory compliance.",s:8}]},
+    {idx:2,brand:"Quibi",yr:"2020",title:"Launch Campaign",verdict:"$1.75B BONFIRE",cost:"$1.75B total funding burned. Shut down in 6 months.",cl:"#6C00FF",
+     what:"Jeffrey Katzenberg's short-form streaming platform launched with multiple SB spots featuring A-list talent. The app shut down 6 months later despite $1.75B in funding.",
+     why:[{h:"No Product-Market Fit",v:"Quibi solved a problem that did not exist. Nobody wanted premium 10-minute shows on their phone. TikTok already owned short-form."},{h:"Awareness Without Desire",v:"The SB ads generated massive awareness. But awareness of something nobody wants is worthless. 90% awareness, 2% conversion."},{h:"Launch Timing Disaster",v:"Launched April 2020, peak COVID lockdowns. Their entire thesis was 'watch during your commute.' Commutes disappeared overnight."},{h:"Celebrity Over Utility",v:"Spent on Chrissy Teigen, Liam Hemsworth, and SB spots instead of building a product people actually wanted to use."}],
+     fix:[{n:"Beta Test Before Broadcast",d:"Spend $10M on a soft launch in 3 cities. Prove people actually watch before spending $100M on awareness. PMF before SB.",s:9},{n:"Pivot the Product",d:"If short-form premium existed today as YouTube Shorts exclusives, it might work. The format was not wrong. The distribution model was.",s:7},{n:"Influencer-First Launch",d:"Give 1,000 creators free accounts and let them promote organically. If creators love it, audiences follow. If they do not, you saved $1.75B.",s:8}]},
+    {idx:3,brand:"Pepsi",yr:"2017",title:"Kendall Jenner Protest Ad",verdict:"BRAND CRISIS",cost:"Pulled within 24 hours. Immeasurable reputation damage.",cl:"#004B93",
+     what:"Kendall Jenner leaves a photoshoot, joins a protest, and hands a police officer a Pepsi. World peace achieved. The ad was pulled within 24 hours after universal mockery for trivializing Black Lives Matter.",
+     why:[{h:"Appropriation",v:"Took real imagery of protest movements and commodified it to sell soda. The visual references to Ieshia Evans' iconic Baton Rouge photo were unmistakable and offensive."},{h:"In-House Creative",v:"Made by Pepsi's internal Creators League Studio, not an agency. Lacked the outside perspective and guardrails that an agency provides on sensitive topics."},{h:"Celebrity as Shield",v:"Using Kendall Jenner, a wealthy white model, as the face of protest resolution was tone-deaf on multiple dimensions simultaneously."},{h:"No Cultural Consultants",v:"Nobody with lived experience of protest movements was in the room. The creative team saw 'unity' while the world saw 'appropriation.'"}],
+     fix:[{n:"Amplify Real Voices",d:"Instead of staging a fake protest, fund real community organizers. Document their work. Let THEM tell the story. Pepsi as enabler, not protagonist.",s:9},{n:"Stay in Your Lane",d:"Pepsi is a fun soda brand. Make funny ads about soda. Not every brand needs to address social movements. Know your role.",s:8},{n:"Hire an Agency",d:"External agencies provide critical distance. They will tell you 'this is a terrible idea' when your internal team is too close to see it.",s:7}]}
+  ].filter(c=>c.idx===autCase).map(c=>(
+    <div key={c.idx}>
+      <div style={{...S.cd, marginBottom:16}}><div style={{ padding:"20px" }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
+          <div>
+            <div style={{ fontFamily:"Oswald", fontSize:24, fontWeight:700, color:c.cl }}>{c.brand}</div>
+            <div style={{ fontFamily:"Oswald", fontSize:13, color:"#64748b", marginTop:2 }}>{c.title+" | "+c.yr}</div>
+          </div>
+          <div style={{ fontFamily:"Oswald", fontSize:12, letterSpacing:2, color:"#C8102E", padding:"4px 12px", borderRadius:4, background:"rgba(200,16,46,0.1)", border:"1px solid rgba(200,16,46,0.2)" }}>{c.verdict}</div>
+        </div>
+        <div style={{ fontSize:14, color:"#c8cdd5", lineHeight:1.7, marginTop:12 }}>{c.what}</div>
+        <div style={{ fontSize:12, color:"#C8102E", marginTop:10, fontFamily:"Oswald", letterSpacing:1 }}>{"COST: "+c.cost}</div>
+      </div></div>
+      <div style={{...S.cd, marginBottom:16}}><div style={{ padding:"18px 20px" }}>
+        <div style={{...S.lb, color:"#C8102E", marginBottom:12}}>CAUSE OF DEATH</div>
+        {c.why.map((w,i)=>(
+          <div key={i} style={{ padding:"10px 0", borderBottom:"1px solid #111827" }}>
+            <div style={{ fontFamily:"Oswald", fontSize:13, fontWeight:600, color:"#e2e8f0", marginBottom:4 }}>{w.h}</div>
+            <div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.7 }}>{w.v}</div>
+          </div>
+        ))}
+      </div></div>
+      <div style={{...S.cd}}><div style={{ padding:"18px 20px" }}>
+        <div style={{...S.lb, color:"#69BE28", marginBottom:6}}>WHAT WOULD YOU DO DIFFERENTLY?</div>
+        <div style={{ fontSize:12, color:"#64748b", marginBottom:16 }}>Pick the fix you think would have saved the campaign.</div>
+        <div style={{ display:"grid", gap:10 }}>
+          {c.fix.map((f,i)=>(
+            <div key={i} onClick={()=>setAutFix(f.n)} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:autFix===f.n?(f.s>=8?"#69BE28":"#D4A843"):"#1a1f2e"}}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                <div style={{ fontFamily:"Oswald", fontSize:14, color:autFix===f.n?"#e2e8f0":"#94a3b8" }}>{f.n}</div>
+                {autFix===f.n&&<div style={{ fontFamily:"Oswald", fontSize:18, fontWeight:700, color:f.s>=8?"#69BE28":f.s>=6?"#D4A843":"#C8102E" }}>{f.s+"/9"}</div>}
+              </div>
+              <div style={{ fontSize:12, color:"#64748b", marginTop:4 }}>{f.d}</div>
+            </div>
+          ))}
+        </div>
+      </div></div>
+    </div>
+  ))}
+</div>}
+
+{tab==="voicelab"&&<div>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>Brand Voice Lab</h2>
+  <p style={{ color:"#94a3b8", marginBottom:20, lineHeight:1.7 }}>Pick any two brands and get a head-to-head voice, tone, and strategy breakdown.</p>
+  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:24 }}>
+    <div>
+      <div style={{ fontFamily:"Oswald", fontSize:11, color:"#64748b", letterSpacing:2, marginBottom:8 }}>BRAND A</div>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(90px,1fr))", gap:6 }}>
+        {["Budweiser","Nike","Apple","Pepsi","DoorDash","Dunkin","Old Spice","ChatGPT"].map((b,i)=>(
+          <div key={i} onClick={()=>setVlabA(b)} style={{ padding:"8px", borderRadius:6, textAlign:"center", cursor:"pointer", fontSize:11, fontFamily:"Oswald", letterSpacing:1, border:"1px solid "+(vlabA===b?"#69BE28":"#1a1f2e"), color:vlabA===b?"#69BE28":"#64748b", background:vlabA===b?"rgba(105,190,40,0.08)":"transparent" }}>{b}</div>
+        ))}
+      </div>
+    </div>
+    <div>
+      <div style={{ fontFamily:"Oswald", fontSize:11, color:"#64748b", letterSpacing:2, marginBottom:8 }}>BRAND B</div>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(90px,1fr))", gap:6 }}>
+        {["Budweiser","Nike","Apple","Pepsi","DoorDash","Dunkin","Old Spice","ChatGPT"].map((b,i)=>(
+          <div key={i} onClick={()=>setVlabB(b)} style={{ padding:"8px", borderRadius:6, textAlign:"center", cursor:"pointer", fontSize:11, fontFamily:"Oswald", letterSpacing:1, border:"1px solid "+(vlabB===b?"#C8102E":"#1a1f2e"), color:vlabB===b?"#C8102E":"#64748b", background:vlabB===b?"rgba(200,16,46,0.08)":"transparent" }}>{b}</div>
+        ))}
+      </div>
+    </div>
+  </div>
+  {vlabA&&vlabB&&vlabA!==vlabB&&(()=>{
+    const brands={
+      "Budweiser":{pos:"Heritage Americana",tone:"Cinematic, patriotic, earnest",aud:"35-65, heartland America",content:"Emotional brand films, Clydesdale franchise",social:"FB/IG heavy, minimal TikTok",risk:"Low",celebrity:"Animals > humans",color:"#C8102E"},
+      "Nike":{pos:"Athletic aspiration",tone:"Inspirational, bold, empowering",aud:"18-45, athletes and aspirational",content:"Hero films, athlete stories, cultural stance",social:"IG dominant, 300M+ followers",risk:"High (Kaepernick proved it pays off)",celebrity:"Athlete endorsements ($12B+ total)",color:"#FF6B00"},
+      "Apple":{pos:"Premium simplicity",tone:"Minimal, clever, human",aud:"25-55, creative professionals",content:"Product demos disguised as emotion",social:"YouTube focus, minimal social engagement",risk:"Low-medium",celebrity:"Rarely uses, prefers real people",color:"#A3AAAE"},
+      "Pepsi":{pos:"Youthful challenger",tone:"Fun, provocative, pop culture",aud:"18-34, trend-conscious",content:"Celebrity partnerships, music tie-ins",social:"Multi-platform, TikTok-forward",risk:"Medium-high",celebrity:"Music stars: Beyonce, Britney, Cardi B",color:"#004B93"},
+      "DoorDash":{pos:"Culture-jacking challenger",tone:"Irreverent, trolling, bold",aud:"21-40, urban, convenience-driven",content:"Provocative stunts, celeb partnerships",social:"Twitter/TikTok first, meme-native",risk:"Very high",celebrity:"Comedic/unexpected picks",color:"#FF3008"},
+      "Dunkin":{pos:"Everyman coffee culture",tone:"Fun, self-deprecating, wicked Boston",aud:"All ages, value-conscious, coffee addicts",content:"Celebrity comedy, meme-native, drive-through content",social:"IG/TikTok, Ben Affleck memes as content",risk:"Low-medium",celebrity:"Ben Affleck franchise (organic, not forced)",color:"#FF6600"},"ChatGPT":{pos:"AI for everyone",tone:"Friendly, accessible, optimistic",aud:"Mass market, early adopters to mainstream",content:"User story videos, demo-driven, demystification",social:"Twitter/X dominant, viral demos",risk:"Medium (AI backlash risk)",celebrity:"No celebrities - real users as stars",color:"#10A37F"},
+      "Old Spice":{pos:"Reinvented masculinity",tone:"Absurdist humor, self-aware",aud:"18-34 women (buyers) + men (users)",content:"Viral response campaigns, memes",social:"YouTube-first, social response",risk:"Medium",celebrity:"Isaiah Mustafa franchise",color:"#C8102E"},
+      "Coca-Cola":{pos:"Universal togetherness",tone:"Warm, inclusive, timeless",aud:"All ages, global",content:"Emotional universality, UGC (Share a Coke)",social:"Massive FB presence, IG lifestyle",risk:"Very low",celebrity:"Rarely - brand IS the celebrity",color:"#C8102E"}
+    };
+    const a=brands[vlabA]||brands["Budweiser"];
+    const b=brands[vlabB]||brands["Pepsi"];
+    const rows=[{l:"Positioning",ka:a.pos,kb:b.pos},{l:"Tone",ka:a.tone,kb:b.tone},{l:"Target Audience",ka:a.aud,kb:b.aud},{l:"Content Strategy",ka:a.content,kb:b.content},{l:"Social Platform",ka:a.social,kb:b.social},{l:"Risk Tolerance",ka:a.risk,kb:b.risk},{l:"Celebrity Strategy",ka:a.celebrity,kb:b.celebrity}];
+    return (
+      <div>
+        <div style={{...S.cd, marginBottom:16}}><div style={{ padding:"20px" }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
+            <div style={{ fontFamily:"Oswald", fontSize:24, fontWeight:700, color:a.color }}>{vlabA}</div>
+            <div style={{ fontFamily:"Oswald", fontSize:16, color:"#475569" }}>vs</div>
+            <div style={{ fontFamily:"Oswald", fontSize:24, fontWeight:700, color:b.color }}>{vlabB}</div>
+          </div>
+          {rows.map((r,i)=>(
+            <div key={i} style={{ display:"grid", gridTemplateColumns:"1fr auto 1fr", gap:12, padding:"12px 0", borderBottom:"1px solid #111827", alignItems:"start" }}>
+              <div style={{ fontSize:12, color:"#94a3b8", lineHeight:1.5 }}>{r.ka}</div>
+              <div style={{ fontFamily:"Oswald", fontSize:10, color:"#475569", letterSpacing:2, textAlign:"center", minWidth:80, paddingTop:2 }}>{r.l.toUpperCase()}</div>
+              <div style={{ fontSize:12, color:"#94a3b8", lineHeight:1.5, textAlign:"right" }}>{r.kb}</div>
+            </div>
+          ))}
+        </div></div>
+        <div style={{...S.cd}}><div style={{ padding:"20px" }}>
+          <div style={{...S.lb, color:"#D4A843", marginBottom:12}}>WHAT IF THEY SWAPPED STRATEGIES?</div>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
+            <div style={{ padding:14, borderRadius:8, background:"#0a0d15", border:"1px solid #151a28" }}>
+              <div style={{ fontFamily:"Oswald", fontSize:13, color:a.color, marginBottom:6 }}>{vlabA+" using "+vlabB+"'s voice"}</div>
+              <div style={{ fontSize:12, color:"#94a3b8", lineHeight:1.6 }}>{
+                vlabA==="Budweiser"&&vlabB==="DoorDash"?"Budweiser trolling on TikTok with Clydesdales doing meme dances. Horrifying. 150 years of brand equity destroyed in one viral moment.":
+                vlabA==="Nike"&&vlabB==="Coca-Cola"?"Nike going warm and inclusive instead of aspirational. Loses the edge that makes Just Do It iconic. Becomes generic activewear.":
+                vlabA==="Poppi"&&vlabB==="Budweiser"?"Poppi doing cinematic Americana. Loses the scrappy DTC energy that makes it authentic. Feels like it is trying too hard.":
+                vlabA+"'s brand equity would clash with "+vlabB+"'s tone. The audience expects "+a.tone.toLowerCase()+" and would get "+b.tone.toLowerCase()+". Jarring at best, damaging at worst."
+              }</div>
+            </div>
+            <div style={{ padding:14, borderRadius:8, background:"#0a0d15", border:"1px solid #151a28" }}>
+              <div style={{ fontFamily:"Oswald", fontSize:13, color:b.color, marginBottom:6 }}>{vlabB+" using "+vlabA+"'s voice"}</div>
+              <div style={{ fontSize:12, color:"#94a3b8", lineHeight:1.6 }}>{
+                vlabB==="Pepsi"&&vlabA==="Budweiser"?"Pepsi doing heritage storytelling. Loses the youthful challenger energy. Becomes a Coke clone. The whole point of Pepsi is NOT being Budweiser.":
+                vlabB==="Apple"&&vlabA==="Old Spice"?"Apple doing absurdist humor. Actually... the 2019 Mac Pro cheese grater memes suggest this could accidentally work. But officially? Brand suicide.":
+                vlabB==="Coca-Cola"&&vlabA==="Nike"?"Coke taking bold political stances. Alienates half its universal audience. Coke's power IS being for everyone.":
+                vlabB+"'s positioning built on "+b.tone.toLowerCase()+" would feel inauthentic with "+vlabA+"'s "+a.tone.toLowerCase()+" approach. Audiences detect inauthenticity instantly."
+              }</div>
+            </div>
+          </div>
+          <div style={{ marginTop:16, padding:12, borderRadius:8, background:"rgba(212,168,67,0.05)", border:"1px solid rgba(212,168,67,0.15)" }}>
+            <div style={{ fontFamily:"Oswald", fontSize:10, color:"#D4A843", letterSpacing:2, marginBottom:4 }}>THE LESSON</div>
+            <div style={{ fontSize:12, color:"#c8cdd5", lineHeight:1.6 }}>Brand voice is not interchangeable. It is built over years of consistent positioning. Swapping voices does not just feel wrong - it destroys the mental model customers have built. This is why brand guidelines exist and why tone-of-voice documents matter.</div>
+          </div>
+        </div></div>
+      </div>
+    );
+  })()}
+  {vlabA&&vlabB&&vlabA===vlabB&&<div style={{...S.cd, padding:"40px 20px", textAlign:"center"}}>
+    <div style={{ fontSize:48, marginBottom:12 }}>{"\\uD83E\\uDD14"}</div>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#64748b" }}>Pick two DIFFERENT brands to compare!</div>
+  </div>}
+  {(!vlabA||!vlabB)&&<div style={{...S.cd, padding:"40px 20px", textAlign:"center"}}>
+    <div style={{ fontSize:48, marginBottom:12 }}>{"\\u2191"}</div>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#64748b" }}>Select one brand from each column above</div>
+  </div>}
+</div>}
+
+{tab==="pitchroom"&&<div style={{ maxWidth:700, margin:"0 auto" }}>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>The Pitch Room</h2>
+  <p style={{ color:"#94a3b8", marginBottom:24, lineHeight:1.7 }}>Build a complete Super Bowl ad pitch from scratch. Strategy, creative, media, measurement - the full business case.</p>
+  <div style={{ display:"flex", gap:4, marginBottom:20 }}>
+    {["Brand","Strategy","Creative","Media","Pitch"].map((s,i)=>(
+      <div key={i} style={{ flex:1, textAlign:"center" }}>
+        <div style={{ height:4, borderRadius:2, background:pitchStep>=i?"#D4A843":"#1a1f2e", marginBottom:6 }}/>
+        <div style={{ fontFamily:"Oswald", fontSize:9, color:pitchStep>=i?"#D4A843":"#475569", letterSpacing:1 }}>{s}</div>
+      </div>
+    ))}
+  </div>
+  {pitchStep===0&&<div style={S.cd}><div style={{ padding:"24px 20px" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>What brand are you pitching for?</div>
+    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:10 }}>
+      {[{n:"Fast Food Chain",d:"Mass market, family audience"},{n:"Tech Startup",d:"Awareness play, need credibility"},{n:"Luxury Auto",d:"Premium positioning, aspirational"},{n:"Beverage Brand",d:"High competition, need differentiation"},{n:"Streaming Service",d:"Subscriber acquisition focused"},{n:"Financial Services",d:"Trust-building, regulation-aware"}].map((b,i)=>(
+        <div key={i} onClick={()=>{setPitchPicks({...pitchPicks,brand:b.n}); setPitchStep(1)}} style={{...S.cd, padding:"16px", cursor:"pointer", textAlign:"center", borderColor:pitchPicks.brand===b.n?"#D4A843":"#1a1f2e"}}>
+          <div style={{ fontFamily:"Oswald", fontSize:13, color:"#e2e8f0" }}>{b.n}</div>
+          <div style={{ fontSize:11, color:"#64748b", marginTop:4 }}>{b.d}</div>
+        </div>
+      ))}
+    </div>
+  </div></div>}
+  {pitchStep===1&&<div style={S.cd}><div style={{ padding:"24px 20px" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>Strategic approach?</div>
+    <div style={{ display:"grid", gap:10 }}>
+      {[{n:"Heritage Play",d:"Lean into brand history and trust. Emotional storytelling.",s:8},{n:"Challenger Attack",d:"Call out the competition. Provocative, disruptive.",s:7},{n:"Cultural Moment",d:"Tie into a current trend or movement. Timely.",s:9},{n:"Product Demo",d:"Show the product in action. Let it speak for itself.",s:6}].map((s,i)=>(
+        <div key={i} onClick={()=>{setPitchPicks({...pitchPicks,strategy:s.n,ss:s.s}); setPitchStep(2)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:pitchPicks.strategy===s.n?"#D4A843":"#1a1f2e"}}>
+          <div style={{ fontFamily:"Oswald", fontSize:14, color:"#e2e8f0" }}>{s.n}</div>
+          <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{s.d}</div>
+        </div>
+      ))}
+    </div>
+  </div></div>}
+  {pitchStep===2&&<div style={S.cd}><div style={{ padding:"24px 20px" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>Creative format?</div>
+    <div style={{ display:"grid", gap:10 }}>
+      {[{n:"60-sec Cinematic Film",d:"Premium production. One big moment.",s:8},{n:"30-sec + Extended YouTube Cut",d:"Hub and spoke. TV drives to digital.",s:9},{n:"Multi-Spot Series",d:"Three 15-sec spots telling one story across the game.",s:7},{n:"Interactive / QR Experience",d:"Drive to second screen. Coinbase-style gamble.",s:6}].map((c,i)=>(
+        <div key={i} onClick={()=>{setPitchPicks({...pitchPicks,creative:c.n,cs:c.s}); setPitchStep(3)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:pitchPicks.creative===c.n?"#D4A843":"#1a1f2e"}}>
+          <div style={{ fontFamily:"Oswald", fontSize:14, color:"#e2e8f0" }}>{c.n}</div>
+          <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{c.d}</div>
+        </div>
+      ))}
+    </div>
+  </div></div>}
+  {pitchStep===3&&<div style={S.cd}><div style={{ padding:"24px 20px" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>Amplification strategy?</div>
+    <div style={{ display:"grid", gap:10 }}>
+      {[{n:"Pre-Release Teaser Campaign",d:"Build anticipation 3-4 weeks before game. Social seeding.",s:9},{n:"Real-Time War Room",d:"200+ pre-loaded responses. Sub-60-sec reply time on social.",s:8},{n:"Influencer Army",d:"500+ creators posting before, during, and after the game.",s:7},{n:"PR-First Approach",d:"Embargo strategy with tier-1 outlets. Earned media focus.",s:7}].map((m,i)=>(
+        <div key={i} onClick={()=>{setPitchPicks({...pitchPicks,media:m.n,ms:m.s}); setPitchStep(4)}} style={{...S.cd, padding:"14px 18px", cursor:"pointer", borderColor:pitchPicks.media===m.n?"#D4A843":"#1a1f2e"}}>
+          <div style={{ fontFamily:"Oswald", fontSize:14, color:"#e2e8f0" }}>{m.n}</div>
+          <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>{m.d}</div>
+        </div>
+      ))}
+    </div>
+  </div></div>}
+  {pitchStep===4&&<div>
+    <div style={{...S.cd, marginBottom:16}}><div style={{ padding:"24px 20px" }}>
+      <div style={{ fontFamily:"Oswald", fontSize:20, color:"#D4A843", marginBottom:16 }}>Your Pitch Deck Summary</div>
+      {[{l:"Client",v:pitchPicks.brand},{l:"Strategy",v:pitchPicks.strategy},{l:"Creative",v:pitchPicks.creative},{l:"Amplification",v:pitchPicks.media}].map((f,i)=>(
+        <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"12px 0", borderBottom:"1px solid #111827" }}>
+          <span style={{ fontFamily:"Oswald", fontSize:12, color:"#64748b", letterSpacing:1 }}>{f.l}</span>
+          <span style={{ fontFamily:"Oswald", fontSize:14, color:"#e2e8f0" }}>{f.v}</span>
+        </div>
+      ))}
+    </div></div>
+    <div style={{...S.cd, marginBottom:16}}><div style={{ padding:"24px 20px" }}>
+      <div style={{...S.lb, color:"#69BE28", marginBottom:12}}>PROJECTED ROI</div>
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12 }}>
+        {[{l:"Media Spend",v:"$8-10M",cl:"#C8102E"},{l:"Earned Media Est.",v:"$"+(((pitchPicks.ss||7)+(pitchPicks.cs||7)+(pitchPicks.ms||7))*4)+"M",cl:"#69BE28"},{l:"Total ROI",v:((pitchPicks.ss||7)+(pitchPicks.cs||7)+(pitchPicks.ms||7)>=23?"5.2x":((pitchPicks.ss||7)+(pitchPicks.cs||7)+(pitchPicks.ms||7))>=20?"3.8x":"2.1x"),cl:"#D4A843"}].map((m,i)=>(
+          <div key={i} style={{ textAlign:"center", padding:12, borderRadius:8, background:"#0a0d15" }}>
+            <div style={{ fontFamily:"Oswald", fontSize:24, fontWeight:700, color:m.cl }}>{m.v}</div>
+            <div style={{ fontSize:10, color:"#64748b", letterSpacing:1, marginTop:4 }}>{m.l}</div>
+          </div>
+        ))}
+      </div>
+    </div></div>
+    <div style={{...S.cd}}><div style={{ padding:"24px 20px", textAlign:"center" }}>
+      <div style={{ fontFamily:"Oswald", fontSize:48, fontWeight:700, color:((pitchPicks.ss||0)+(pitchPicks.cs||0)+(pitchPicks.ms||0))>=24?"#69BE28":"#D4A843" }}>{(pitchPicks.ss||0)+(pitchPicks.cs||0)+(pitchPicks.ms||0)}</div>
+      <div style={{ fontFamily:"Oswald", fontSize:14, color:"#64748b" }}>pitch score out of 27</div>
+      <div style={{ fontSize:14, color:"#94a3b8", marginTop:8, lineHeight:1.6 }}>{((pitchPicks.ss||0)+(pitchPicks.cs||0)+(pitchPicks.ms||0))>=24?"Client is buying. This pitch has strategic rigor, creative ambition, and a clear amplification plan.":((pitchPicks.ss||0)+(pitchPicks.cs||0)+(pitchPicks.ms||0))>=20?"Strong pitch but the client wants one more round of refinement.":"Back to the drawing board. The strategy and execution are not aligned."}</div>
+      <button onClick={()=>{setPitchStep(0);setPitchPicks({})}} style={{...bt("linear-gradient(135deg,#D4A843,#8B6914)","#fff"), marginTop:16}}>Pitch Again</button>
+    </div></div>
+  </div>}
+  {pitchStep>0&&pitchStep<4&&<div style={{ marginTop:16, textAlign:"center" }}><button onClick={()=>setPitchStep(pitchStep-1)} style={bt("#1a1f2e","#64748b")}>Back</button></div>}
+</div>}
+
+{tab==="mediamix"&&<div>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>Media Mix Optimizer</h2>
+  <p style={{ color:"#94a3b8", marginBottom:20, lineHeight:1.7 }}>Allocate a $15M Super Bowl budget across channels. Drag sliders to see how your mix affects projected reach and ROI.</p>
+  <div style={{ display:"flex", gap:8, marginBottom:20, flexWrap:"wrap" }}>
+    {[{k:"custom",l:"Custom"},{k:"heritage",l:"Heritage Brand"},{k:"challenger",l:"Challenger"},{k:"dtc",l:"DTC Disruptor"}].map((p,i)=>(
+      <button key={i} onClick={()=>{
+        if(p.k==="heritage") setMmSliders({tv:55,social:10,influencer:5,pr:10,youtube:10,ooh:5,podcast:0,experiential:5});
+        else if(p.k==="challenger") setMmSliders({tv:35,social:20,influencer:15,pr:10,youtube:10,ooh:0,podcast:5,experiential:5});
+        else if(p.k==="dtc") setMmSliders({tv:25,social:25,influencer:20,pr:5,youtube:15,ooh:0,podcast:10,experiential:0});
+      }} style={{ fontFamily:"Oswald",fontSize:11,letterSpacing:1,textTransform:"uppercase",padding:"6px 14px",borderRadius:20,border:"1px solid #1a1f2e",background:"transparent",color:"#64748b",cursor:"pointer" }}>{p.l}</button>
+    ))}
+  </div>
+  <div style={{ display:"grid", gap:12, marginBottom:24 }}>
+    {[{k:"tv",l:"TV Spot",cl:"#C8102E",roi:5.2,reach:"130M"},{k:"social",l:"Social Paid",cl:"#4285F4",roi:3.1,reach:"Variable"},{k:"influencer",l:"Influencer",cl:"#FF69B4",roi:3.8,reach:"Targeted"},{k:"pr",l:"PR / Earned",cl:"#69BE28",roi:8.0,reach:"Amplified"},{k:"youtube",l:"YouTube",cl:"#FF3008",roi:4.5,reach:"On-demand"},{k:"ooh",l:"OOH / Billboard",cl:"#D4A843",roi:1.5,reach:"Local"},{k:"podcast",l:"Podcast",cl:"#9C27B0",roi:5.5,reach:"Niche"},{k:"experiential",l:"Experiential",cl:"#00D2FF",roi:2.0,reach:"Limited"}].map((ch,i)=>{
+      const val=mmSliders[ch.k]||0;
+      const spend=Math.round(val/100*15*10)/10;
+      return (
+        <div key={i} style={{ padding:"12px 16px", borderRadius:8, background:"#0f1420", border:"1px solid #1a1f2e" }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+            <div style={{ fontFamily:"Oswald", fontSize:13, color:ch.cl }}>{ch.l}</div>
+            <div style={{ fontFamily:"Oswald", fontSize:14, color:"#e2e8f0" }}>{"$"+spend+"M ("+val+"%)"}</div>
+          </div>
+          <input type="range" min="0" max="60" value={val} onChange={e=>{const nv=Number(e.target.value); const total=Object.values({...mmSliders,[ch.k]:nv}).reduce((a,b)=>a+b,0); if(total<=100) setMmSliders({...mmSliders,[ch.k]:nv})}} style={{ width:"100%", accentColor:ch.cl }}/>
+          <div style={{ display:"flex", justifyContent:"space-between", fontSize:10, color:"#475569", marginTop:2 }}>
+            <span>{"ROI: "+ch.roi+"x"}</span>
+            <span>{"Reach: "+ch.reach}</span>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+  <div style={{...S.cd}}><div style={{ padding:"20px" }}>
+    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12, marginBottom:16 }}>
+      {[{l:"Allocated",v:Object.values(mmSliders).reduce((a,b)=>a+b,0)+"%",cl:Object.values(mmSliders).reduce((a,b)=>a+b,0)>100?"#C8102E":"#69BE28"},{l:"Remaining",v:(100-Object.values(mmSliders).reduce((a,b)=>a+b,0))+"%",cl:"#D4A843"},{l:"Blended ROI",v:(Math.round(([{k:"tv",r:5.2},{k:"social",r:3.1},{k:"influencer",r:3.8},{k:"pr",r:8},{k:"youtube",r:4.5},{k:"ooh",r:1.5},{k:"podcast",r:5.5},{k:"experiential",r:2}].reduce((sum,c)=>sum+((mmSliders[c.k]||0)/100*c.r),0)/(Math.max(Object.values(mmSliders).reduce((a,b)=>a+b,0),1)/100))*10)/10)+"x",cl:"#4285F4"}].map((m,i)=>(
+        <div key={i} style={{ textAlign:"center", padding:12, borderRadius:8, background:"#0a0d15" }}>
+          <div style={{ fontFamily:"Oswald", fontSize:24, fontWeight:700, color:m.cl }}>{m.v}</div>
+          <div style={{ fontSize:10, color:"#64748b", letterSpacing:1, marginTop:4 }}>{m.l}</div>
+        </div>
+      ))}
+    </div>
+    {Object.values(mmSliders).reduce((a,b)=>a+b,0)>100&&<div style={{ padding:12, borderRadius:8, background:"rgba(200,16,46,0.1)", border:"1px solid rgba(200,16,46,0.2)", textAlign:"center" }}>
+      <div style={{ fontFamily:"Oswald", fontSize:13, color:"#C8102E" }}>OVER BUDGET! Reduce allocations to stay within 100%.</div>
+    </div>}
+  </div></div>
+</div>}
+
+{tab==="awards"&&<div>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>Super Ad Bowl Awards</h2>
+  <p style={{ color:"#94a3b8", marginBottom:24, lineHeight:1.7 }}>Cast your vote across 6 award categories. Pick the brand you think deserves each honor.</p>
+  <div style={{ display:"grid", gap:16 }}>
+    {[{cat:"Best Use of Celebrity",ic:"\u2B50",cl:"#D4A843",desc:"Which brand got the most value from their celebrity partnership?"},{cat:"Best Emotional Gut Punch",ic:"\uD83D\uDE2D",cl:"#4285F4",desc:"Which ad made you FEEL something real?"},{cat:"Best Troll Move",ic:"\uD83D\uDE08",cl:"#FF3008",desc:"Most clever shade, provocation, or competitive jab."},{cat:"Most Likely to Go Viral",ic:"\uD83D\uDD25",cl:"#FF69B4",desc:"Which ad will dominate social media for the next week?"},{cat:"Biggest Waste of Money",ic:"\uD83D\uDCB8",cl:"#C8102E",desc:"Which brand burned $8M+ for nothing memorable?"},{cat:"Best 5-Second Moment",ic:"\u26A1",cl:"#69BE28",desc:"The single best moment across all ads. The one everyone will quote."}].map((award,ai)=>(
+      <div key={ai} style={S.cd}><div style={{ padding:"18px 20px" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
+          <span style={{ fontSize:24 }}>{award.ic}</span>
+          <div>
+            <div style={{ fontFamily:"Oswald", fontSize:16, fontWeight:600, color:award.cl }}>{award.cat}</div>
+            <div style={{ fontSize:12, color:"#64748b" }}>{award.desc}</div>
+          </div>
+        </div>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(110px,1fr))", gap:6 }}>
+          {["Budweiser","Claude","Pepsi","DoorDash","ChatGPT","T-Mobile","Nerds","Google","Dunkin","Uber Eats","Xfinity","Bud Light"].map((brand,bi)=>(
+            <div key={bi} onClick={()=>setAwardVotes({...awardVotes,[award.cat]:brand})} style={{ padding:"8px 10px", borderRadius:6, textAlign:"center", cursor:"pointer", fontSize:11, fontFamily:"Oswald", letterSpacing:0.5, border:"1px solid "+(awardVotes[award.cat]===brand?award.cl:"#1a1f2e"), color:awardVotes[award.cat]===brand?award.cl:"#64748b", background:awardVotes[award.cat]===brand?"rgba(212,168,67,0.06)":"transparent" }}>{brand}</div>
+          ))}
+        </div>
+        {awardVotes[award.cat]&&<div style={{ marginTop:10, fontSize:12, color:award.cl, fontFamily:"Oswald", letterSpacing:1 }}>{"YOUR PICK: "+awardVotes[award.cat]}</div>}
+      </div></div>
+    ))}
+  </div>
+  {Object.keys(awardVotes).length>=6&&<div style={{...S.cd, marginTop:20}}><div style={{ padding:"24px 20px", textAlign:"center" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:20, color:"#D4A843", marginBottom:16 }}>Your Awards Ballot</div>
+    {Object.entries(awardVotes).map(([cat,brand],i)=>(
+      <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"10px 0", borderBottom:"1px solid #111827" }}>
+        <span style={{ fontSize:12, color:"#64748b" }}>{cat}</span>
+        <span style={{ fontFamily:"Oswald", fontSize:14, color:"#e2e8f0" }}>{brand}</span>
+      </div>
+    ))}
+    <button onClick={()=>setAwardVotes({})} style={{...bt("linear-gradient(135deg,#D4A843,#8B6914)","#fff"), marginTop:16}}>Reset Votes</button>
+  </div></div>}
+</div>}
+
+
+{tab==="overunder"&&<div style={{ maxWidth:600, margin:"0 auto" }}>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>Over / Under</h2>
+  <p style={{ color:"#94a3b8", marginBottom:20, lineHeight:1.7 }}>10 wild Super Bowl marketing stats. Guess if the real number is OVER or UNDER what we show you.</p>
+  <div style={{ display:"flex", gap:4, marginBottom:20 }}>
+    {Array.from({length:10}).map((_,i)=>(
+      <div key={i} style={{ flex:1, height:4, borderRadius:2, background:ouRound>i?(ouPicks[i]===ouData[i].a?"#69BE28":"#C8102E"):(ouRound===i?"#D4A843":"#1a1f2e") }}/>
+    ))}
+  </div>
+  {ouRound<10&&(()=>{
+    const q=ouData[ouRound];
+    return (
+      <div style={{...S.cd}}><div style={{ padding:"28px 24px", textAlign:"center" }}>
+        <div style={{ fontFamily:"Oswald", fontSize:12, color:"#64748b", letterSpacing:2, marginBottom:12 }}>{"ROUND "+(ouRound+1)+" OF 10"}</div>
+        <div style={{ fontSize:15, color:"#c8cdd5", lineHeight:1.7, marginBottom:20 }}>{q.q}</div>
+        <div style={{ fontFamily:"Oswald", fontSize:48, fontWeight:700, color:"#D4A843", marginBottom:20 }}>{q.shown}</div>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
+          <div onClick={()=>{const p={...ouPicks};p[ouRound]="over";setOuPicks(p);setOuScore(ouScore+(q.a==="over"?1:0));setTimeout(()=>setOuRound(ouRound+1),800)}} style={{...S.cd, padding:"20px", cursor:"pointer", borderColor:ouPicks[ouRound]==="over"?(q.a==="over"?"#69BE28":"#C8102E"):"#1a1f2e", textAlign:"center" }}>
+            <div style={{ fontFamily:"Oswald", fontSize:24, fontWeight:700, color:"#69BE28" }}>OVER</div>
+            <div style={{ fontSize:12, color:"#64748b", marginTop:4 }}>Higher than {q.shown}</div>
+          </div>
+          <div onClick={()=>{const p={...ouPicks};p[ouRound]="under";setOuPicks(p);setOuScore(ouScore+(q.a==="under"?1:0));setTimeout(()=>setOuRound(ouRound+1),800)}} style={{...S.cd, padding:"20px", cursor:"pointer", borderColor:ouPicks[ouRound]==="under"?(q.a==="under"?"#69BE28":"#C8102E"):"#1a1f2e", textAlign:"center" }}>
+            <div style={{ fontFamily:"Oswald", fontSize:24, fontWeight:700, color:"#C8102E" }}>UNDER</div>
+            <div style={{ fontSize:12, color:"#64748b", marginTop:4 }}>Lower than {q.shown}</div>
+          </div>
+        </div>
+        {ouPicks[ouRound]&&<div style={{ marginTop:16, padding:14, borderRadius:8, background:ouPicks[ouRound]===q.a?"rgba(105,190,40,0.08)":"rgba(200,16,46,0.08)", border:"1px solid "+(ouPicks[ouRound]===q.a?"rgba(105,190,40,0.2)":"rgba(200,16,46,0.2)") }}>
+          <div style={{ fontFamily:"Oswald", fontSize:14, color:ouPicks[ouRound]===q.a?"#69BE28":"#C8102E" }}>{ouPicks[ouRound]===q.a?"CORRECT!":"WRONG!"}</div>
+          <div style={{ fontSize:13, color:"#94a3b8", marginTop:4 }}>{"The real answer: "+q.real+". "+q.fact}</div>
+        </div>}
+      </div></div>
+    );
+  })()}
+  {ouRound>=10&&<div style={{...S.cd}}><div style={{ padding:"32px 24px", textAlign:"center" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:14, color:"#64748b", letterSpacing:2, marginBottom:8 }}>FINAL SCORE</div>
+    <div style={{ fontFamily:"Oswald", fontSize:72, fontWeight:700, color:ouScore>=8?"#69BE28":ouScore>=5?"#D4A843":"#C8102E" }}>{ouScore}</div>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#64748b" }}>out of 10</div>
+    <div style={{ fontSize:14, color:"#94a3b8", marginTop:12, lineHeight:1.6 }}>{ouScore>=8?"Marketing savant! You know your SB stats.":ouScore>=5?"Solid performance. A few surprises in there.":"These numbers are wild, right? That is the point."}</div>
+    <button onClick={()=>{setOuRound(0);setOuPicks({});setOuScore(0)}} style={{...bt("linear-gradient(135deg,#D4A843,#8B6914)","#fff"), marginTop:16}}>Play Again</button>
+  </div></div>}
+</div>}
+
+{tab==="adlibs"&&<div style={{ maxWidth:600, margin:"0 auto" }}>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>Ad Libs</h2>
+  <p style={{ color:"#94a3b8", marginBottom:20, lineHeight:1.7 }}>Fill in the blanks to create absurd Super Bowl ad pitches. Read them aloud to your table for maximum laughs.</p>
+  {adlibStep===0&&<div style={S.cd}><div style={{ padding:"24px 20px" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#D4A843", marginBottom:16 }}>Fill in each blank:</div>
+    <div style={{ display:"grid", gap:14 }}>
+      {[{k:"celeb",l:"A famous celebrity",p:"e.g. Beyonce, The Rock, Martha Stewart"},{k:"animal",l:"An animal",p:"e.g. llama, goldfish, angry raccoon"},{k:"product",l:"A random product",p:"e.g. toaster, yoga mat, chainsaw"},{k:"place",l:"A weird location",p:"e.g. the moon, a Costco, a volcano"},{k:"emotion",l:"An emotion",p:"e.g. confused, furious, suspiciously happy"},{k:"catchphrase",l:"A catchphrase or slogan",p:"e.g. Lets get weird, You deserve this, YOLO"},{k:"number",l:"A large number",p:"e.g. 47 million, 3 billion, 420"},{k:"sound",l:"A sound effect",p:"e.g. air horn, sad trombone, explosion"}].map(field=>(
+        <div key={field.k}>
+          <div style={{ fontFamily:"Oswald", fontSize:12, color:"#D4A843", letterSpacing:1, marginBottom:4 }}>{field.l.toUpperCase()}</div>
+          <input value={adlibPicks[field.k]||""} onChange={e=>setAdlibPicks({...adlibPicks,[field.k]:e.target.value})} placeholder={field.p} style={{ width:"100%", padding:"10px 14px", borderRadius:8, border:"1px solid #1a1f2e", background:"#0f1420", color:"#e2e8f0", fontSize:14, outline:"none", boxSizing:"border-box" }}/>
+        </div>
+      ))}
+    </div>
+    <div style={{ marginTop:20, textAlign:"center" }}>
+      <button onClick={()=>setAdlibStep(1)} style={{...bt("linear-gradient(135deg,#D4A843,#8B6914)","#fff")}}>Generate My Ad</button>
+    </div>
+  </div></div>}
+  {adlibStep===1&&<div>
+    <div style={{...S.cd, marginBottom:16}}><div style={{ padding:"24px 20px" }}>
+      <div style={{ fontFamily:"Oswald", fontSize:14, color:"#C8102E", letterSpacing:2, marginBottom:12 }}>YOUR SUPER BOWL AD</div>
+      <div style={{ fontSize:15, color:"#c8cdd5", lineHeight:1.9 }}>
+        {"The ad opens on "+(adlibPicks.celeb||"[celebrity]")+" standing in "+(adlibPicks.place||"[location]")+", looking extremely "+(adlibPicks.emotion||"[emotion]")+". A "+(adlibPicks.animal||"[animal]")+" walks up carrying a "+(adlibPicks.product||"[product]")+". The crowd goes wild. A "+(adlibPicks.sound||"[sound effect]")+" blasts as the screen flashes: '"+((adlibPicks.number||"[number]")+" people cannot be wrong.'")+" "+(adlibPicks.celeb||"[celebrity]")+" looks directly into the camera, holds up the "+(adlibPicks.product||"[product]")+", and whispers: '"+(adlibPicks.catchphrase||"[catchphrase]")+".' The "+(adlibPicks.animal||"[animal]")+" nods in approval. Fade to black. Super Bowl ad of the year."}
+      </div>
+    </div></div>
+    <div style={{...S.cd}}><div style={{ padding:"20px", textAlign:"center" }}>
+      <div style={{ fontFamily:"Oswald", fontSize:12, color:"#64748b", letterSpacing:2, marginBottom:10 }}>AD AGENCY REVIEW</div>
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginBottom:16 }}>
+        {[{l:"Virality",v:Math.floor(Math.random()*4)+7,cl:"#FF69B4"},{l:"Absurdity",v:Math.floor(Math.random()*3)+8,cl:"#D4A843"},{l:"Will It Air?",v:Math.floor(Math.random()*5)+1,cl:"#C8102E"}].map((s,i)=>(
+          <div key={i} style={{ padding:10, borderRadius:8, background:"#0a0d15" }}>
+            <div style={{ fontFamily:"Oswald", fontSize:24, fontWeight:700, color:s.cl }}>{s.v+"/10"}</div>
+            <div style={{ fontSize:10, color:"#64748b", letterSpacing:1, marginTop:2 }}>{s.l}</div>
+          </div>
+        ))}
+      </div>
+      <button onClick={()=>{setAdlibStep(0);setAdlibPicks({})}} style={{...bt("linear-gradient(135deg,#D4A843,#8B6914)","#fff")}}>Make Another Ad</button>
+    </div></div>
+  </div>}
+</div>}
+
+{tab==="twotruth"&&<div style={{ maxWidth:600, margin:"0 auto" }}>
+  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}><span onClick={()=>sTab("more")} style={{ cursor:"pointer", color:"#64748b", fontSize:12, fontFamily:"Oswald", letterSpacing:1 }}>MORE</span><span style={{ color:"#334155" }}>/</span></div>
+  <h2 style={S.h2}>Two Truths and a Lie</h2>
+  <p style={{ color:"#94a3b8", marginBottom:20, lineHeight:1.7 }}>10 rounds of insane Super Bowl ad facts. Two are real. One is fake. Tap the lie.</p>
+  <div style={{ display:"flex", gap:4, marginBottom:20 }}>
+    {Array.from({length:10}).map((_,i)=>(
+      <div key={i} style={{ flex:1, height:4, borderRadius:2, background:ttRound>i?(ttPicks[i]===ttData[i].lie?"#69BE28":"#C8102E"):(ttRound===i?"#D4A843":"#1a1f2e") }}/>
+    ))}
+  </div>
+  {ttRound<10&&(()=>{
+    const q=ttData[ttRound];
+    return (
+      <div style={{...S.cd}}><div style={{ padding:"24px 20px" }}>
+        <div style={{ fontFamily:"Oswald", fontSize:12, color:"#64748b", letterSpacing:2, marginBottom:16, textAlign:"center" }}>{"ROUND "+(ttRound+1)+" OF 10 | TAP THE LIE"}</div>
+        <div style={{ display:"grid", gap:10 }}>
+          {q.opts.map((opt,oi)=>(
+            <div key={oi} onClick={()=>{if(!ttPicks[ttRound]&&ttPicks[ttRound]!==0){const p={...ttPicks};p[ttRound]=oi;setTtPicks(p);setTtScore(ttScore+(oi===q.lie?1:0));setTimeout(()=>setTtRound(ttRound+1),1500)}}} style={{...S.cd, padding:"16px 18px", cursor:ttPicks[ttRound]!=null?"default":"pointer", borderColor:ttPicks[ttRound]!=null?(oi===q.lie?"#69BE28":(ttPicks[ttRound]===oi?"#C8102E":"#1a1f2e")):"#1a1f2e", background:ttPicks[ttRound]!=null&&oi===q.lie?"rgba(105,190,40,0.06)":"transparent" }}>
+              <div style={{ fontSize:14, color:"#c8cdd5", lineHeight:1.6 }}>{opt}</div>
+              {ttPicks[ttRound]!=null&&oi===q.lie&&<div style={{ fontFamily:"Oswald", fontSize:11, color:"#69BE28", marginTop:6, letterSpacing:1 }}>THIS WAS THE LIE</div>}
+              {ttPicks[ttRound]!=null&&ttPicks[ttRound]===oi&&oi!==q.lie&&<div style={{ fontFamily:"Oswald", fontSize:11, color:"#C8102E", marginTop:6, letterSpacing:1 }}>ACTUALLY TRUE!</div>}
+            </div>
+          ))}
+        </div>
+        {ttPicks[ttRound]!=null&&<div style={{ marginTop:14, padding:12, borderRadius:8, background:"#0a0d15", border:"1px solid #151a28" }}>
+          <div style={{ fontSize:12, color:"#D4A843", fontFamily:"Oswald", letterSpacing:1, marginBottom:4 }}>THE TRUTH</div>
+          <div style={{ fontSize:13, color:"#94a3b8", lineHeight:1.6 }}>{q.explain}</div>
+        </div>}
+      </div></div>
+    );
+  })()}
+  {ttRound>=10&&<div style={{...S.cd}}><div style={{ padding:"32px 24px", textAlign:"center" }}>
+    <div style={{ fontFamily:"Oswald", fontSize:14, color:"#64748b", letterSpacing:2, marginBottom:8 }}>LIE DETECTOR SCORE</div>
+    <div style={{ fontFamily:"Oswald", fontSize:72, fontWeight:700, color:ttScore>=8?"#69BE28":ttScore>=5?"#D4A843":"#C8102E" }}>{ttScore}</div>
+    <div style={{ fontFamily:"Oswald", fontSize:16, color:"#64748b" }}>out of 10</div>
+    <div style={{ fontSize:14, color:"#94a3b8", marginTop:12, lineHeight:1.6 }}>{ttScore>=8?"Nothing gets past you! You know SB ad history cold.":ttScore>=5?"Not bad - SB advertising is wilder than most people think.":"These facts are genuinely insane. Nobody blames you."}</div>
+    <button onClick={()=>{setTtRound(0);setTtPicks({});setTtScore(0)}} style={{...bt("linear-gradient(135deg,#D4A843,#8B6914)","#fff"), marginTop:16}}>Play Again</button>
+  </div></div>}
+</div>}
+
+
+{/* ══════ ADMIN ══════ */}
+{tab==="admin"&&<div style={{ maxWidth:500,margin:"0 auto" }}>
+  <h2 style={{...S.h2,textAlign:"center"}}>Host Controls</h2>
+  {!admin?<div style={{...S.cd,textAlign:"center",padding:"40px 20px"}}>
+    <p style={{ color:"#94a3b8",marginBottom:16 }}>Enter admin PIN</p>
+    <div style={{ display:"flex",justifyContent:"center",gap:8 }}>
+      <input type="password" value={aPin} onChange={e=>sAPin(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&aPin===PIN)sAdmin(true)}} placeholder="PIN" style={{ padding:"10px 14px",borderRadius:6,border:"1px solid #1a1f2e",background:"#0f1420",color:"#e2e8f0",fontFamily:"monospace",fontSize:18,width:100,textAlign:"center",outline:"none" }}/>
+      <button onClick={()=>{if(aPin===PIN)sAdmin(true)}} style={bt("#1a1f2e","#e2e8f0")}>Unlock</button>
+    </div>
+  </div>:<div style={{...S.cd,padding:20}}>
+    <div style={{ padding:"8px 14px",borderRadius:6,background:"rgba(105,190,40,0.06)",marginBottom:16,textAlign:"center" }}>
+      <span style={{ fontFamily:"Oswald",fontSize:12,color:"#69BE28",letterSpacing:1 }}>ADMIN ACTIVE</span>
+    </div>
+    <div style={{ marginBottom:16 }}><div style={S.lb}>Current Round</div><div style={{ fontFamily:"Oswald",fontSize:20,fontWeight:700,color:"#e2e8f0",marginTop:4 }}>{RNAMES[round]||"Complete"}</div></div>
+    <div style={{ marginBottom:16 }}><div style={S.lb}>Live Votes</div>
+      {bracket.map((m,i)=>{const r=live[round+"-"+i],va=(r&&r.tally&&m.a1&&r.tally[m.a1.id])||0,vb=(r&&r.tally&&m.a2&&r.tally[m.a2.id])||0;return <div key={i} style={{ display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:"1px solid #151a28",fontSize:13 }}>
+        <span style={{ color:va>=vb?"#69BE28":"#94a3b8" }}>{m.a1&&m.a1.brand} ({va})</span>
+        <span style={{ color:"#334155" }}>vs</span>
+        <span style={{ color:vb>va?"#69BE28":"#94a3b8" }}>{m.a2&&m.a2.brand} ({vb})</span>
+      </div>})}
+    </div>
+    <button onClick={advance} disabled={round>=4} style={{...bt(round>=4?"#1a1f2e":"linear-gradient(135deg,#C8102E,#8b0a1a)",round>=4?"#475569":"#fff"),width:"100%",marginBottom:8}}>
+      {round>=3?"Crown Champion":round>=4?"Complete":"Advance to "+RNAMES[round+1]}
+    </button>
+    <button onClick={async()=>{sRound(0);sBracket(bldB());sLive({});try{await window.storage.set(sk("st"),JSON.stringify({r:0,b:bldB()}),true)}catch(e){}}}
+      style={{...bt("transparent","#475569"),width:"100%",border:"1px solid #1a1f2e",fontSize:11}}>Reset Tournament</button>
+  </div>}
+</div>}
+
+      </main>
+
+      <footer style={{ borderTop:"1px solid #1a1f2e",padding:"24px 16px",textAlign:"center" }}>
+        <div style={{ fontFamily:"Oswald",fontSize:9,color:"#94a3b8",letterSpacing:3 }}>5TH ANNUAL</div>
+        <div style={{ fontFamily:"Oswald",fontSize:16,fontWeight:700,color:"#D4A843",letterSpacing:3 }}>SUPER AD BOWL LX</div>
+        <div style={{ fontSize:10,color:"#1e293b",marginTop:8,maxWidth:500,margin:"8px auto 0",lineHeight:1.5 }}>For demonstration and educational purposes only. All brand logos and trademarks are property of their respective owners. Not affiliated with the NFL or any brands featured.</div>
+      </footer>
+    </div>
+  );
+}
