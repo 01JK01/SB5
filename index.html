@@ -258,15 +258,16 @@ export default function App() {
   function bldB() { return INIT.map(([a,b]) => ({ a1:ADS.find(x=>x.id===a), a2:ADS.find(x=>x.id===b), w:null })); }
   const sk = k => "adb5:" + k;
 
-  const doVote = useCallback(async (mi, wid) => {
-    if (!voter) return;
+  const doVote = useCallback(async (mi, wid, vid) => {
+    const v = vid || voter;
+    if (!v) return;
     try {
       const key = sk("v:r"+round+":m"+mi);
       const ex = await window.storage.get(key, true).catch(()=>null);
       let d = ex ? JSON.parse(ex.value) : {};
-      d[voter] = wid;
+      d[v] = wid;
       await window.storage.set(key, JSON.stringify(d), true);
-      sVotes(v => ({...v, [round+"-"+mi]: wid}));
+      sVotes(vv => ({...vv, [round+"-"+mi]: wid}));
       ldLive();
     } catch(e) { console.error(e); }
   }, [voter, round]);
@@ -441,7 +442,7 @@ export default function App() {
         </div>
         {[mu.a1,mu.a2].map((ad,i)=>ad&&<div key={ad.id}>
           {i===1&&<div style={{ textAlign:"center",padding:"6px 0",background:"#0d1018",fontFamily:"Oswald",fontSize:13,fontWeight:700,color:"#475569",letterSpacing:3 }}>VS</div>}
-          <div onClick={()=>{if(!reg){if(!vName.trim()){const n=prompt("Enter your name to vote:");if(!n||!n.trim())return;sVName(n.trim());const id=n.trim().toLowerCase().replace(/\s+/g,"-");sVoter(id);sReg(true);try{const key2=sk("voters");window.storage.get(key2,true).catch(()=>null).then(ex=>{let v2=ex?JSON.parse(ex.value):{};v2[id]={n:n.trim(),t:new Date().toISOString()};window.storage.set(key2,JSON.stringify(v2),true)})}catch(e2){}}else{const id=vName.trim().toLowerCase().replace(/\s+/g,"-");sVoter(id);sReg(true)}}doVote(idx,ad.id)}} style={{ display:"flex",alignItems:"center",gap:12,padding:"16px 18px",cursor:"pointer",transition:"all .25s",background:mv===ad.id?(ad.color+"18"):"transparent",borderLeft:mv===ad.id?("4px solid "+ad.color):"4px solid transparent" }}
+          <div onClick={()=>{let vid=voter;if(!reg){if(!vName.trim()){const n=prompt("Enter your name to vote:");if(!n||!n.trim())return;sVName(n.trim());vid=n.trim().toLowerCase().replace(/\s+/g,"-");sVoter(vid);sReg(true);try{const key2=sk("voters");window.storage.get(key2,true).catch(()=>null).then(ex=>{let v2=ex?JSON.parse(ex.value):{};v2[vid]={n:n.trim(),t:new Date().toISOString()};window.storage.set(key2,JSON.stringify(v2),true)})}catch(e2){}}else{vid=vName.trim().toLowerCase().replace(/\s+/g,"-");sVoter(vid);sReg(true)}}doVote(idx,ad.id,vid)}} style={{ display:"flex",alignItems:"center",gap:12,padding:"16px 18px",cursor:"pointer",transition:"all .25s",background:mv===ad.id?(ad.color+"18"):"transparent",borderLeft:mv===ad.id?("4px solid "+ad.color):"4px solid transparent" }}
             onMouseEnter={e=>{e.currentTarget.style.background=mv===ad.id?(ad.color+"18"):(ad.color+"08")}} onMouseLeave={e=>{e.currentTarget.style.background=mv===ad.id?(ad.color+"18"):"transparent"}}>
             <BI ad={ad} size={44}/>
             <div style={{ flex:1 }}>
