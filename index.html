@@ -261,15 +261,15 @@ export default function App() {
   const doVote = useCallback(async (mi, wid, vid) => {
     const v = vid || voter;
     if (!v) return;
+    sVotes(vv => ({...vv, [round+"-"+mi]: wid}));
     try {
       const key = sk("v:r"+round+":m"+mi);
       const ex = await window.storage.get(key, true).catch(()=>null);
       let d = ex ? JSON.parse(ex.value) : {};
       d[v] = wid;
       await window.storage.set(key, JSON.stringify(d), true);
-      sVotes(vv => ({...vv, [round+"-"+mi]: wid}));
       ldLive();
-    } catch(e) { console.error(e); }
+    } catch(e) {}
   }, [voter, round]);
 
   const ldLive = useCallback(async () => {
@@ -434,16 +434,26 @@ export default function App() {
     {bracket.map((mu,idx)=>{
       const res=live[round+"-"+idx], mv=votes[round+"-"+idx];
       const t1=(res&&res.tally&&mu.a1&&res.tally[mu.a1.id])||0, t2=(res&&res.tally&&mu.a2&&res.tally[mu.a2.id])||0, tot=t1+t2;
+      const castVote=(adId)=>{
+        let vid=voter;
+        if(!vid){
+          const n=vName.trim()||prompt("Enter your name to vote:");
+          if(!n||!n.trim())return;
+          vid=n.trim().toLowerCase().replace(/\s+/g,"-");
+          sVName(n.trim());sVoter(vid);sReg(true);
+          try{const key2=sk("voters");window.storage.get(key2,true).catch(()=>null).then(ex=>{let v2=ex?JSON.parse(ex.value):{};v2[vid]={n:n.trim(),t:new Date().toISOString()};window.storage.set(key2,JSON.stringify(v2),true)}).catch(()=>{})}catch(e2){}
+        }
+        doVote(idx,adId,vid);
+      };
       return(<div key={idx} style={{...S.cd,overflow:"visible"}}>
         <div style={{ padding:"10px 14px",background:"#1c2233",display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:"1px solid #252b3b" }}>
           <span style={S.lb}>Match {idx+1}</span>
           {mv?<span style={{ fontFamily:"Oswald",fontSize:10,color:"#69BE28",letterSpacing:1,padding:"3px 10px",borderRadius:4,background:"rgba(105,190,40,0.1)",border:"1px solid rgba(105,190,40,0.2)" }}>VOTE CAST</span>
-          :<span style={{ fontFamily:"Oswald",fontSize:10,color:"#D4A843",letterSpacing:1,padding:"3px 10px",borderRadius:4,background:"rgba(212,168,67,0.08)",border:"1px solid rgba(212,168,67,0.15)" }}>TAP A SIDE TO VOTE</span>}
+          :<span style={{ fontFamily:"Oswald",fontSize:10,color:"#D4A843",letterSpacing:1,padding:"3px 10px",borderRadius:4,background:"rgba(212,168,67,0.08)",border:"1px solid rgba(212,168,67,0.15)" }}>TAP TO VOTE</span>}
         </div>
         {[mu.a1,mu.a2].map((ad,i)=>ad&&<div key={ad.id}>
           {i===1&&<div style={{ textAlign:"center",padding:"6px 0",background:"#0d1018",fontFamily:"Oswald",fontSize:13,fontWeight:700,color:"#475569",letterSpacing:3 }}>VS</div>}
-          <div onClick={()=>{let vid=voter;if(!reg){if(!vName.trim()){const n=prompt("Enter your name to vote:");if(!n||!n.trim())return;sVName(n.trim());vid=n.trim().toLowerCase().replace(/\s+/g,"-");sVoter(vid);sReg(true);try{const key2=sk("voters");window.storage.get(key2,true).catch(()=>null).then(ex=>{let v2=ex?JSON.parse(ex.value):{};v2[vid]={n:n.trim(),t:new Date().toISOString()};window.storage.set(key2,JSON.stringify(v2),true)})}catch(e2){}}else{vid=vName.trim().toLowerCase().replace(/\s+/g,"-");sVoter(vid);sReg(true)}}doVote(idx,ad.id,vid)}} style={{ display:"flex",alignItems:"center",gap:12,padding:"16px 18px",cursor:"pointer",transition:"all .25s",background:mv===ad.id?(ad.color+"18"):"transparent",borderLeft:mv===ad.id?("4px solid "+ad.color):"4px solid transparent" }}
-            onMouseEnter={e=>{e.currentTarget.style.background=mv===ad.id?(ad.color+"18"):(ad.color+"08")}} onMouseLeave={e=>{e.currentTarget.style.background=mv===ad.id?(ad.color+"18"):"transparent"}}>
+          <div style={{ display:"flex",alignItems:"center",gap:12,padding:"16px 18px",transition:"all .25s",background:mv===ad.id?(ad.color+"18"):"transparent",borderLeft:mv===ad.id?("4px solid "+ad.color):"4px solid transparent" }}>
             <BI ad={ad} size={44}/>
             <div style={{ flex:1 }}>
               <div style={{ display:"flex",alignItems:"center",gap:6,flexWrap:"wrap" }}>
@@ -453,16 +463,16 @@ export default function App() {
               </div>
               <div style={{ fontSize:12,color:"#94a3b8",marginTop:2 }}>{ad.title}</div>
               <div style={{ fontSize:11,color:"#64748b",marginTop:1 }}>{ad.celeb}</div>
+              {ad.video&&<div style={{ marginTop:4 }}><WatchBtn href={ad.video} color={ad.color} small/></div>}
             </div>
-            <div style={{ textAlign:"right",minWidth:60 }}>
-              {tot>0?<div>
-                <div style={{ fontFamily:"Oswald",fontSize:18,fontWeight:700,color:ad.color }}>{Math.round(((i===0?t1:t2)/tot)*100)}%</div>
-                <div style={{ width:60,height:5,borderRadius:3,background:"#252b3b",overflow:"hidden",marginTop:3 }}>
-                  <div style={{ width:(((i===0?t1:t2)/tot)*100)+"%",height:"100%",borderRadius:3,background:ad.color,transition:"width .5s" }}/>
+            <div style={{ display:"flex",flexDirection:"column",alignItems:"center",gap:6,minWidth:70 }}>
+              <div onClick={()=>castVote(ad.id)} style={{ fontFamily:"Oswald",fontSize:12,fontWeight:600,letterSpacing:1,padding:"8px 16px",borderRadius:8,cursor:"pointer",transition:"all .2s",textAlign:"center",background:mv===ad.id?ad.color:(ad.color+"12"),color:mv===ad.id?"#fff":ad.color,border:"1px solid "+(mv===ad.id?ad.color:(ad.color+"40")) }}>{mv===ad.id?"VOTED":"VOTE"}</div>
+              {tot>0&&<div style={{ textAlign:"center" }}>
+                <div style={{ fontFamily:"Oswald",fontSize:16,fontWeight:700,color:ad.color }}>{Math.round(((i===0?t1:t2)/tot)*100)}%</div>
+                <div style={{ width:56,height:4,borderRadius:2,background:"#252b3b",overflow:"hidden",marginTop:2 }}>
+                  <div style={{ width:(((i===0?t1:t2)/tot)*100)+"%",height:"100%",borderRadius:2,background:ad.color,transition:"width .5s" }}/>
                 </div>
-                <div style={{ fontSize:9,color:"#475569",marginTop:2 }}>{i===0?t1:t2} vote{(i===0?t1:t2)!==1?"s":""}</div>
-              </div>
-              :<div style={{ fontFamily:"Oswald",fontSize:11,color:mv?"#475569":ad.color,letterSpacing:1,padding:"6px 12px",borderRadius:6,border:"1px solid "+(mv?"#252b3b":(ad.color+"40")),background:mv?"transparent":(ad.color+"08"),transition:"all .2s" }}>{mv?"":"VOTE"}</div>}
+              </div>}
             </div>
           </div>
         </div>)}
